@@ -8,9 +8,12 @@ import (
 	"log"
 	"os"
 	"testing"
+	"strings"
 )
 
-var db *sql.DB
+func getContainerName(container * dockertest.Resource) string  {
+	return strings.TrimPrefix(container.Container.Name, "/")
+}
 
 func createPostgres(pool * dockertest.Pool) *dockertest.Resource {
 	var db *sql.DB
@@ -32,8 +35,48 @@ func createPostgres(pool * dockertest.Pool) *dockertest.Resource {
 	return resource
 }
 
+func createKong(pool * dockertest.Pool, postgresContainer * dockertest.Resource) *dockertest.Resource {
+
+	postgresContainerName := getContainerName(postgresContainer)
+
+
+	options := &dockertest.RunOptions{
+		Repository: "kong",
+		Tag:        "0.11",
+		Env:     []string{
+			"KONG_DATABASE=postgres",
+			fmt.Sprintf("KONG_PG_HOST=%v", postgresContainerName),
+			"KONG_PG_USER=postgres",
+			"KONG_PG_PASSWORD=kong",
+		},
+		Links:   []string{fmt.Sprintf("%s:%s", postgresContainerName, postgresContainerName)},
+	}
+
+	log.Printf("postgres container: %v", postgresContainerName)
+
+	resource, err := pool.RunWithOptions(options)
+
+	log.Printf("kong container: %v", getContainerName(resource))
+
+	if err != nil {
+		log.Fatalf("Could not start resource: %s", err)
+	}
+
+	return resource
+
+}
+
+func stopAllContainers(pool * dockertest.Pool, containers []*dockertest.Resource) {
+	for _, container := range containers {
+		if err := pool.Purge(container); err != nil {
+			log.Fatalf("Could not purge container %s, error: %s", container.Container.Name, err)
+		}
+	}
+}
+
 func TestMain(m *testing.M) {
 
+	log.SetOutput(os.Stdout)
 	var err error
 	pool, err := dockertest.NewPool("")
 	if err != nil {
@@ -42,17 +85,15 @@ func TestMain(m *testing.M) {
 
 
 	postgresContainer := createPostgres(pool)
+	kongContainer := createKong(pool, postgresContainer)
 
 	code := m.Run()
 
-	if err := pool.Purge(postgresContainer); err != nil {
-		log.Fatalf("Could not purge containers: %s", err)
-	}
+	stopAllContainers(pool, []*dockertest.Resource{postgresContainer, kongContainer})
 
 	os.Exit(code)
 }
 
 func TestSomething(t *testing.T) {
-	db.Query("SELECT 1")
 
 }
