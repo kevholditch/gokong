@@ -44,13 +44,12 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Could not connect to consul: %s", err)
 	}
 
-
 	vaultResource, err := pool.RunWithOptions(&dockertest.RunOptions{
 		Repository: "vault",
 		Tag:        "0.8.3",
-		Links: []string{consulResource.Container.Name},
-		Env: [] string {"VAULT_DEV_ROOT_TOKEN_ID=C4B4BDE9-D318-421C-BF65-9AE4C3DA169B"},
-		Cmd: [] string {"-cap-add=IPC_LOCK"},
+		Links:      []string{consulResource.Container.Name},
+		Env:        []string{"VAULT_DEV_ROOT_TOKEN_ID=C4B4BDE9-D318-421C-BF65-9AE4C3DA169B"},
+		Cmd:        []string{"-cap-add=IPC_LOCK"},
 	})
 
 	if err != nil {
@@ -69,7 +68,6 @@ func TestMain(m *testing.M) {
 	}); err != nil {
 		log.Fatalf("Could not connect to vault: %s", err)
 	}
-
 
 	code := m.Run()
 
