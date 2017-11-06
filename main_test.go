@@ -50,11 +50,28 @@ func createKong(pool * dockertest.Pool, postgresContainer * dockertest.Resource)
 			"KONG_PG_PASSWORD=kong",
 		},
 		Links:   []string{fmt.Sprintf("%s:%s", postgresContainerName, postgresContainerName)},
+		Cmd: []string { "kong", "migrations", "up"},
 	}
 
 	log.Printf("postgres container: %v", postgresContainerName)
 
 	resource, err := pool.RunWithOptions(options)
+
+	log.Printf("kong migrations: %v", getContainerName(resource))
+
+	options = &dockertest.RunOptions{
+		Repository: "kong",
+		Tag:        "0.11",
+		Env:     []string{
+			"KONG_DATABASE=postgres",
+			fmt.Sprintf("KONG_PG_HOST=%v", postgresContainerName),
+			"KONG_PG_USER=kong",
+			"KONG_PG_PASSWORD=kong",
+		},
+		Links:   []string{fmt.Sprintf("%s:%s", postgresContainerName, postgresContainerName)},
+	}
+
+	resource, err = pool.RunWithOptions(options)
 
 	log.Printf("kong container: %v", getContainerName(resource))
 
