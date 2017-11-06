@@ -17,14 +17,14 @@ func getContainerName(container * dockertest.Resource) string  {
 
 func createPostgres(pool * dockertest.Pool) *dockertest.Resource {
 	var db *sql.DB
-	resource, err := pool.Run("postgres", "9.6", []string{"POSTGRES_PASSWORD=kong", "POSTGRES_DB=kong"})
+	resource, err := pool.Run("postgres", "9.6", []string{"POSTGRES_PASSWORD=kong", "POSTGRES_DB=kong", "POSTGRES_USER=kong"})
 	if err != nil {
 		log.Fatalf("Could not start resource: %s", err)
 	}
 
 	if err = pool.Retry(func() error {
 		var err error
-		db, err = sql.Open("postgres", fmt.Sprintf("postgres://postgres:kong@localhost:%s/kong?sslmode=disable", resource.GetPort("5432/tcp")))
+		db, err = sql.Open("postgres", fmt.Sprintf("postgres://kong:kong@localhost:%s/kong?sslmode=disable", resource.GetPort("5432/tcp")))
 		if err != nil {
 			return err
 		}
@@ -46,7 +46,7 @@ func createKong(pool * dockertest.Pool, postgresContainer * dockertest.Resource)
 		Env:     []string{
 			"KONG_DATABASE=postgres",
 			fmt.Sprintf("KONG_PG_HOST=%v", postgresContainerName),
-			"KONG_PG_USER=postgres",
+			"KONG_PG_USER=kong",
 			"KONG_PG_PASSWORD=kong",
 		},
 		Links:   []string{fmt.Sprintf("%s:%s", postgresContainerName, postgresContainerName)},
