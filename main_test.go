@@ -12,14 +12,8 @@ import (
 
 var db *sql.DB
 
-func TestMain(m *testing.M) {
+func createPostgres(pool * dockertest.Pool) *dockertest.Resource {
 	var db *sql.DB
-	var err error
-	pool, err := dockertest.NewPool("")
-	if err != nil {
-		log.Fatalf("Could not connect to docker: %s", err)
-	}
-
 	resource, err := pool.Run("postgres", "9.6", []string{"POSTGRES_PASSWORD=kong", "POSTGRES_DB=kong"})
 	if err != nil {
 		log.Fatalf("Could not start resource: %s", err)
@@ -35,10 +29,23 @@ func TestMain(m *testing.M) {
 	}); err != nil {
 		log.Fatalf("Could not connect to docker: %s", err)
 	}
+	return resource
+}
+
+func TestMain(m *testing.M) {
+
+	var err error
+	pool, err := dockertest.NewPool("")
+	if err != nil {
+		log.Fatalf("Could not connect to docker: %s", err)
+	}
+
+
+	postgresContainer := createPostgres(pool)
 
 	code := m.Run()
 
-	if err := pool.Purge(resource); err != nil {
+	if err := pool.Purge(postgresContainer); err != nil {
 		log.Fatalf("Could not purge containers: %s", err)
 	}
 
