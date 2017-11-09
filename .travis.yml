@@ -3,3 +3,5 @@ go:
 - 1.9.x
 script:
 - make
+services:
+- docker
