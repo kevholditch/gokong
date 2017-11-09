@@ -1,0 +1,100 @@
+package konggo
+
+import (
+	"errors"
+	"fmt"
+	"gopkg.in/ory-am/dockertest.v3"
+	"log"
+	"net/http"
+)
+
+type kong struct {
+	Name     string
+	pool     *dockertest.Pool
+	resource *dockertest.Resource
+}
+
+func NewKong(pool *dockertest.Pool, postgres *postgres) *kong {
+
+	envVars := []string{
+		"KONG_DATABASE=postgres",
+		fmt.Sprintf("KONG_PG_HOST=%s", postgres.Name),
+		fmt.Sprintf("KONG_PG_USER=%s", postgres.DatabaseUser),
+		fmt.Sprintf("KONG_PG_PASSWORD=%s", postgres.Password),
+	}
+
+	options := &dockertest.RunOptions{
+		Repository: "kong",
+		Tag:        "0.11",
+		Env:        envVars,
+		Links:      []string{postgres.Name},
+		Cmd:        []string{"kong", "migrations", "up"},
+	}
+
+	migrations, err := pool.RunWithOptions(options)
+
+	if err := pool.Retry(func() error {
+		migrationsContainer, err := pool.Client.InspectContainer(migrations.Container.ID)
+		if err != nil {
+			log.Fatalf("Could not get state of migrations container %v", err)
+		}
+
+		if migrationsContainer.State.Running {
+			log.Printf("waiting for migration")
+			return errors.New("waiting for migration to finish")
+		}
+		return nil
+	}); err != nil {
+		log.Fatalf("Could not connect to kong: %s", err)
+	}
+
+	if err != nil {
+		log.Fatalf("Could not start kong: %s", err)
+	}
+
+	options = &dockertest.RunOptions{
+		Repository: "kong",
+		Tag:        "0.11",
+		Env:        envVars,
+		Links:      []string{fmt.Sprintf("%s:postgres", postgres.Name)},
+	}
+
+	resource, err := pool.RunWithOptions(options)
+
+	containerName := getContainerName(resource)
+
+	kongAddress := fmt.Sprintf("http://localhost:%v", resource.GetPort("8001/tcp"))
+
+	if err := pool.Retry(func() error {
+		var err error
+		curlEndpoint := fmt.Sprintf("%s/apis", kongAddress)
+		if err != nil {
+			return err
+		}
+
+		resp, err := http.Get(curlEndpoint)
+		if err != nil {
+			return err
+		}
+
+		if resp.StatusCode >= 400 {
+			return errors.New(fmt.Sprintf("Kong not ready: %+v", resp))
+		}
+
+		log.Printf("Kong (%v) up", containerName)
+
+		return nil
+	}); err != nil {
+		log.Fatalf("Could not connect to kong: %s", err)
+	}
+
+	return &kong{
+		Name:     containerName,
+		pool:     pool,
+		resource: resource,
+	}
+}
+
+func (kong *kong) Stop() error {
+	return kong.pool.Purge(kong.resource)
+}
