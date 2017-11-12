@@ -1,6 +1,7 @@
 package konggo
 
 import (
+	"github.com/stretchr/testify/assert"
 	"gopkg.in/ory-am/dockertest.v3"
 	"log"
 	"os"
@@ -28,6 +29,11 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func TestSomething(t *testing.T) {
+func Test_GetStatus(t *testing.T) {
+	result, err := NewKongAdminClient().GetStatus()
 
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.True(t, result.Database.Reachable)
+	assert.True(t, result.Server.ConnectionsAccepted >= 1)
 }

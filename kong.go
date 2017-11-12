@@ -6,12 +6,14 @@ import (
 	"gopkg.in/ory-am/dockertest.v3"
 	"log"
 	"net/http"
+	"os"
 )
 
 type kong struct {
-	Name     string
-	pool     *dockertest.Pool
-	resource *dockertest.Resource
+	Name        string
+	pool        *dockertest.Pool
+	resource    *dockertest.Resource
+	HostAddress string
 }
 
 func NewKong(pool *dockertest.Pool, postgres *postgres) *kong {
@@ -88,10 +90,16 @@ func NewKong(pool *dockertest.Pool, postgres *postgres) *kong {
 		log.Fatalf("Could not connect to kong: %s", err)
 	}
 
+	err = os.Setenv(EnvKongAdminHostAddress, kongAddress)
+	if err != nil {
+		log.Fatalf("Could not set kong host address env variable: %v", err)
+	}
+
 	return &kong{
-		Name:     containerName,
-		pool:     pool,
-		resource: resource,
+		Name:        containerName,
+		pool:        pool,
+		resource:    resource,
+		HostAddress: kongAddress,
 	}
 }
 
