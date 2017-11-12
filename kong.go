@@ -37,13 +37,14 @@ func NewKong(pool *dockertest.Pool, postgres *postgres) *kong {
 
 	if err := pool.Retry(func() error {
 		migrationsContainer, err := pool.Client.InspectContainer(migrations.Container.ID)
+		migrationsContainerName := getContainerName(migrations)
 		if err != nil {
 			log.Fatalf("Could not get state of migrations container %v", err)
 		}
 
 		if migrationsContainer.State.Running {
-			log.Printf("waiting for migration")
-			return errors.New("waiting for migration to finish")
+			log.Printf("Kong Migrations (%v): waiting for migration", migrationsContainerName)
+			return errors.New(fmt.Sprintf("Kong Migrations (%v): Error waiting for migration to finish", migrationsContainerName))
 		}
 		return nil
 	}); err != nil {
