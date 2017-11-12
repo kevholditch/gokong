@@ -52,7 +52,7 @@ func NewPostgres(pool *dockertest.Pool) *postgres {
 		log.Fatalf("Could not connect to docker: %s", err)
 	}
 
-	log.Printf("Postgres (%v) up", containerName)
+	log.Printf("Postgres (%v): up", containerName)
 
 	return &postgres{
 		Name:             containerName,

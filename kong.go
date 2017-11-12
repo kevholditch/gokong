@@ -64,7 +64,7 @@ func NewKong(pool *dockertest.Pool, postgres *postgres) *kong {
 
 	resource, err := pool.RunWithOptions(options)
 
-	containerName := getContainerName(resource)
+	kongContainerName := getContainerName(resource)
 
 	kongAddress := fmt.Sprintf("http://localhost:%v", resource.GetPort("8001/tcp"))
 
@@ -84,7 +84,7 @@ func NewKong(pool *dockertest.Pool, postgres *postgres) *kong {
 			return errors.New(fmt.Sprintf("Kong not ready: %+v", resp))
 		}
 
-		log.Printf("Kong (%v) up", containerName)
+		log.Printf("Kong (%v): up", kongContainerName)
 
 		return nil
 	}); err != nil {
@@ -97,7 +97,7 @@ func NewKong(pool *dockertest.Pool, postgres *postgres) *kong {
 	}
 
 	return &kong{
-		Name:        containerName,
+		Name:        kongContainerName,
 		pool:        pool,
 		resource:    resource,
 		HostAddress: kongAddress,
