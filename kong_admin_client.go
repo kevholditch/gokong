@@ -42,7 +42,7 @@ func NewKongAdminClient() *KongAdminClient {
 
 func (kongAdminClient *KongAdminClient) GetStatus() (*Status, error) {
 
-	_, body, errs := kongAdminClient.client.Get(kongAdminClient.hostAddress + "/status").End()
+	_, body, errs := kongAdminClient.client.Get(NewUrlBuilder(kongAdminClient.hostAddress).Status().Build()).End()
 	if errs != nil {
 		return nil, errors.New(fmt.Sprintf("Could not call kong api client, error: %v", errs))
 	}
@@ -55,4 +55,11 @@ func (kongAdminClient *KongAdminClient) GetStatus() (*Status, error) {
 
 	return status, nil
 
+}
+
+func (kongAdminClient *KongAdminClient) Api() *ApiClient {
+	return &ApiClient{
+		hostAddress: kongAdminClient.hostAddress,
+		client:      kongAdminClient.client,
+	}
 }
