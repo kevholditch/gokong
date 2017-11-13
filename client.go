@@ -57,7 +57,7 @@ func (kongAdminClient *KongAdminClient) GetStatus() (*Status, error) {
 
 }
 
-func (kongAdminClient *KongAdminClient) Api() *ApiClient {
+func (kongAdminClient *KongAdminClient) Apis() *ApiClient {
 	return &ApiClient{
 		hostAddress: kongAdminClient.hostAddress,
 		client:      kongAdminClient.client,
