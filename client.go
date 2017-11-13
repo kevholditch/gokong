@@ -33,7 +33,7 @@ type databaseStatus struct {
 	Reachable bool `json:"reachable"`
 }
 
-func NewKongAdminClient() *KongAdminClient {
+func NewClient() *KongAdminClient {
 	return &KongAdminClient{
 		hostAddress: GetEnvOrDefault("KONG_ADMIN_ADDR", "http://localhost:8001"),
 		client:      gorequest.New(),

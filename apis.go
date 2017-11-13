@@ -10,7 +10,7 @@ type ApiClient struct {
 type ApiRequest struct {
 }
 
-func (apis *ApiClient) GetById(id string) (*ApiRequest, error) {
+func (apiClient *ApiClient) GetById(id string) (*ApiRequest, error) {
 
 	return &ApiRequest{}, nil
 }

@@ -6,7 +6,7 @@ import (
 )
 
 func Test_GetById(t *testing.T) {
-	result, err := NewKongAdminClient().GetStatus()
+	result, err := NewClient().GetStatus()
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
