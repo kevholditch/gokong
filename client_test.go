@@ -6,13 +6,11 @@ import (
 	"testing"
 )
 
-func Test_GetStatus(t *testing.T) {
-	result, err := NewClient().GetStatus()
+func Test_Newclient(t *testing.T) {
+	result := NewClient()
 
-	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.True(t, result.Database.Reachable)
-	assert.True(t, result.Server.ConnectionsAccepted >= 1)
+	assert.Equal(t, os.Getenv(EnvKongAdminHostAddress), result.hostAddress)
 }
 
 func TestMain(m *testing.M) {

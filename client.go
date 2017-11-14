@@ -1,9 +1,6 @@
 package konggo
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -14,25 +11,6 @@ type KongAdminClient struct {
 	client      *gorequest.SuperAgent
 }
 
-type Status struct {
-	Server   serverStatus   `json:"server"`
-	Database databaseStatus `json:"database"`
-}
-
-type serverStatus struct {
-	TotalRequests       int `json:"total_requests"`
-	ConnectionsActive   int `json:"connections_active"`
-	ConnectionsAccepted int `json:"connections_accepted"`
-	ConnectionsHandled  int `json:"connections_handled"`
-	ConnectionsReading  int `json:"connections_reading"`
-	ConnectionsWriting  int `json:"connections_writing"`
-	ConnectionsWaiting  int `json:"connections_waiting"`
-}
-
-type databaseStatus struct {
-	Reachable bool `json:"reachable"`
-}
-
 func NewClient() *KongAdminClient {
 	return &KongAdminClient{
 		hostAddress: GetEnvOrDefault("KONG_ADMIN_ADDR", "http://localhost:8001"),
@@ -40,20 +18,11 @@ func NewClient() *KongAdminClient {
 	}
 }
 
-func (kongAdminClient *KongAdminClient) GetStatus() (*Status, error) {
-
-	_, body, errs := kongAdminClient.client.Get(NewUrlBuilder(kongAdminClient.hostAddress).Status().Build()).End()
-	if errs != nil {
-		return nil, errors.New(fmt.Sprintf("Could not call kong api client, error: %v", errs))
+func (kongAdminClient *KongAdminClient) Status() *StatusClient {
+	return &StatusClient{
+		hostAddress: kongAdminClient.hostAddress,
+		client:      kongAdminClient.client,
 	}
-
-	status := &Status{}
-	err := json.Unmarshal([]byte(body), status)
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Could not parse status response, error: %v", err))
-	}
-
-	return status, nil
 
 }
 
