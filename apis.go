@@ -46,16 +46,27 @@ type Api struct {
 	HttpIfTerminated       bool     `json:"http_if_terminated,omitempty"`
 }
 
-func (apiClient *ApiClient) GetById(id string) (*NewApi, error) {
+const ApisPath = "/apis/"
 
-	return &NewApi{}, nil
+func (apiClient *ApiClient) GetById(id string) (*Api, error) {
+
+	_, body, errs := apiClient.client.Get(apiClient.hostAddress + ApisPath + id).End()
+	if errs != nil {
+		return nil, errors.New(fmt.Sprintf("Could not get api, error: %v", errs))
+	}
+
+	api := &Api{}
+	err := json.Unmarshal([]byte(body), api)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Could not parse api get by id response, error: %v", err))
+	}
+
+	return api, nil
 }
 
 func (apiClient *ApiClient) Create(newApi *NewApi) (*Api, error) {
 
-	_, body, errs := apiClient.client.Post(NewUrlBuilder(apiClient.hostAddress).Apis().Build()).
-		Send(newApi).
-		End()
+	_, body, errs := apiClient.client.Post(apiClient.hostAddress + ApisPath).Send(newApi).End()
 	if errs != nil {
 		return nil, errors.New(fmt.Sprintf("Could not create new api, error: %v", errs))
 	}

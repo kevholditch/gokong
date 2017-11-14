@@ -2,6 +2,7 @@ package konggo
 
 import (
 	"github.com/parnurzeal/gorequest"
+	"strings"
 )
 
 const EnvKongAdminHostAddress = "KONG_ADMIN_ADDR"
@@ -13,7 +14,7 @@ type KongAdminClient struct {
 
 func NewClient() *KongAdminClient {
 	return &KongAdminClient{
-		hostAddress: GetEnvOrDefault("KONG_ADMIN_ADDR", "http://localhost:8001"),
+		hostAddress: strings.TrimRight(GetEnvOrDefault("KONG_ADMIN_ADDR", "http://localhost:8001"), "/"),
 		client:      gorequest.New(),
 	}
 }

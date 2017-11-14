@@ -33,7 +33,7 @@ type databaseStatus struct {
 
 func (statusClient *StatusClient) Get() (*Status, error) {
 
-	_, body, errs := statusClient.client.Get(NewUrlBuilder(statusClient.hostAddress).Status().Build()).End()
+	_, body, errs := statusClient.client.Get(statusClient.hostAddress + "/status").End()
 	if errs != nil {
 		return nil, errors.New(fmt.Sprintf("Could not call get status, error: %v", errs))
 	}
