@@ -14,6 +14,10 @@ func (urlBuilder *UrlBuilder) Status() *UrlBuilder {
 	return &UrlBuilder{url: urlBuilder.url + "/status"}
 }
 
+func (urlBuilder *UrlBuilder) Apis() *UrlBuilder {
+	return &UrlBuilder{url: urlBuilder.url + "/apis/"}
+}
+
 func (urlBuilder *UrlBuilder) Build() string {
 	return urlBuilder.url
 }

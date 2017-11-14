@@ -16,3 +16,7 @@ func Test_BuildUrlRemoveTrailingSlash(t *testing.T) {
 func Test_BuildUrlToStatus(t *testing.T) {
 	assert.Equal(t, "http://localhost:8001/status", NewUrlBuilder("http://localhost:8001").Status().Build())
 }
+
+func Test_BuildUrlToApis(t *testing.T) {
+	assert.Equal(t, "http://localhost:8001/apis/", NewUrlBuilder("http://localhost:8001").Apis().Build())
+}
