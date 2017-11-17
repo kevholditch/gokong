@@ -8,8 +8,8 @@ import (
 )
 
 type ApiClient struct {
-	hostAddress string
-	client      *gorequest.SuperAgent
+	config *Config
+	client *gorequest.SuperAgent
 }
 
 type NewApi struct {
@@ -50,7 +50,7 @@ const ApisPath = "/apis/"
 
 func (apiClient *ApiClient) GetById(id string) (*Api, error) {
 
-	_, body, errs := apiClient.client.Get(apiClient.hostAddress + ApisPath + id).End()
+	_, body, errs := apiClient.client.Get(apiClient.config.HostAddress + ApisPath + id).End()
 	if errs != nil {
 		return nil, errors.New(fmt.Sprintf("Could not get api, error: %v", errs))
 	}
@@ -71,7 +71,7 @@ func (apiClient *ApiClient) GetAll() ([]*Api, error) {
 
 func (apiClient *ApiClient) Create(newApi *NewApi) (*Api, error) {
 
-	_, body, errs := apiClient.client.Post(apiClient.hostAddress + ApisPath).Send(newApi).End()
+	_, body, errs := apiClient.client.Post(apiClient.config.HostAddress + ApisPath).Send(newApi).End()
 	if errs != nil {
 		return nil, errors.New(fmt.Sprintf("Could not create new api, error: %v", errs))
 	}

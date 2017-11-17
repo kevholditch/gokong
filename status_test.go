@@ -6,7 +6,7 @@ import (
 )
 
 func Test_GetStatus(t *testing.T) {
-	result, err := NewClient().Status().Get()
+	result, err := NewClient(NewDefaultConfig()).Status().Get()
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)

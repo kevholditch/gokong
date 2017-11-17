@@ -8,8 +8,8 @@ import (
 )
 
 type StatusClient struct {
-	hostAddress string
-	client      *gorequest.SuperAgent
+	config *Config
+	client *gorequest.SuperAgent
 }
 
 type Status struct {
@@ -33,7 +33,7 @@ type databaseStatus struct {
 
 func (statusClient *StatusClient) Get() (*Status, error) {
 
-	_, body, errs := statusClient.client.Get(statusClient.hostAddress + "/status").End()
+	_, body, errs := statusClient.client.Get(statusClient.config.HostAddress + "/status").End()
 	if errs != nil {
 		return nil, errors.New(fmt.Sprintf("Could not call get status, error: %v", errs))
 	}

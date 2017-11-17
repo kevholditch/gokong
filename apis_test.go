@@ -23,7 +23,7 @@ func Test_ApisGetById(t *testing.T) {
 		HttpIfTerminated:       true,
 	}
 
-	apiClient := NewClient().Apis()
+	apiClient := NewClient(NewDefaultConfig()).Apis()
 	createdApi, err := apiClient.Create(apiRequest)
 
 	assert.Nil(t, err)
@@ -67,7 +67,7 @@ func Test_ApisGetAll(t *testing.T) {
 		HttpsOnly:              true,
 		HttpIfTerminated:       true,
 	}
-	apiClient := NewClient().Apis()
+	apiClient := NewClient(NewDefaultConfig()).Apis()
 	createdApi, err := apiClient.Create(apiRequest)
 
 	assert.Nil(t, err)
@@ -93,7 +93,7 @@ func Test_ApisCreate(t *testing.T) {
 		HttpIfTerminated:       true,
 	}
 
-	result, err := NewClient().Apis().Create(apiRequest)
+	result, err := NewClient(NewDefaultConfig()).Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)

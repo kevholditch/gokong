@@ -7,10 +7,10 @@ import (
 )
 
 func Test_Newclient(t *testing.T) {
-	result := NewClient()
+	result := NewClient(NewDefaultConfig())
 
 	assert.NotNil(t, result)
-	assert.Equal(t, os.Getenv(EnvKongAdminHostAddress), result.hostAddress)
+	assert.Equal(t, os.Getenv(EnvKongAdminHostAddress), result.config.HostAddress)
 }
 
 func TestMain(m *testing.M) {

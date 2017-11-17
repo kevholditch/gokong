@@ -32,19 +32,29 @@ import (
 )
 ```
 
-Gokong uses the env variable `KONG_ADMIN_ADDR` for the host address for the kong admin api.
-If the env variable is not set then the address is defaulted to `http://localhost:8001`
+To create a default config for us with the client:
+```
+config := gokong.NewDefaultConfig()
+```
+
+`NewDefaultConfig` creates a config with the host address set to the value of the env variable `KONG_ADMIN_ADDR`.
+If the env variable is not set then the address is defaulted to `http://localhost:8001`.
+
+You can of course simply create your own config with the address set to whatever you want:
+```
+config := gokong.Config{HostAddress:"http://localhost:1234"}
+```
 
 
 Getting the status of the kong server:
 ```
-kongClient := gokong.NewClient()
+kongClient := gokong.NewClient(gokong.NewDefaultConfig())
 status, err := kongClient.Status().Get()
 ```
-Gokong is fluent so we can combine the above two lines into one:
 
+Gokong is fluent so we can combine the above two lines into one:
 ```
-status, err := gokong.NewClient().Status().Get()
+status, err := gokong.NewClient(gokong.NewDefaultConfig()).Status().Get()
 ```
 
 ## APIs
@@ -66,12 +76,12 @@ newApi := &gokong.NewApi{
 	HttpIfTerminated:       true,
 }
 
-api, err := gokong.NewClient().Apis().Create(newApi)
+api, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().Create(newApi)
 ```
 
 Get an API by id:
 ```
-api, err := gokong.NewClient().Apis().GetById("ExampleApi")
+api, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().GetById("ExampleApi")
 ```
 
 
