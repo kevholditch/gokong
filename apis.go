@@ -12,7 +12,7 @@ type ApiClient struct {
 	client *gorequest.SuperAgent
 }
 
-type NewApi struct {
+type ApiRequest struct {
 	Name                   string   `json:"name"`
 	Hosts                  []string `json:"hosts,omitempty"`
 	Uris                   []string `json:"uris,omitempty"`
@@ -46,6 +46,13 @@ type Api struct {
 	HttpIfTerminated       bool     `json:"http_if_terminated,omitempty"`
 }
 
+type Apis struct {
+	Results []*Api `json:"data,omitempty"`
+	Total   int    `json:"total,omitempty"`
+	Next    string `json:"next,omitempty"`
+	Offset  string `json:"offset,omitempty"`
+}
+
 const ApisPath = "/apis/"
 
 func (apiClient *ApiClient) GetById(id string) (*Api, error) {
@@ -64,12 +71,23 @@ func (apiClient *ApiClient) GetById(id string) (*Api, error) {
 	return api, nil
 }
 
-func (apiClient *ApiClient) GetAll() ([]*Api, error) {
+func (apiClient *ApiClient) GetAll() (*Apis, error) {
 
-	return nil, nil
+	_, body, errs := apiClient.client.Get(apiClient.config.HostAddress + ApisPath).End()
+	if errs != nil {
+		return nil, errors.New(fmt.Sprintf("Could not get apis, error: %v", errs))
+	}
+
+	apis := &Apis{}
+	err := json.Unmarshal([]byte(body), apis)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Could not parse apis get response, error: %v", err))
+	}
+
+	return apis, nil
 }
 
-func (apiClient *ApiClient) Create(newApi *NewApi) (*Api, error) {
+func (apiClient *ApiClient) Create(newApi *ApiRequest) (*Api, error) {
 
 	_, body, errs := apiClient.client.Post(apiClient.config.HostAddress + ApisPath).Send(newApi).End()
 	if errs != nil {

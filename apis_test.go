@@ -7,7 +7,7 @@ import (
 )
 
 func Test_ApisGetById(t *testing.T) {
-	apiRequest := &NewApi{
+	apiRequest := &ApiRequest{
 		Name:                   "test-" + uuid.NewV4().String(),
 		Hosts:                  []string{"example.com"},
 		Uris:                   []string{"/example"},
@@ -52,20 +52,20 @@ func Test_ApisGetById(t *testing.T) {
 
 func Test_ApisGetAll(t *testing.T) {
 
-	apiRequest := &NewApi{
+	apiRequest := &ApiRequest{
 		Name:                   "test-" + uuid.NewV4().String(),
-		Hosts:                  []string{"example.com"},
-		Uris:                   []string{"/example"},
-		Methods:                []string{"GET", "POST"},
-		UpstreamUrl:            "http://localhost:4140/testservice",
-		StripUri:               true,
-		PreserveHost:           true,
-		Retries:                3,
-		UpstreamConnectTimeout: 1000,
-		UpstreamSendTimeout:    2000,
-		UpstreamReadTimeout:    3000,
-		HttpsOnly:              true,
-		HttpIfTerminated:       true,
+		Hosts:                  []string{"another.com"},
+		Uris:                   []string{"/another"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/myservice",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                5,
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
 	}
 	apiClient := NewClient(NewDefaultConfig()).Apis()
 	createdApi, err := apiClient.Create(apiRequest)
@@ -73,11 +73,16 @@ func Test_ApisGetAll(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
+	results, err := apiClient.GetAll()
+
+	assert.True(t, results.Total > 0)
+	assert.True(t, len(results.Results) > 0)
+
 }
 
 func Test_ApisCreate(t *testing.T) {
 
-	apiRequest := &NewApi{
+	apiRequest := &ApiRequest{
 		Name:                   "test-" + uuid.NewV4().String(),
 		Hosts:                  []string{"example.com"},
 		Uris:                   []string{"/example"},

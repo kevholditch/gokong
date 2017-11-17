@@ -60,7 +60,7 @@ status, err := gokong.NewClient(gokong.NewDefaultConfig()).Status().Get()
 ## APIs
 Create a new API:
 ```
-newApi := &gokong.NewApi{
+apiRequest := &gokong.ApiRequest{
 	Name:                   "Example",
 	Hosts:                  []string{"example.com"},
 	Uris:                   []string{"/example"},
@@ -76,12 +76,17 @@ newApi := &gokong.NewApi{
 	HttpIfTerminated:       true,
 }
 
-api, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().Create(newApi)
+api, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().Create(apiRequest)
 ```
 
 Get an API by id:
 ```
 api, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().GetById("ExampleApi")
+```
+
+Get all apis:
+```
+apis, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().GetAll()
 ```
 
 
