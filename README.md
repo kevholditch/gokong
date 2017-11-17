@@ -11,8 +11,7 @@ GoKong is a easy to use api client for [kong](https://getkong.org/).  The differ
 Ensure docker is installed then run:
 `make`
 
-
-## Usage
+## Importing
 
 To add gokong via `go get`:
 ```
@@ -20,10 +19,11 @@ go get github.com/kevholditch/gokong
 ```
 
 To add gokong via `govendor`:
-
 ```
 govendor fetch github.com/kevholditch/gokong
 ```
+
+## Usage
 
 Import gokong
 ```
@@ -32,7 +32,7 @@ import (
 )
 ```
 
-To create a default config for us with the client:
+To create a default config for use with the client:
 ```
 config := gokong.NewDefaultConfig()
 ```
@@ -40,7 +40,7 @@ config := gokong.NewDefaultConfig()
 `NewDefaultConfig` creates a config with the host address set to the value of the env variable `KONG_ADMIN_ADDR`.
 If the env variable is not set then the address is defaulted to `http://localhost:8001`.
 
-You can of course simply create your own config with the address set to whatever you want:
+You can of course create your own config with the address set to whatever you want:
 ```
 config := gokong.Config{HostAddress:"http://localhost:1234"}
 ```
