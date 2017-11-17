@@ -99,10 +99,10 @@ func buildQueryString(filter *GetAllFilter) string {
 	return fmt.Sprintf(queryStringValues.Encode())
 }
 
-func (apiClient *ApiClient) GetAllFiltered(getAllFilter *GetAllFilter) (*Apis, error) {
+func (apiClient *ApiClient) GetAllFiltered(filter *GetAllFilter) (*Apis, error) {
 
 	address := apiClient.config.HostAddress + ApisPath
-	queryString := buildQueryString(getAllFilter)
+	queryString := buildQueryString(filter)
 	if queryString != "" {
 		address += "?" + queryString
 	}
