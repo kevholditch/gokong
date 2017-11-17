@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/google/go-querystring/query"
 	"github.com/parnurzeal/gorequest"
+	"net/url"
 )
 
 type ApiClient struct {
@@ -53,6 +55,15 @@ type Apis struct {
 	Offset  string `json:"offset,omitempty"`
 }
 
+type GetAllFilter struct {
+	Id          string `url:"id"`
+	Name        string `url:"name"`
+	UpstreamUrl string `url:"upstream_url"`
+	Retries     string `url:"retries"`
+	Size        string `url:"size"`
+	Offset      string `url:"offset"`
+}
+
 const ApisPath = "/apis/"
 
 func (apiClient *ApiClient) GetById(id string) (*Api, error) {
@@ -72,8 +83,31 @@ func (apiClient *ApiClient) GetById(id string) (*Api, error) {
 }
 
 func (apiClient *ApiClient) GetAll() (*Apis, error) {
+	return apiClient.GetAllFiltered(nil)
+}
 
-	_, body, errs := apiClient.client.Get(apiClient.config.HostAddress + ApisPath).End()
+func buildQueryString(filter *GetAllFilter) string {
+	v, _ := query.Values(filter)
+	queryStringValues := make(url.Values)
+
+	for key, values := range v {
+		if len(values) > 0 && values[0] != "" {
+			queryStringValues[key] = values
+		}
+	}
+
+	return fmt.Sprintf(queryStringValues.Encode())
+}
+
+func (apiClient *ApiClient) GetAllFiltered(getAllFilter *GetAllFilter) (*Apis, error) {
+
+	address := apiClient.config.HostAddress + ApisPath
+	queryString := buildQueryString(getAllFilter)
+	if queryString != "" {
+		address += "?" + queryString
+	}
+
+	_, body, errs := apiClient.client.Get(address).End()
 	if errs != nil {
 		return nil, errors.New(fmt.Sprintf("Could not get apis, error: %v", errs))
 	}

@@ -32,7 +32,6 @@ func Test_ApisGetById(t *testing.T) {
 	result, err := apiClient.GetById(createdApi.Id)
 
 	assert.NotNil(t, result)
-	assert.NotNil(t, result)
 	assert.Equal(t, createdApi.Id, result.Id)
 	assert.Equal(t, createdApi.CreatedAt, result.CreatedAt)
 	assert.Equal(t, createdApi.Name, result.Name)
@@ -77,6 +76,72 @@ func Test_ApisGetAll(t *testing.T) {
 
 	assert.True(t, results.Total > 0)
 	assert.True(t, len(results.Results) > 0)
+
+}
+func Test_ApisGetAllFilteredById(t *testing.T) {
+
+	apiRequest := &ApiRequest{
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/myservice",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                5,
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
+	}
+	apiRequest2 := &ApiRequest{
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/myservice",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                5,
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
+	}
+	apiClient := NewClient(NewDefaultConfig()).Apis()
+
+	createdApi, err := apiClient.Create(apiRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdApi)
+
+	createdApi2, err := apiClient.Create(apiRequest2)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdApi2)
+
+	results, err := apiClient.GetAllFiltered(&GetAllFilter{Id: createdApi2.Id})
+
+	assert.True(t, results.Total == 1)
+	assert.True(t, len(results.Results) == 1)
+
+	result := results.Results[0]
+	assert.Equal(t, createdApi2.Id, result.Id)
+	assert.Equal(t, createdApi2.CreatedAt, result.CreatedAt)
+	assert.Equal(t, createdApi2.Name, result.Name)
+	assert.Equal(t, createdApi2.Hosts, result.Hosts)
+	assert.Equal(t, createdApi2.Uris, result.Uris)
+	assert.Equal(t, createdApi2.Methods, result.Methods)
+	assert.Equal(t, createdApi2.UpstreamUrl, result.UpstreamUrl)
+	assert.Equal(t, createdApi2.StripUri, result.StripUri)
+	assert.Equal(t, createdApi2.PreserveHost, result.PreserveHost)
+	assert.Equal(t, createdApi2.UpstreamConnectTimeout, result.UpstreamConnectTimeout)
+	assert.Equal(t, createdApi2.UpstreamSendTimeout, result.UpstreamSendTimeout)
+	assert.Equal(t, createdApi2.UpstreamReadTimeout, result.UpstreamReadTimeout)
+	assert.Equal(t, createdApi2.HttpsOnly, result.HttpsOnly)
+	assert.Equal(t, createdApi2.HttpIfTerminated, result.HttpIfTerminated)
 
 }
 

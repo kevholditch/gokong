@@ -367,7 +367,11 @@
 			"path": "gopkg.in/ory-am/dockertest.v3",
 			"revision": "a7951f7a8442f0e70d36e499ed4d744f00af2963",
 			"revisionTime": "2017-07-29T08:02:57Z"
+		},
+		{
+			"path": "ithub.com/google/go-querystring/query",
+			"revision": ""
 		}
 	],
-	"rootPath": "github.com/kevholditch/konggo"
+	"rootPath": "github.com/kevholditch/gokong"
 }
