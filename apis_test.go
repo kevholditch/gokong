@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func Test_GetById(t *testing.T) {
+func Test_ApisGetById(t *testing.T) {
 	apiRequest := &NewApi{
 		Name:                   "test-" + uuid.NewV4().String(),
 		Hosts:                  []string{"example.com"},
@@ -27,6 +27,7 @@ func Test_GetById(t *testing.T) {
 	createdApi, err := apiClient.Create(apiRequest)
 
 	assert.Nil(t, err)
+	assert.NotNil(t, createdApi)
 
 	result, err := apiClient.GetById(createdApi.Id)
 
@@ -49,7 +50,35 @@ func Test_GetById(t *testing.T) {
 
 }
 
-func Test_Create(t *testing.T) {
+func Test_ApisGetAll(t *testing.T) {
+
+	apiRequest := &NewApi{
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"example.com"},
+		Uris:                   []string{"/example"},
+		Methods:                []string{"GET", "POST"},
+		UpstreamUrl:            "http://localhost:4140/testservice",
+		StripUri:               true,
+		PreserveHost:           true,
+		Retries:                3,
+		UpstreamConnectTimeout: 1000,
+		UpstreamSendTimeout:    2000,
+		UpstreamReadTimeout:    3000,
+		HttpsOnly:              true,
+		HttpIfTerminated:       true,
+	}
+	apiClient := NewClient().Apis()
+	createdApi, err := apiClient.Create(apiRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdApi)
+
+	result, err := apiClient.GetAll()
+
+
+}
+
+func Test_ApisCreate(t *testing.T) {
 
 	apiRequest := &NewApi{
 		Name:                   "test-" + uuid.NewV4().String(),
