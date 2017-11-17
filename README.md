@@ -89,4 +89,9 @@ Get all apis:
 apis, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().GetAll()
 ```
 
+Get all apis with a filter:
+```
+filtered, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().GetAllFiltered(&gokong.GetAllFilter{Id:"936ad391-c30d-43db-b624-2f820d6fd38d", Name:"MyApi"})
+```
+
 
