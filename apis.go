@@ -1,4 +1,4 @@
-package konggo
+package gokong
 
 import (
 	"encoding/json"
@@ -64,7 +64,7 @@ func (apiClient *ApiClient) GetById(id string) (*Api, error) {
 	return api, nil
 }
 
-func (apiClient *ApiClient) GetAll() ([] *Api, error) {
+func (apiClient *ApiClient) GetAll() ([]*Api, error) {
 
 	return nil, nil
 }

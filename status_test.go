@@ -1,4 +1,4 @@
-package konggo
+package gokong
 
 import (
 	"github.com/stretchr/testify/assert"

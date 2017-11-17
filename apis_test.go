@@ -1,4 +1,4 @@
-package konggo
+package gokong
 
 import (
 	"github.com/satori/go.uuid"
@@ -72,9 +72,6 @@ func Test_ApisGetAll(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
-
-	result, err := apiClient.GetAll()
-
 
 }
 

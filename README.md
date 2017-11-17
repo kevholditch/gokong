@@ -1,11 +1,11 @@
-[![Build Status](https://travis-ci.org/kevholditch/konggo.svg?branch=master)](https://travis-ci.org/kevholditch/konggo)
+[![Build Status](https://travis-ci.org/kevholditch/gokong.svg?branch=master)](https://travis-ci.org/kevholditch/gokong)
 
-Konggo
+GoKong
 ======
 A kong go client fully tested with no mocks!!
 
-## Kong go
-Kong go is a easy to use api client for [kong](https://getkong.org/).  The difference with the konggo library is all of its tests are written against a real running kong running inside a docker container, yep that's right you won't see a horrible mock anywhere!!
+## GoKong
+GoKong is a easy to use api client for [kong](https://getkong.org/).  The difference with the gokong library is all of its tests are written against a real running kong running inside a docker container, yep that's right you won't see a horrible mock anywhere!!
 
 ## Run build
 Ensure docker is installed then run:
@@ -14,43 +14,43 @@ Ensure docker is installed then run:
 
 ## Usage
 
-To add konggo via `go get`:
+To add gokong via `go get`:
 ```
-go get github.com/kevholditch/konggo
-```
-
-To add konggo via `govendor`:
-
-```
-govendor fetch github.com/kevholditch/konggo
+go get github.com/kevholditch/gokong
 ```
 
-Import konggo
+To add gokong via `govendor`:
+
+```
+govendor fetch github.com/kevholditch/gokong
+```
+
+Import gokong
 ```
 import (
-  konggo "github.com/kevholditch/konggo"
+  gokong "github.com/kevholditch/gokong"
 )
 ```
 
-Konggo uses the env variable `KONG_ADMIN_ADDR` for the host address for the kong admin api.
+Gokong uses the env variable `KONG_ADMIN_ADDR` for the host address for the kong admin api.
 If the env variable is not set then the address is defaulted to `http://localhost:8001`
 
 
 Getting the status of the kong server:
 ```
-kongClient := konggo.NewClient()
+kongClient := gokong.NewClient()
 status, err := kongClient.Status().Get()
 ```
-Konggo is fluent so we can combine the above two lines into one:
+Gokong is fluent so we can combine the above two lines into one:
 
 ```
-status, err := konggo.NewClient().Status().Get()
+status, err := gokong.NewClient().Status().Get()
 ```
 
 ## APIs
 Create a new API:
 ```
-newApi := &konggo.NewApi{
+newApi := &gokong.NewApi{
 	Name:                   "Example",
 	Hosts:                  []string{"example.com"},
 	Uris:                   []string{"/example"},
@@ -66,12 +66,12 @@ newApi := &konggo.NewApi{
 	HttpIfTerminated:       true,
 }
 
-api, err := konggo.NewClient().Apis().Create(newApi)
+api, err := gokong.NewClient().Apis().Create(newApi)
 ```
 
 Get an API by id:
 ```
-api, err := konggo.NewClient().Apis().GetById("ExampleApi")
+api, err := gokong.NewClient().Apis().GetById("ExampleApi")
 ```
 
 

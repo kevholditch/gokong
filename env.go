@@ -1,4 +1,4 @@
-package konggo
+package gokong
 
 import "os"
 

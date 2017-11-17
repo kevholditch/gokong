@@ -1,4 +1,4 @@
-package konggo
+package gokong
 
 import (
 	"gopkg.in/ory-am/dockertest.v3"

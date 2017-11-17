@@ -1,4 +1,4 @@
-package konggo
+package gokong
 
 import (
 	"github.com/parnurzeal/gorequest"
