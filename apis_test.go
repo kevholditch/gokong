@@ -31,21 +31,7 @@ func Test_ApisGetById(t *testing.T) {
 
 	result, err := apiClient.GetById(createdApi.Id)
 
-	assert.NotNil(t, result)
-	assert.Equal(t, createdApi.Id, result.Id)
-	assert.Equal(t, createdApi.CreatedAt, result.CreatedAt)
-	assert.Equal(t, createdApi.Name, result.Name)
-	assert.Equal(t, createdApi.Hosts, result.Hosts)
-	assert.Equal(t, createdApi.Uris, result.Uris)
-	assert.Equal(t, createdApi.Methods, result.Methods)
-	assert.Equal(t, createdApi.UpstreamUrl, result.UpstreamUrl)
-	assert.Equal(t, createdApi.StripUri, result.StripUri)
-	assert.Equal(t, createdApi.PreserveHost, result.PreserveHost)
-	assert.Equal(t, createdApi.UpstreamConnectTimeout, result.UpstreamConnectTimeout)
-	assert.Equal(t, createdApi.UpstreamSendTimeout, result.UpstreamSendTimeout)
-	assert.Equal(t, createdApi.UpstreamReadTimeout, result.UpstreamReadTimeout)
-	assert.Equal(t, createdApi.HttpsOnly, result.HttpsOnly)
-	assert.Equal(t, createdApi.HttpIfTerminated, result.HttpIfTerminated)
+	assert.Equal(t, createdApi, result)
 
 }
 
@@ -128,20 +114,9 @@ func Test_ApisGetAllFilteredById(t *testing.T) {
 	assert.True(t, len(results.Results) == 1)
 
 	result := results.Results[0]
-	assert.Equal(t, createdApi2.Id, result.Id)
-	assert.Equal(t, createdApi2.CreatedAt, result.CreatedAt)
-	assert.Equal(t, createdApi2.Name, result.Name)
-	assert.Equal(t, createdApi2.Hosts, result.Hosts)
-	assert.Equal(t, createdApi2.Uris, result.Uris)
-	assert.Equal(t, createdApi2.Methods, result.Methods)
-	assert.Equal(t, createdApi2.UpstreamUrl, result.UpstreamUrl)
-	assert.Equal(t, createdApi2.StripUri, result.StripUri)
-	assert.Equal(t, createdApi2.PreserveHost, result.PreserveHost)
-	assert.Equal(t, createdApi2.UpstreamConnectTimeout, result.UpstreamConnectTimeout)
-	assert.Equal(t, createdApi2.UpstreamSendTimeout, result.UpstreamSendTimeout)
-	assert.Equal(t, createdApi2.UpstreamReadTimeout, result.UpstreamReadTimeout)
-	assert.Equal(t, createdApi2.HttpsOnly, result.HttpsOnly)
-	assert.Equal(t, createdApi2.HttpIfTerminated, result.HttpIfTerminated)
+
+	assert.Equal(t, createdApi2, result)
+
 
 }
 
