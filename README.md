@@ -26,14 +26,14 @@ govendor fetch github.com/kevholditch/gokong
 ## Usage
 
 Import gokong
-```
+```go
 import (
   gokong "github.com/kevholditch/gokong"
 )
 ```
 
 To create a default config for use with the client:
-```
+```go
 config := gokong.NewDefaultConfig()
 ```
 
@@ -41,25 +41,25 @@ config := gokong.NewDefaultConfig()
 If the env variable is not set then the address is defaulted to `http://localhost:8001`.
 
 You can of course create your own config with the address set to whatever you want:
-```
+```go
 config := gokong.Config{HostAddress:"http://localhost:1234"}
 ```
 
 
 Getting the status of the kong server:
-```
+```go
 kongClient := gokong.NewClient(gokong.NewDefaultConfig())
 status, err := kongClient.Status().Get()
 ```
 
 Gokong is fluent so we can combine the above two lines into one:
-```
+```go
 status, err := gokong.NewClient(gokong.NewDefaultConfig()).Status().Get()
 ```
 
 ## APIs
 Create a new API:
-```
+```go
 apiRequest := &gokong.ApiRequest{
 	Name:                   "Example",
 	Hosts:                  []string{"example.com"},
@@ -80,17 +80,17 @@ api, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().Create(apiRequest
 ```
 
 Get an API by id:
-```
+```go
 api, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().GetById("ExampleApi")
 ```
 
 Get all apis:
-```
+```go
 apis, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().GetAll()
 ```
 
 Get all apis with a filter:
-```
+```go
 filtered, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().GetAllFiltered(&gokong.GetAllFilter{Id:"936ad391-c30d-43db-b624-2f820d6fd38d", Name:"MyApi"})
 ```
 
