@@ -67,6 +67,10 @@ type GetAllFilter struct {
 
 const ApisPath = "/apis/"
 
+func (apiClient *ApiClient) GetByName(name string) (*Api, error) {
+	return apiClient.GetById(name)
+}
+
 func (apiClient *ApiClient) GetById(id string) (*Api, error) {
 
 	_, body, errs := apiClient.client.Get(apiClient.config.HostAddress + ApisPath + id).End()
@@ -77,7 +81,11 @@ func (apiClient *ApiClient) GetById(id string) (*Api, error) {
 	api := &Api{}
 	err := json.Unmarshal([]byte(body), api)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Could not parse api get by id response, error: %v", err))
+		return nil, errors.New(fmt.Sprintf("Could not parse api get response, error: %v", err))
+	}
+
+	if api.Id == "" {
+		return nil, nil
 	}
 
 	return api, nil
@@ -143,4 +151,38 @@ func (apiClient *ApiClient) Create(newApi *ApiRequest) (*Api, error) {
 	}
 
 	return createdApi, nil
+}
+
+func (apiClient *ApiClient) DeleteByName(name string) error {
+	return apiClient.DeleteById(name)
+}
+
+func (apiClient *ApiClient) DeleteById(id string) error {
+
+	res, _, errs := apiClient.client.Delete(apiClient.config.HostAddress + ApisPath + id).End()
+	if errs != nil {
+		return errors.New(fmt.Sprintf("Could not delete api, result: %v error: %v", res, errs))
+	}
+
+	return nil
+}
+
+func (apiClient *ApiClient) UpdateByName(name string, apiRequest *ApiRequest) (*Api, error) {
+	return apiClient.UpdateById(name, apiRequest)
+}
+
+func (apiClient *ApiClient) UpdateById(id string, apiRequest *ApiRequest) (*Api, error) {
+
+	_, body, errs := apiClient.client.Patch(apiClient.config.HostAddress + ApisPath + id).Send(apiRequest).End()
+	if errs != nil {
+		return nil, errors.New(fmt.Sprintf("Could not update api, error: %v", errs))
+	}
+
+	updatedApi := &Api{}
+	err := json.Unmarshal([]byte(body), updatedApi)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Could not parse api update response, error: %v", err))
+	}
+
+	return updatedApi, nil
 }
