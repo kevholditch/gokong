@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-querystring/query"
 	"github.com/parnurzeal/gorequest"
 	"net/url"
+	"reflect"
 )
 
 type ApiClient struct {
@@ -56,12 +57,12 @@ type Apis struct {
 }
 
 type GetAllFilter struct {
-	Id          string `url:"id"`
-	Name        string `url:"name"`
-	UpstreamUrl string `url:"upstream_url"`
-	Retries     string `url:"retries"`
-	Size        string `url:"size"`
-	Offset      string `url:"offset"`
+	Id          string `url:"id,omitempty"`
+	Name        string `url:"name,omitempty"`
+	UpstreamUrl string `url:"upstream_url,omitempty"`
+	Retries     int    `url:"retries,omitempty"`
+	Size        int    `url:"size,omitempty"`
+	Offset      int    `url:"offset,omitempty"`
 }
 
 const ApisPath = "/apis/"
@@ -86,25 +87,32 @@ func (apiClient *ApiClient) GetAll() (*Apis, error) {
 	return apiClient.GetAllFiltered(nil)
 }
 
-func buildQueryString(filter *GetAllFilter) string {
-	v, _ := query.Values(filter)
-	queryStringValues := make(url.Values)
-
-	for key, values := range v {
-		if len(values) > 0 && values[0] != "" {
-			queryStringValues[key] = values
-		}
+func addQueryString(currentUrl string, opt interface{}) (string, error) {
+	v := reflect.ValueOf(opt)
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return currentUrl, nil
 	}
 
-	return fmt.Sprintf(queryStringValues.Encode())
+	u, err := url.Parse(currentUrl)
+	if err != nil {
+		return currentUrl, err
+	}
+
+	qs, err := query.Values(opt)
+	if err != nil {
+		return currentUrl, err
+	}
+
+	u.RawQuery = qs.Encode()
+	return u.String(), nil
 }
 
 func (apiClient *ApiClient) GetAllFiltered(filter *GetAllFilter) (*Apis, error) {
 
-	address := apiClient.config.HostAddress + ApisPath
-	queryString := buildQueryString(filter)
-	if queryString != "" {
-		address += "?" + queryString
+	address, err := addQueryString(apiClient.config.HostAddress+ApisPath, filter)
+
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Could not build query string for apis filter, error: %v", err))
 	}
 
 	_, body, errs := apiClient.client.Get(address).End()
@@ -113,7 +121,7 @@ func (apiClient *ApiClient) GetAllFiltered(filter *GetAllFilter) (*Apis, error) 
 	}
 
 	apis := &Apis{}
-	err := json.Unmarshal([]byte(body), apis)
+	err = json.Unmarshal([]byte(body), apis)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Could not parse apis get response, error: %v", err))
 	}

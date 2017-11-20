@@ -64,6 +64,7 @@ func Test_ApisGetAll(t *testing.T) {
 	assert.True(t, len(results.Results) > 0)
 
 }
+
 func Test_ApisGetAllFilteredById(t *testing.T) {
 
 	apiRequest := &ApiRequest{
@@ -83,10 +84,10 @@ func Test_ApisGetAllFilteredById(t *testing.T) {
 	}
 	apiRequest2 := &ApiRequest{
 		Name:                   "test-" + uuid.NewV4().String(),
-		Hosts:                  []string{"filter1.com"},
-		Uris:                   []string{"/filter"},
+		Hosts:                  []string{"filter2.com"},
+		Uris:                   []string{"/filter2"},
 		Methods:                []string{"PUT", "POST"},
-		UpstreamUrl:            "http://linkerd:4140/myservice",
+		UpstreamUrl:            "http://linkerd:4140/myservice2",
 		StripUri:               false,
 		PreserveHost:           false,
 		Retries:                5,
@@ -117,7 +118,169 @@ func Test_ApisGetAllFilteredById(t *testing.T) {
 
 	assert.Equal(t, createdApi2, result)
 
+}
 
+func Test_ApisGetAllFilteredByName(t *testing.T) {
+
+	apiRequest := &ApiRequest{
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/myservice",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                5,
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
+	}
+	apiRequest2 := &ApiRequest{
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter2.com"},
+		Uris:                   []string{"/filter2"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/myservice2",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                5,
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
+	}
+	apiClient := NewClient(NewDefaultConfig()).Apis()
+
+	createdApi, err := apiClient.Create(apiRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdApi)
+
+	createdApi2, err := apiClient.Create(apiRequest2)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdApi2)
+
+	results, err := apiClient.GetAllFiltered(&GetAllFilter{Name: createdApi2.Name})
+
+	assert.True(t, results.Total == 1)
+	assert.True(t, len(results.Results) == 1)
+
+	result := results.Results[0]
+
+	assert.Equal(t, createdApi2, result)
+
+}
+
+func Test_ApisGetAllFilteredByUpstreamUrl(t *testing.T) {
+
+	apiRequest := &ApiRequest{
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/someurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                5,
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
+	}
+	apiRequest2 := &ApiRequest{
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter2.com"},
+		Uris:                   []string{"/filter2"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://upstreamunique:4140/uniqueurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                5,
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
+	}
+	apiClient := NewClient(NewDefaultConfig()).Apis()
+
+	createdApi, err := apiClient.Create(apiRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdApi)
+
+	createdApi2, err := apiClient.Create(apiRequest2)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdApi2)
+
+	results, err := apiClient.GetAllFiltered(&GetAllFilter{UpstreamUrl: createdApi2.UpstreamUrl})
+
+	assert.True(t, results.Total == 1)
+	assert.True(t, len(results.Results) == 1)
+
+	result := results.Results[0]
+
+	assert.Equal(t, createdApi2, result)
+}
+
+func Test_ApisGetAllFilteredByRetries(t *testing.T) {
+
+	apiRequest := &ApiRequest{
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter1.com"},
+		Uris:                   []string{"/filter"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/someurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                5,
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
+	}
+	apiRequest2 := &ApiRequest{
+		Name:                   "test-" + uuid.NewV4().String(),
+		Hosts:                  []string{"filter2.com"},
+		Uris:                   []string{"/filter2"},
+		Methods:                []string{"PUT", "POST"},
+		UpstreamUrl:            "http://linkerd:4140/uniqueurl",
+		StripUri:               false,
+		PreserveHost:           false,
+		Retries:                1234,
+		UpstreamConnectTimeout: 2222,
+		UpstreamSendTimeout:    1233,
+		UpstreamReadTimeout:    1234,
+		HttpsOnly:              false,
+		HttpIfTerminated:       false,
+	}
+	apiClient := NewClient(NewDefaultConfig()).Apis()
+
+	createdApi, err := apiClient.Create(apiRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdApi)
+
+	createdApi2, err := apiClient.Create(apiRequest2)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdApi2)
+
+	results, err := apiClient.GetAllFiltered(&GetAllFilter{Retries: createdApi2.Retries})
+
+	assert.True(t, results.Total == 1)
+	assert.True(t, len(results.Results) == 1)
+
+	result := results.Results[0]
+
+	assert.Equal(t, createdApi2, result)
 }
 
 func Test_ApisCreate(t *testing.T) {
