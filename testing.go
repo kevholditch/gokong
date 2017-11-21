@@ -20,8 +20,8 @@ func StartTestContainers() *TestContext {
 		log.Fatalf("Could not connect to docker: %s", err)
 	}
 
-	postgres := NewPostgres(pool)
-	kong := NewKong(pool, postgres)
+	postgres := NewPostgresContainer(pool)
+	kong := NewKongContainer(pool, postgres)
 
 	return &TestContext{containers: []container{postgres, kong}}
 }

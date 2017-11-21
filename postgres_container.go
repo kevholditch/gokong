@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-type postgres struct {
+type postgresContainer struct {
 	Name             string
 	ConnectionString string
 	Password         string
@@ -18,7 +18,7 @@ type postgres struct {
 	resource         *dockertest.Resource
 }
 
-func NewPostgres(pool *dockertest.Pool) *postgres {
+func NewPostgresContainer(pool *dockertest.Pool) *postgresContainer {
 
 	var db *sql.DB
 
@@ -54,7 +54,7 @@ func NewPostgres(pool *dockertest.Pool) *postgres {
 
 	log.Printf("Postgres (%v): up", containerName)
 
-	return &postgres{
+	return &postgresContainer{
 		Name:             containerName,
 		ConnectionString: connectionString,
 		Password:         password,
@@ -65,6 +65,6 @@ func NewPostgres(pool *dockertest.Pool) *postgres {
 	}
 }
 
-func (postgres *postgres) Stop() error {
+func (postgres *postgresContainer) Stop() error {
 	return postgres.pool.Purge(postgres.resource)
 }

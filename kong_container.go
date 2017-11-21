@@ -9,14 +9,14 @@ import (
 	"os"
 )
 
-type kong struct {
+type kongContainer struct {
 	Name        string
 	pool        *dockertest.Pool
 	resource    *dockertest.Resource
 	HostAddress string
 }
 
-func NewKong(pool *dockertest.Pool, postgres *postgres) *kong {
+func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer) *kongContainer {
 
 	envVars := []string{
 		"KONG_DATABASE=postgres",
@@ -96,7 +96,7 @@ func NewKong(pool *dockertest.Pool, postgres *postgres) *kong {
 		log.Fatalf("Could not set kong host address env variable: %v", err)
 	}
 
-	return &kong{
+	return &kongContainer{
 		Name:        kongContainerName,
 		pool:        pool,
 		resource:    resource,
@@ -104,6 +104,6 @@ func NewKong(pool *dockertest.Pool, postgres *postgres) *kong {
 	}
 }
 
-func (kong *kong) Stop() error {
+func (kong *kongContainer) Stop() error {
 	return kong.pool.Purge(kong.resource)
 }
