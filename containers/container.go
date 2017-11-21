@@ -1,4 +1,4 @@
-package gokong
+package containers
 
 import (
 	"gopkg.in/ory-am/dockertest.v3"

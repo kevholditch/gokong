@@ -1,4 +1,4 @@
-package gokong
+package containers
 
 import (
 	"gopkg.in/ory-am/dockertest.v3"
@@ -7,11 +7,11 @@ import (
 )
 
 type TestContext struct {
-	containers []container
-	code       int
+	containers      []container
+	KongHostAddress string
 }
 
-func StartTestContainers() *TestContext {
+func StartKong(kongVersion string) *TestContext {
 	log.SetOutput(os.Stdout)
 
 	var err error
@@ -21,12 +21,12 @@ func StartTestContainers() *TestContext {
 	}
 
 	postgres := NewPostgresContainer(pool)
-	kong := NewKongContainer(pool, postgres)
+	kong := NewKongContainer(pool, postgres, kongVersion)
 
-	return &TestContext{containers: []container{postgres, kong}}
+	return &TestContext{containers: []container{postgres, kong}, KongHostAddress: kong.HostAddress}
 }
 
-func StopTestContainers(testContext *TestContext) {
+func StopKong(testContext *TestContext) {
 
 	for _, container := range testContext.containers {
 		err := container.Stop()

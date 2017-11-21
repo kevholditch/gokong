@@ -1,4 +1,4 @@
-package gokong
+package containers
 
 import (
 	"errors"
@@ -6,7 +6,6 @@ import (
 	"gopkg.in/ory-am/dockertest.v3"
 	"log"
 	"net/http"
-	"os"
 )
 
 type kongContainer struct {
@@ -16,7 +15,7 @@ type kongContainer struct {
 	HostAddress string
 }
 
-func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer) *kongContainer {
+func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer, kongVersion string) *kongContainer {
 
 	envVars := []string{
 		"KONG_DATABASE=postgres",
@@ -27,7 +26,7 @@ func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer) *kongC
 
 	options := &dockertest.RunOptions{
 		Repository: "kong",
-		Tag:        "0.11",
+		Tag:        kongVersion,
 		Env:        envVars,
 		Links:      []string{postgres.Name},
 		Cmd:        []string{"kong", "migrations", "up"},
@@ -89,11 +88,6 @@ func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer) *kongC
 		return nil
 	}); err != nil {
 		log.Fatalf("Could not connect to kong: %s", err)
-	}
-
-	err = os.Setenv(EnvKongAdminHostAddress, kongAddress)
-	if err != nil {
-		log.Fatalf("Could not set kong host address env variable: %v", err)
 	}
 
 	return &kongContainer{
