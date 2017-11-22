@@ -370,14 +370,14 @@ func Test_ApisCreate(t *testing.T) {
 		Uris:                   []string{"/example"},
 		Methods:                []string{"GET", "POST"},
 		UpstreamUrl:            "http://localhost:4140/testservice",
-		StripUri:               true,
+		StripUri:               false,
 		PreserveHost:           true,
 		Retries:                3,
 		UpstreamConnectTimeout: 1000,
 		UpstreamSendTimeout:    2000,
 		UpstreamReadTimeout:    3000,
 		HttpsOnly:              true,
-		HttpIfTerminated:       true,
+		HttpIfTerminated:       false,
 	}
 
 	result, err := NewClient(NewDefaultConfig()).Apis().Create(apiRequest)
@@ -396,7 +396,31 @@ func Test_ApisCreate(t *testing.T) {
 	assert.Equal(t, apiRequest.UpstreamReadTimeout, result.UpstreamReadTimeout)
 	assert.Equal(t, apiRequest.HttpsOnly, result.HttpsOnly)
 	assert.Equal(t, apiRequest.HttpIfTerminated, result.HttpIfTerminated)
+}
 
+func Test_ApisCreateWithOnlyRequiredFields(t *testing.T) {
+	apiRequest := &ApiRequest{
+		Name:        "test-" + uuid.NewV4().String(),
+		Hosts:       []string{"example.com"},
+		UpstreamUrl: "http://localhost:4140/testservice",
+	}
+
+	result, err := NewClient(NewDefaultConfig()).Apis().Create(apiRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, apiRequest.Name, result.Name)
+	assert.Equal(t, apiRequest.Hosts, result.Hosts)
+	assert.Nil(t, result.Uris)
+	assert.Nil(t, result.Methods)
+	assert.Equal(t, apiRequest.UpstreamUrl, result.UpstreamUrl)
+	assert.Equal(t, false, result.StripUri)
+	assert.Equal(t, false, result.PreserveHost)
+	assert.Equal(t, 60000, result.UpstreamConnectTimeout)
+	assert.Equal(t, 60000, result.UpstreamSendTimeout)
+	assert.Equal(t, 60000, result.UpstreamReadTimeout)
+	assert.Equal(t, false, result.HttpsOnly)
+	assert.Equal(t, false, result.HttpIfTerminated)
 }
 
 func Test_ApisDeleteById(t *testing.T) {
@@ -493,6 +517,7 @@ func Test_ApisUpdateApiById(t *testing.T) {
 	assert.NotNil(t, createdApi)
 
 	apiRequest.Methods = []string{"GET"}
+	apiRequest.Name = "kevin"
 	apiRequest.StripUri = true
 	apiRequest.PreserveHost = true
 	apiRequest.Retries = 10
