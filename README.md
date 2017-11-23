@@ -58,7 +58,7 @@ status, err := gokong.NewClient(gokong.NewDefaultConfig()).Status().Get()
 ```
 
 ## APIs
-Create a new API: [for more information on the API fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#add-api)
+Create a new API ([for more information on the API fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#add-api)):
 ```go
 apiRequest := &gokong.ApiRequest{
 	Name:                   "Example",
@@ -96,7 +96,7 @@ apis, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().List()
 
 List all APIs with a filter:
 ```go
-filtered, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().ListFiltered(&gokong.ApiFilter{Id:"936ad391-c30d-43db-b624-2f820d6fd38d", Name:"MyApi"})
+apis, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().ListFiltered(&gokong.ApiFilter{Id:"936ad391-c30d-43db-b624-2f820d6fd38d", Name:"MyApi"})
 ```
 
 Delete an API by id:
@@ -153,7 +153,7 @@ updatedApi, err :=  gokong.NewClient(gokong.NewDefaultConfig()).Apis().UpdateByN
 
 
 ## Consumers
-Create a new Consumer: [for more information on the Consumer Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#create-consumer)
+Create a new Consumer ([for more information on the Consumer Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#create-consumer)):
 ```go
 consumerRequest := &gokong.ConsumerRequest{
   Username: "User1",
@@ -212,3 +212,15 @@ consumerRequest := &gokong.ConsumerRequest{
 
 updatedConsumer, err :=  gokong.NewClient(gokong.NewDefaultConfig()).Consumers().UpdateByUsername("User2", consumerRequest)
 ```
+
+# Contributing
+I would love to get contributions to the project so please feel free to submit a PR.  To setup your dev station you need go and docker installed.
+
+Once you have cloned the repository the `make` command will build the code and run all of the tests.  If they all pass then you are good to go!
+
+If when you run the make command you get the following error:
+```
+gofmt needs running on the following files:
+```
+Then all you need to do is run `make fmt` this will reformat all of the code (I know awesome)!!
+
