@@ -58,7 +58,7 @@ status, err := gokong.NewClient(gokong.NewDefaultConfig()).Status().Get()
 ```
 
 ## APIs
-Create a new API:
+Create a new API: [for more information on the API fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#add-api)
 ```go
 apiRequest := &gokong.ApiRequest{
 	Name:                   "Example",
@@ -84,14 +84,17 @@ Get an API by id:
 api, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().GetById("ExampleApi")
 ```
 
-Get all apis:
+List all apis:
 ```go
-apis, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().GetAll()
+apis, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().List()
 ```
 
-Get all apis with a filter:
+List all apis with a filter:
 ```go
-filtered, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().GetAllFiltered(&gokong.GetAllFilter{Id:"936ad391-c30d-43db-b624-2f820d6fd38d", Name:"MyApi"})
+filtered, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().ListFiltered(&gokong.ApiFilter{Id:"936ad391-c30d-43db-b624-2f820d6fd38d", Name:"MyApi"})
 ```
+
+## Consumers
+Create a new Consumer: [for more information on the Consumer Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#create-consumer)
 
 

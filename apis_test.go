@@ -64,7 +64,7 @@ func Test_ApisGetByName(t *testing.T) {
 
 }
 
-func Test_ApisGetAll(t *testing.T) {
+func Test_ApisList(t *testing.T) {
 
 	apiRequest := &ApiRequest{
 		Name:                   "test-" + uuid.NewV4().String(),
@@ -87,14 +87,14 @@ func Test_ApisGetAll(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	results, err := apiClient.GetAll()
+	results, err := apiClient.List()
 
 	assert.True(t, results.Total > 0)
 	assert.True(t, len(results.Results) > 0)
 
 }
 
-func Test_ApisGetAllFilteredById(t *testing.T) {
+func Test_ApisListFilteredById(t *testing.T) {
 
 	apiRequest := &ApiRequest{
 		Name:                   "test-" + uuid.NewV4().String(),
@@ -138,7 +138,7 @@ func Test_ApisGetAllFilteredById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := apiClient.GetAllFiltered(&GetAllFilter{Id: createdApi2.Id})
+	results, err := apiClient.ListFiltered(&ApiFilter{Id: createdApi2.Id})
 
 	assert.True(t, results.Total == 1)
 	assert.True(t, len(results.Results) == 1)
@@ -149,7 +149,7 @@ func Test_ApisGetAllFilteredById(t *testing.T) {
 
 }
 
-func Test_ApisGetAllFilteredByName(t *testing.T) {
+func Test_ApisListFilteredByName(t *testing.T) {
 
 	apiRequest := &ApiRequest{
 		Name:                   "test-" + uuid.NewV4().String(),
@@ -193,7 +193,7 @@ func Test_ApisGetAllFilteredByName(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := apiClient.GetAllFiltered(&GetAllFilter{Name: createdApi2.Name})
+	results, err := apiClient.ListFiltered(&ApiFilter{Name: createdApi2.Name})
 
 	assert.True(t, results.Total == 1)
 	assert.True(t, len(results.Results) == 1)
@@ -204,7 +204,7 @@ func Test_ApisGetAllFilteredByName(t *testing.T) {
 
 }
 
-func Test_ApisGetAllFilteredByUpstreamUrl(t *testing.T) {
+func Test_ApisListFilteredByUpstreamUrl(t *testing.T) {
 
 	apiRequest := &ApiRequest{
 		Name:                   "test-" + uuid.NewV4().String(),
@@ -248,7 +248,7 @@ func Test_ApisGetAllFilteredByUpstreamUrl(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := apiClient.GetAllFiltered(&GetAllFilter{UpstreamUrl: createdApi2.UpstreamUrl})
+	results, err := apiClient.ListFiltered(&ApiFilter{UpstreamUrl: createdApi2.UpstreamUrl})
 
 	assert.True(t, results.Total == 1)
 	assert.True(t, len(results.Results) == 1)
@@ -258,7 +258,7 @@ func Test_ApisGetAllFilteredByUpstreamUrl(t *testing.T) {
 	assert.Equal(t, createdApi2, result)
 }
 
-func Test_ApisGetAllFilteredByRetries(t *testing.T) {
+func Test_ApisListFilteredByRetries(t *testing.T) {
 
 	apiRequest := &ApiRequest{
 		Name:                   "test-" + uuid.NewV4().String(),
@@ -302,7 +302,7 @@ func Test_ApisGetAllFilteredByRetries(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := apiClient.GetAllFiltered(&GetAllFilter{Retries: createdApi2.Retries})
+	results, err := apiClient.ListFiltered(&ApiFilter{Retries: createdApi2.Retries})
 
 	assert.True(t, results.Total == 1)
 	assert.True(t, len(results.Results) == 1)
@@ -312,7 +312,7 @@ func Test_ApisGetAllFilteredByRetries(t *testing.T) {
 	assert.Equal(t, createdApi2, result)
 }
 
-func Test_ApisGetAllFilteredBySize(t *testing.T) {
+func Test_ApisListFilteredBySize(t *testing.T) {
 
 	apiRequest := &ApiRequest{
 		Name:                   "test-" + uuid.NewV4().String(),
@@ -356,7 +356,7 @@ func Test_ApisGetAllFilteredBySize(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := apiClient.GetAllFiltered(&GetAllFilter{Size: 1})
+	results, err := apiClient.ListFiltered(&ApiFilter{Size: 1})
 
 	assert.True(t, len(results.Results) == 1)
 
