@@ -12,13 +12,13 @@ func Test_ConsumersGetById(t *testing.T) {
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
 
-	consumerClient := NewClient(NewDefaultConfig()).Consumers()
-	createdConsumer, err := consumerClient.Create(consumerRequest)
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
 
-	result, err := consumerClient.GetById(createdConsumer.Id)
+	result, err := client.Consumers().GetById(createdConsumer.Id)
 
 	assert.Equal(t, createdConsumer, result)
 
@@ -30,13 +30,13 @@ func Test_ConsumersGetByUsername(t *testing.T) {
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
 
-	consumerClient := NewClient(NewDefaultConfig()).Consumers()
-	createdConsumer, err := consumerClient.Create(consumerRequest)
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
 
-	result, err := consumerClient.GetByUsername(createdConsumer.Username)
+	result, err := client.Consumers().GetByUsername(createdConsumer.Username)
 
 	assert.Equal(t, createdConsumer, result)
 
@@ -92,13 +92,13 @@ func Test_ConsumersList(t *testing.T) {
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
 
-	consumerClient := NewClient(NewDefaultConfig()).Consumers()
-	createdConsumer, err := consumerClient.Create(consumerRequest)
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
 
-	results, err := consumerClient.List()
+	results, err := client.Consumers().List()
 
 	assert.True(t, results.Total > 0)
 	assert.True(t, len(results.Results) > 0)
@@ -112,8 +112,8 @@ func Test_ConsumersListFilteredById(t *testing.T) {
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
 
-	consumerClient := NewClient(NewDefaultConfig()).Consumers()
-	createdConsumer, err := consumerClient.Create(consumerRequest)
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
@@ -122,12 +122,12 @@ func Test_ConsumersListFilteredById(t *testing.T) {
 		Username: "username-" + uuid.NewV4().String(),
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
-	createdConsumer2, err := consumerClient.Create(consumerRequest2)
+	createdConsumer2, err := client.Consumers().Create(consumerRequest2)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer2)
 
-	results, err := consumerClient.ListFiltered(&ConsumerFilter{Id: createdConsumer.Id})
+	results, err := client.Consumers().ListFiltered(&ConsumerFilter{Id: createdConsumer.Id})
 
 	assert.True(t, len(results.Results) == 1)
 	result := results.Results[0]
@@ -145,8 +145,8 @@ func Test_ConsumersListFilteredByCustomId(t *testing.T) {
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
 
-	consumerClient := NewClient(NewDefaultConfig()).Consumers()
-	createdConsumer, err := consumerClient.Create(consumerRequest)
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
@@ -155,12 +155,12 @@ func Test_ConsumersListFilteredByCustomId(t *testing.T) {
 		Username: "username-" + uuid.NewV4().String(),
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
-	createdConsumer2, err := consumerClient.Create(consumerRequest2)
+	createdConsumer2, err := client.Consumers().Create(consumerRequest2)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer2)
 
-	results, err := consumerClient.ListFiltered(&ConsumerFilter{CustomId: createdConsumer.CustomId})
+	results, err := client.Consumers().ListFiltered(&ConsumerFilter{CustomId: createdConsumer.CustomId})
 
 	assert.True(t, len(results.Results) == 1)
 	result := results.Results[0]
@@ -178,8 +178,8 @@ func Test_ConsumersListFilteredByUsername(t *testing.T) {
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
 
-	consumerClient := NewClient(NewDefaultConfig()).Consumers()
-	createdConsumer, err := consumerClient.Create(consumerRequest)
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
@@ -188,12 +188,12 @@ func Test_ConsumersListFilteredByUsername(t *testing.T) {
 		Username: "username-" + uuid.NewV4().String(),
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
-	createdConsumer2, err := consumerClient.Create(consumerRequest2)
+	createdConsumer2, err := client.Consumers().Create(consumerRequest2)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer2)
 
-	results, err := consumerClient.ListFiltered(&ConsumerFilter{Username: createdConsumer.Username})
+	results, err := client.Consumers().ListFiltered(&ConsumerFilter{Username: createdConsumer.Username})
 
 	assert.True(t, len(results.Results) == 1)
 	result := results.Results[0]
@@ -211,8 +211,8 @@ func Test_ConsumersListFilteredBySize(t *testing.T) {
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
 
-	consumerClient := NewClient(NewDefaultConfig()).Consumers()
-	createdConsumer, err := consumerClient.Create(consumerRequest)
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
@@ -221,7 +221,7 @@ func Test_ConsumersListFilteredBySize(t *testing.T) {
 		Username: "username-" + uuid.NewV4().String(),
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
-	createdConsumer2, err := consumerClient.Create(consumerRequest2)
+	createdConsumer2, err := client.Consumers().Create(consumerRequest2)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer2)
@@ -230,12 +230,12 @@ func Test_ConsumersListFilteredBySize(t *testing.T) {
 		Username: "username-" + uuid.NewV4().String(),
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
-	createdConsumer3, err := consumerClient.Create(consumerRequest3)
+	createdConsumer3, err := client.Consumers().Create(consumerRequest3)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer3)
 
-	results, err := consumerClient.ListFiltered(&ConsumerFilter{Size: 2})
+	results, err := client.Consumers().ListFiltered(&ConsumerFilter{Size: 2})
 
 	assert.True(t, len(results.Results) == 2)
 
@@ -247,16 +247,16 @@ func Test_ConsumersDeleteById(t *testing.T) {
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
 
-	consumerClient := NewClient(NewDefaultConfig()).Consumers()
-	createdConsumer, err := consumerClient.Create(consumerRequest)
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
 
-	err = consumerClient.DeleteById(createdConsumer.Id)
+	err = client.Consumers().DeleteById(createdConsumer.Id)
 	assert.Nil(t, err)
 
-	deletedConsumer, err := consumerClient.GetById(createdConsumer.Id)
+	deletedConsumer, err := client.Consumers().GetById(createdConsumer.Id)
 	assert.Nil(t, deletedConsumer)
 }
 
@@ -266,16 +266,16 @@ func Test_ConsumersDeleteByUsername(t *testing.T) {
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
 
-	consumerClient := NewClient(NewDefaultConfig()).Consumers()
-	createdConsumer, err := consumerClient.Create(consumerRequest)
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
 
-	err = consumerClient.DeleteByUsername(createdConsumer.Username)
+	err = client.Consumers().DeleteByUsername(createdConsumer.Username)
 	assert.Nil(t, err)
 
-	deletedConsumer, err := consumerClient.GetById(createdConsumer.Id)
+	deletedConsumer, err := client.Consumers().GetById(createdConsumer.Id)
 	assert.Nil(t, deletedConsumer)
 }
 
@@ -286,8 +286,8 @@ func Test_ConsumersUpdateById(t *testing.T) {
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
 
-	consumerClient := NewClient(NewDefaultConfig()).Consumers()
-	createdConsumer, err := consumerClient.Create(consumerRequest)
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
@@ -295,7 +295,7 @@ func Test_ConsumersUpdateById(t *testing.T) {
 
 	consumerRequest.CustomId = "test-" + uuid.NewV4().String()
 
-	result, err := consumerClient.UpdateById(createdConsumer.Id, consumerRequest)
+	result, err := client.Consumers().UpdateById(createdConsumer.Id, consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
@@ -311,8 +311,8 @@ func Test_ConsumersUpdateByUsername(t *testing.T) {
 		CustomId: "test-" + uuid.NewV4().String(),
 	}
 
-	consumerClient := NewClient(NewDefaultConfig()).Consumers()
-	createdConsumer, err := consumerClient.Create(consumerRequest)
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
@@ -320,7 +320,7 @@ func Test_ConsumersUpdateByUsername(t *testing.T) {
 
 	consumerRequest.Username = "username-" + uuid.NewV4().String()
 
-	result, err := consumerClient.UpdateByUsername(createdConsumer.Username, consumerRequest)
+	result, err := client.Consumers().UpdateByUsername(createdConsumer.Username, consumerRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)

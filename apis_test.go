@@ -23,13 +23,13 @@ func Test_ApisGetById(t *testing.T) {
 		HttpIfTerminated:       true,
 	}
 
-	apiClient := NewClient(NewDefaultConfig()).Apis()
-	createdApi, err := apiClient.Create(apiRequest)
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	result, err := apiClient.GetById(createdApi.Id)
+	result, err := client.Apis().GetById(createdApi.Id)
 
 	assert.Equal(t, createdApi, result)
 
@@ -52,13 +52,13 @@ func Test_ApisGetByName(t *testing.T) {
 		HttpIfTerminated:       true,
 	}
 
-	apiClient := NewClient(NewDefaultConfig()).Apis()
-	createdApi, err := apiClient.Create(apiRequest)
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	result, err := apiClient.GetByName(createdApi.Name)
+	result, err := client.Apis().GetByName(createdApi.Name)
 
 	assert.Equal(t, createdApi, result)
 
@@ -81,13 +81,14 @@ func Test_ApisList(t *testing.T) {
 		HttpsOnly:              false,
 		HttpIfTerminated:       false,
 	}
-	apiClient := NewClient(NewDefaultConfig()).Apis()
-	createdApi, err := apiClient.Create(apiRequest)
+
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	results, err := apiClient.List()
+	results, err := client.Apis().List()
 
 	assert.True(t, results.Total > 0)
 	assert.True(t, len(results.Results) > 0)
@@ -126,19 +127,19 @@ func Test_ApisListFilteredById(t *testing.T) {
 		HttpsOnly:              false,
 		HttpIfTerminated:       false,
 	}
-	apiClient := NewClient(NewDefaultConfig()).Apis()
 
-	createdApi, err := apiClient.Create(apiRequest)
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	createdApi2, err := apiClient.Create(apiRequest2)
+	createdApi2, err := client.Apis().Create(apiRequest2)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := apiClient.ListFiltered(&ApiFilter{Id: createdApi2.Id})
+	results, err := client.Apis().ListFiltered(&ApiFilter{Id: createdApi2.Id})
 
 	assert.True(t, results.Total == 1)
 	assert.True(t, len(results.Results) == 1)
@@ -181,19 +182,19 @@ func Test_ApisListFilteredByName(t *testing.T) {
 		HttpsOnly:              false,
 		HttpIfTerminated:       false,
 	}
-	apiClient := NewClient(NewDefaultConfig()).Apis()
 
-	createdApi, err := apiClient.Create(apiRequest)
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	createdApi2, err := apiClient.Create(apiRequest2)
+	createdApi2, err := client.Apis().Create(apiRequest2)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := apiClient.ListFiltered(&ApiFilter{Name: createdApi2.Name})
+	results, err := client.Apis().ListFiltered(&ApiFilter{Name: createdApi2.Name})
 
 	assert.True(t, results.Total == 1)
 	assert.True(t, len(results.Results) == 1)
@@ -236,19 +237,19 @@ func Test_ApisListFilteredByUpstreamUrl(t *testing.T) {
 		HttpsOnly:              false,
 		HttpIfTerminated:       false,
 	}
-	apiClient := NewClient(NewDefaultConfig()).Apis()
 
-	createdApi, err := apiClient.Create(apiRequest)
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	createdApi2, err := apiClient.Create(apiRequest2)
+	createdApi2, err := client.Apis().Create(apiRequest2)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := apiClient.ListFiltered(&ApiFilter{UpstreamUrl: createdApi2.UpstreamUrl})
+	results, err := client.Apis().ListFiltered(&ApiFilter{UpstreamUrl: createdApi2.UpstreamUrl})
 
 	assert.True(t, results.Total == 1)
 	assert.True(t, len(results.Results) == 1)
@@ -290,19 +291,19 @@ func Test_ApisListFilteredByRetries(t *testing.T) {
 		HttpsOnly:              false,
 		HttpIfTerminated:       false,
 	}
-	apiClient := NewClient(NewDefaultConfig()).Apis()
 
-	createdApi, err := apiClient.Create(apiRequest)
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	createdApi2, err := apiClient.Create(apiRequest2)
+	createdApi2, err := client.Apis().Create(apiRequest2)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := apiClient.ListFiltered(&ApiFilter{Retries: createdApi2.Retries})
+	results, err := client.Apis().ListFiltered(&ApiFilter{Retries: createdApi2.Retries})
 
 	assert.True(t, results.Total == 1)
 	assert.True(t, len(results.Results) == 1)
@@ -344,19 +345,19 @@ func Test_ApisListFilteredBySize(t *testing.T) {
 		HttpsOnly:              false,
 		HttpIfTerminated:       false,
 	}
-	apiClient := NewClient(NewDefaultConfig()).Apis()
 
-	createdApi, err := apiClient.Create(apiRequest)
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	createdApi2, err := apiClient.Create(apiRequest2)
+	createdApi2, err := client.Apis().Create(apiRequest2)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi2)
 
-	results, err := apiClient.ListFiltered(&ApiFilter{Size: 1})
+	results, err := client.Apis().ListFiltered(&ApiFilter{Size: 1})
 
 	assert.True(t, len(results.Results) == 1)
 
@@ -441,17 +442,17 @@ func Test_ApisDeleteById(t *testing.T) {
 		HttpIfTerminated:       true,
 	}
 
-	apiClient := NewClient(NewDefaultConfig()).Apis()
-	createdApi, err := apiClient.Create(apiRequest)
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	err = apiClient.DeleteById(createdApi.Id)
+	err = client.Apis().DeleteById(createdApi.Id)
 
 	assert.Nil(t, err)
 
-	deletedApi, err := apiClient.GetById(createdApi.Id)
+	deletedApi, err := client.Apis().GetById(createdApi.Id)
 	assert.Nil(t, err)
 	assert.Nil(t, deletedApi)
 
@@ -475,17 +476,17 @@ func Test_ApisDeleteByName(t *testing.T) {
 		HttpIfTerminated:       true,
 	}
 
-	apiClient := NewClient(NewDefaultConfig()).Apis()
-	createdApi, err := apiClient.Create(apiRequest)
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
 
-	err = apiClient.DeleteByName(createdApi.Id)
+	err = client.Apis().DeleteByName(createdApi.Id)
 
 	assert.Nil(t, err)
 
-	deletedApi, err := apiClient.GetById(createdApi.Id)
+	deletedApi, err := client.Apis().GetById(createdApi.Id)
 	assert.Nil(t, err)
 	assert.Nil(t, deletedApi)
 
@@ -509,9 +510,9 @@ func Test_ApisUpdateApiById(t *testing.T) {
 		HttpIfTerminated:       false,
 	}
 
-	apiClient := NewClient(NewDefaultConfig()).Apis()
+	client := NewClient(NewDefaultConfig())
 
-	createdApi, err := apiClient.Create(apiRequest)
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
@@ -527,7 +528,7 @@ func Test_ApisUpdateApiById(t *testing.T) {
 	apiRequest.HttpsOnly = true
 	apiRequest.HttpIfTerminated = true
 
-	result, err := apiClient.UpdateById(createdApi.Id, apiRequest)
+	result, err := client.Apis().UpdateById(createdApi.Id, apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
@@ -563,9 +564,8 @@ func Test_ApisUpdateApiByName(t *testing.T) {
 		HttpIfTerminated:       false,
 	}
 
-	apiClient := NewClient(NewDefaultConfig()).Apis()
-
-	createdApi, err := apiClient.Create(apiRequest)
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdApi)
@@ -580,7 +580,7 @@ func Test_ApisUpdateApiByName(t *testing.T) {
 	apiRequest.HttpsOnly = true
 	apiRequest.HttpIfTerminated = true
 
-	result, err := apiClient.UpdateByName(createdApi.Id, apiRequest)
+	result, err := client.Apis().UpdateByName(createdApi.Id, apiRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
