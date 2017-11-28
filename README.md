@@ -213,6 +213,151 @@ consumerRequest := &gokong.ConsumerRequest{
 updatedConsumer, err :=  gokong.NewClient(gokong.NewDefaultConfig()).Consumers().UpdateByUsername("User2", consumerRequest)
 ```
 
+## Plugins
+Create a new Plugin to be applied to all APIs and consumers do not set `ApiId` or `ConsumerId`.  Not all plugins can be configured in this way
+ ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#add-plugin)):
+
+```go
+pluginRequest := &gokong.PluginRequest{
+  Name: "response-ratelimiting",
+  Config: map[string]interface{}{
+    "limits.sms.minute": 20,
+  },
+}
+
+createdPlugin, err := gokong.NewClient(gokong.NewDefaultConfig()).Plugins().Create(pluginRequest)
+```
+
+Create a new Plugin for a single API (only set `ApiId`), not all plugins can be configured in this way ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#add-plugin)):
+```go
+client := gokong.NewClient(gokong.NewDefaultConfig())
+
+apiRequest := &gokong.ApiRequest{
+  Name:                   "test-api",
+  Hosts:                  []string{"example.com"},
+  Uris:                   []string{"/example"},
+  Methods:                []string{"GET", "POST"},
+  UpstreamUrl:            "http://localhost:4140/testservice",
+  StripUri:               true,
+  PreserveHost:           true,
+  Retries:                3,
+  UpstreamConnectTimeout: 1000,
+  UpstreamSendTimeout:    2000,
+  UpstreamReadTimeout:    3000,
+  HttpsOnly:              true,
+  HttpIfTerminated:       true,
+}
+
+createdApi, err := client.Apis().Create(apiRequest)
+
+pluginRequest := &gokong.PluginRequest{
+  Name: "response-ratelimiting",
+  ApiId: createdApi.Id,
+  Config: map[string]interface{}{
+    "limits.sms.minute": 20,
+  },
+}
+
+createdPlugin, err :=  client.Plugins().Create(pluginRequest)
+```
+
+Create a new Plugin for a single Consumer (only set `ConsumerId`), Not all plugins can be configured in this way ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#add-plugin)):
+```go
+client := gokong.NewClient(gokong.NewDefaultConfig())
+
+consumerRequest := &gokong.ConsumerRequest{
+  Username: "User1",
+  CustomId: "test",
+}
+
+createdConsumer, err := client.Consumers().Create(consumerRequest)
+
+pluginRequest := &gokong.PluginRequest{
+  Name: "response-ratelimiting",
+  ConsumerId: createdConsumer.Id,
+  Config: map[string]interface{}{
+    "limits.sms.minute": 20,
+  },
+}
+
+createdPlugin, err :=  client.Plugins().Create(pluginRequest)
+```
+
+Create a new Plugin for a single Consumer and Api (set `ConsumerId` and `ApiId`), Not all plugins can be configured in this way ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#add-plugin)):
+```go
+client := gokong.NewClient(gokong.NewDefaultConfig())
+
+consumerRequest := &gokong.ConsumerRequest{
+  Username: "User1",
+  CustomId: "test",
+}
+
+createdConsumer, err := client.Consumers().Create(consumerRequest)
+
+apiRequest := &gokong.ApiRequest{
+  Name:                   "test-api",
+  Hosts:                  []string{"example.com"},
+  Uris:                   []string{"/example"},
+  Methods:                []string{"GET", "POST"},
+  UpstreamUrl:            "http://localhost:4140/testservice",
+  StripUri:               true,
+  PreserveHost:           true,
+  Retries:                3,
+  UpstreamConnectTimeout: 1000,
+  UpstreamSendTimeout:    2000,
+  UpstreamReadTimeout:    3000,
+  HttpsOnly:              true,
+  HttpIfTerminated:       true,
+}
+
+createdApi, err := client.Apis().Create(apiRequest)
+
+pluginRequest := &gokong.PluginRequest{
+  Name:       "response-ratelimiting",
+  ConsumerId: createdConsumer.Id,
+  ApiId:      createdApi.Id,
+  Config: map[string]interface{}{
+    "limits.sms.minute": 20,
+  },
+}
+
+createdPlugin, err :=  client.Plugins().Create(pluginRequest)
+```
+
+Get a plugin by id:
+```go
+plugin, err := gokong.NewClient(gokong.NewDefaultConfig()).Plugins().GetById("04bda233-d035-4b8a-8cf2-a53f3dd990f3")
+```
+
+List all plugins:
+```go
+plugins, err := gokong.NewClient(gokong.NewDefaultConfig()).Plugins().List()
+```
+
+List all plugins with a filter:
+```go
+plugins, err := gokong.NewClient(gokong.NewDefaultConfig()).Plugins().ListFiltered(&gokong.PluginFilter{Name: "response-ratelimiting", ConsumerId: "7009a608-b40c-4a21-9a90-9219d5fd1ac7"})
+```
+
+Delete a plugin by id:
+```go
+err := gokong.NewClient(gokong.NewDefaultConfig()).Plugins().DeleteById("f2bbbab8-3e6f-4d9d-bada-d486600b3b4c")
+```
+
+Update a plugin by id:
+```go
+updatePluginRequest := &gokong.PluginRequest{
+  Name:       "response-ratelimiting",
+  ConsumerId: createdConsumer.Id,
+  ApiId:      createdApi.Id,
+  Config: map[string]interface{}{
+    "limits.sms.minute": 20,
+  },
+}
+
+updatedPlugin, err := gokong.NewClient(gokong.NewDefaultConfig()).Plugins().UpdateById("70692eed-2293-486d-b992-db44a6459360", updatePluginRequest)
+```
+
 # Contributing
 I would love to get contributions to the project so please feel free to submit a PR.  To setup your dev station you need go and docker installed.
 
