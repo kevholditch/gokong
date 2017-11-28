@@ -27,6 +27,21 @@ type Plugin struct {
 	Enabled    bool                   `json:"enabled,omitempty"`
 }
 
+type Plugins struct {
+	Results []*Plugin `json:"data,omitempty"`
+	Total   int       `json:"total,omitempty"`
+	Next    string    `json:"next,omitempty"`
+}
+
+type PluginFilter struct {
+	Id         string `url:"id,omitempty"`
+	Name       string `url:"name,omitempty"`
+	ApiId      string `url:"api_id,omitempty"`
+	ConsumerId string `url:"consumer_id,omitempty"`
+	Size       int    `url:"size,omitempty"`
+	Offset     int    `url:"offset,omitempty"`
+}
+
 const PluginsPath = "/plugins/"
 
 func (pluginClient *PluginClient) GetById(id string) (*Plugin, error) {
@@ -47,6 +62,32 @@ func (pluginClient *PluginClient) GetById(id string) (*Plugin, error) {
 	}
 
 	return plugin, nil
+}
+
+func (pluginClient *PluginClient) List() (*Plugins, error) {
+	return pluginClient.ListFiltered(nil)
+}
+
+func (pluginClient *PluginClient) ListFiltered(filter *PluginFilter) (*Plugins, error) {
+
+	address, err := addQueryString(pluginClient.config.HostAddress+PluginsPath, filter)
+
+	if err != nil {
+		return nil, fmt.Errorf("could not build query string for plugins filter, error: %v", err)
+	}
+
+	_, body, errs := pluginClient.client.Get(address).End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
+	}
+
+	plugins := &Plugins{}
+	err = json.Unmarshal([]byte(body), plugins)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse plugins list response, error: %v", err)
+	}
+
+	return plugins, nil
 }
 
 func (pluginClient *PluginClient) Create(pluginRequest *PluginRequest) (*Plugin, error) {
@@ -83,7 +124,7 @@ func (pluginClient *PluginClient) UpdateById(id string, pluginRequest *PluginReq
 
 func (pluginClient *PluginClient) DeleteById(id string) error {
 
-	res, _, errs := pluginClient.client.Delete(pluginClient.config.HostAddress + ApisPath + id).End()
+	res, _, errs := pluginClient.client.Delete(pluginClient.config.HostAddress + PluginsPath + id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete plugin, result: %v error: %v", res, errs)
 	}
