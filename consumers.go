@@ -62,9 +62,9 @@ func (consumerClient *ConsumerClient) GetById(id string) (*Consumer, error) {
 	return consumer, nil
 }
 
-func (consumerClient *ConsumerClient) Create(newConsumer *ConsumerRequest) (*Consumer, error) {
+func (consumerClient *ConsumerClient) Create(consumerRequest *ConsumerRequest) (*Consumer, error) {
 
-	_, body, errs := consumerClient.client.Post(consumerClient.config.HostAddress + ConsumersPath).Send(newConsumer).End()
+	_, body, errs := consumerClient.client.Post(consumerClient.config.HostAddress + ConsumersPath).Send(consumerRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not create new consumer, error: %v", errs)
 	}

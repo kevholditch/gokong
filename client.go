@@ -87,3 +87,10 @@ func (kongAdminClient *KongAdminClient) Plugins() *PluginClient {
 		client: kongAdminClient.client,
 	}
 }
+
+func (kongAdminClient *KongAdminClient) Certificates() *CertificateClient {
+	return &CertificateClient{
+		config: kongAdminClient.config,
+		client: kongAdminClient.client,
+	}
+}

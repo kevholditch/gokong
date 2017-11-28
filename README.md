@@ -354,6 +354,43 @@ updatePluginRequest := &gokong.PluginRequest{
 updatedPlugin, err := gokong.NewClient(gokong.NewDefaultConfig()).Plugins().UpdateById("70692eed-2293-486d-b992-db44a6459360", updatePluginRequest)
 ```
 
+## Certificates
+Create a Certificate ([for more information on the Certificate Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#add-certificate)):
+
+```go
+certificateRequest := &gokong.CertificateRequest{
+  Cert: "public key --- 123",
+  Key:  "private key --- 456",
+}
+
+createdCertificate, err := gokong.NewClient(gokong.NewDefaultConfig()).Certificates().Create(certificateRequest)
+```
+
+Get a Certificate by id:
+```go
+certificate, err := gokong.NewClient(gokong.NewDefaultConfig()).Certificates().GetById("0408cbd4-e856-4565-bc11-066326de9231")
+```
+
+List all certificates:
+```go
+certificates, err := gokong.NewClient(gokong.NewDefaultConfig()).Certificates().List()
+```
+
+Delete a Certificate:
+```go
+err := gokong.NewClient(gokong.NewDefaultConfig()).Certificates().DeleteById("db884cf2-9dd7-4e33-9ef5-628165076a42")
+```
+
+Update a Certificate:
+```go
+updateCertificateRequest := &gokong.CertificateRequest{
+  Cert: "public key --- 789",
+  Key:  "private key --- 111",
+}
+
+updatedCertificate, err := gokong.NewClient(gokong.NewDefaultConfig()).Certificates().UpdateById("1dc11281-30a6-4fb9-aec2-c6ff33445375", updateCertificateRequest)
+```
+
 # Contributing
 I would love to get contributions to the project so please feel free to submit a PR.  To setup your dev station you need go and docker installed.
 
