@@ -94,3 +94,10 @@ func (kongAdminClient *KongAdminClient) Certificates() *CertificateClient {
 		client: kongAdminClient.client,
 	}
 }
+
+func (kongAdminClient *KongAdminClient) Snis() *SnisClient {
+	return &SnisClient{
+		config: kongAdminClient.config,
+		client: kongAdminClient.client,
+	}
+}
