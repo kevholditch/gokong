@@ -7,10 +7,6 @@ A kong go client fully tested with no mocks!!
 ## GoKong
 GoKong is a easy to use api client for [kong](https://getkong.org/).  The difference with the gokong library is all of its tests are written against a real running kong running inside a docker container, yep that's right you won't see a horrible mock anywhere!!
 
-## Run build
-Ensure docker is installed then run:
-`make`
-
 ## Importing
 
 To add gokong via `go get`:
