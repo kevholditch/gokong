@@ -8,10 +8,9 @@ import (
 
 func Test_PluginsGetById(t *testing.T) {
 	pluginRequest := &PluginRequest{
-		Name: "rate-limiting",
+		Name: "request-size-limiting",
 		Config: map[string]interface{}{
-			"minute": "20",
-			"hour":   "500",
+			"allowed_payload_size": 128,
 		},
 	}
 
@@ -33,10 +32,9 @@ func Test_PluginsGetById(t *testing.T) {
 
 func Test_PluginsCreateForAllApisAndConsumers(t *testing.T) {
 	pluginRequest := &PluginRequest{
-		Name: "rate-limiting",
+		Name: "response-ratelimiting",
 		Config: map[string]interface{}{
-			"minute": "20",
-			"hour":   "500",
+			"limits.sms.minute": 20,
 		},
 	}
 
@@ -82,11 +80,10 @@ func Test_PluginsCreateForASpecificApi(t *testing.T) {
 	assert.NotNil(t, createdApi)
 
 	pluginRequest := &PluginRequest{
-		Name:  "rate-limiting",
+		Name:  "basic-auth",
 		ApiId: createdApi.Id,
 		Config: map[string]interface{}{
-			"minute": "20",
-			"hour":   "500",
+			"hide_credentials": true,
 		},
 	}
 
@@ -120,11 +117,10 @@ func Test_PluginsCreateForASpecificConsumer(t *testing.T) {
 	assert.NotNil(t, createdConsumer)
 
 	pluginRequest := &PluginRequest{
-		Name:       "rate-limiting",
+		Name:       "response-ratelimiting",
 		ConsumerId: createdConsumer.Id,
 		Config: map[string]interface{}{
-			"minute": "20",
-			"hour":   "500",
+			"limits.sms.minute": 20,
 		},
 	}
 
@@ -176,12 +172,11 @@ func Test_PluginsCreateForASpecificApiAndConsumer(t *testing.T) {
 	createdApi, err := client.Apis().Create(apiRequest)
 
 	pluginRequest := &PluginRequest{
-		Name:       "rate-limiting",
+		Name:       "response-ratelimiting",
 		ConsumerId: createdConsumer.Id,
 		ApiId:      createdApi.Id,
 		Config: map[string]interface{}{
-			"minute": "20",
-			"hour":   "500",
+			"limits.sms.minute": 20,
 		},
 	}
 
