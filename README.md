@@ -483,7 +483,7 @@ Delete an Upstream by id:
 err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().DeleteByName("test-upstream")
 ```
 
-Update an Update by id:
+Update an Upstream by id:
 ```
 updateUpstreamRequest := &gokong.UpstreamRequest{
   Name: "test-upstream",
