@@ -27,7 +27,14 @@ func Test_PluginsGetById(t *testing.T) {
 	err = client.Plugins().DeleteById(createdPlugin.Id)
 
 	assert.Nil(t, err)
+}
 
+func Test_PluginsGetNonExistentById(t *testing.T) {
+
+	result, err := NewClient(NewDefaultConfig()).Plugins().GetById("cc8e128c-c38d-421c-93cd-b045f64d5d44")
+
+	assert.Nil(t, err)
+	assert.Nil(t, result)
 }
 
 func Test_PluginsCreateForAllApisAndConsumers(t *testing.T) {
@@ -196,6 +203,39 @@ func Test_PluginsCreateForASpecificApiAndConsumer(t *testing.T) {
 
 }
 
+func Test_PluginsCreatePluginNonExistant(t *testing.T) {
+
+	pluginRequest := &PluginRequest{
+		Name: "non-existant-plugin",
+		Config: map[string]interface{}{
+			"some-setting": 20,
+		},
+	}
+
+	result, err := NewClient(NewDefaultConfig()).Plugins().Create(pluginRequest)
+
+	assert.NotNil(t, err)
+	assert.Nil(t, result)
+
+}
+
+func Test_PluginsCreatePluginInvalid(t *testing.T) {
+
+	pluginRequest := &PluginRequest{
+		Name:  "rate-limiting",
+		ApiId: "123",
+		Config: map[string]interface{}{
+			"some-setting": 20,
+		},
+	}
+
+	result, err := NewClient(NewDefaultConfig()).Plugins().Create(pluginRequest)
+
+	assert.NotNil(t, err)
+	assert.Nil(t, result)
+
+}
+
 func Test_PluginsUpdate(t *testing.T) {
 	pluginRequest := &PluginRequest{
 		Name: "rate-limiting",
@@ -232,6 +272,35 @@ func Test_PluginsUpdate(t *testing.T) {
 
 	assert.Nil(t, err)
 
+}
+
+func Test_PluginsUpdateInvalid(t *testing.T) {
+
+	pluginRequest := &PluginRequest{
+		Name: "rate-limiting",
+		Config: map[string]interface{}{
+			"minute": float64(20),
+			"hour":   float64(500),
+		},
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+
+	pluginRequest.Config = map[string]interface{}{
+		"asd":   float64(11),
+		"asdfs": float64(123),
+	}
+
+	result, err := client.Plugins().UpdateById(createdPlugin.Id, pluginRequest)
+
+	assert.NotNil(t, err)
+	assert.Nil(t, result)
+
+	err = client.Plugins().DeleteById(createdPlugin.Id)
 }
 
 func Test_PluginsDelete(t *testing.T) {

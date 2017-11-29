@@ -62,6 +62,10 @@ func (certificateClient *CertificateClient) Create(certificateRequest *Certifica
 		return nil, fmt.Errorf("could not parse certificate creation response, error: %v", err)
 	}
 
+	if createdCertificate.Id == "" {
+		return nil, fmt.Errorf("could not create certificate, error: %v", body)
+	}
+
 	return createdCertificate, nil
 }
 
@@ -102,6 +106,10 @@ func (certificateClient *CertificateClient) UpdateById(id string, certificateReq
 	err := json.Unmarshal([]byte(body), updatedCertificate)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse certificate update response, error: %v", err)
+	}
+
+	if updatedCertificate.Id == "" {
+		return nil, fmt.Errorf("could not update certificate, error: %v", body)
 	}
 
 	return updatedCertificate, nil

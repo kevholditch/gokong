@@ -103,6 +103,10 @@ func (pluginClient *PluginClient) Create(pluginRequest *PluginRequest) (*Plugin,
 		return nil, fmt.Errorf("could not parse plugin creation response, error: %v", err)
 	}
 
+	if createdPlugin.Id == "" {
+		return nil, fmt.Errorf("could not create plugin, err: %v", body)
+	}
+
 	return createdPlugin, nil
 }
 
@@ -117,6 +121,10 @@ func (pluginClient *PluginClient) UpdateById(id string, pluginRequest *PluginReq
 	err := json.Unmarshal([]byte(body), updatedPlugin)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse plugin update response, error: %v", err)
+	}
+
+	if updatedPlugin.Id == "" {
+		return nil, fmt.Errorf("could not update plugin, error: %v", body)
 	}
 
 	return updatedPlugin, nil

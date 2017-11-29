@@ -391,6 +391,118 @@ updateCertificateRequest := &gokong.CertificateRequest{
 updatedCertificate, err := gokong.NewClient(gokong.NewDefaultConfig()).Certificates().UpdateById("1dc11281-30a6-4fb9-aec2-c6ff33445375", updateCertificateRequest)
 ```
 
+
+## SNIs
+Create an SNI ([for more information on the Sni Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#add-sni)):
+```go
+client := gokong.NewClient(gokong.NewDefaultConfig())
+
+certificateRequest := &gokong.CertificateRequest{
+  Cert: "public key --- 123",
+  Key:  "private key --- 111",
+}
+
+certificate, err := client.Certificates().Create(certificateRequest)
+
+snisRequest := &gokong.SnisRequest{
+  Name:             "example.com",
+  SslCertificateId: certificate.Id,
+}
+
+sni, err := client.Snis().Create(snisRequest)
+```
+
+Get an SNI by name:
+```go
+sni, err := client.Snis().GetByName("example.com")
+```
+
+List all SNIs:
+```
+snis, err := client.Snis().List()
+```
+
+Delete an SNI by name:
+```go
+err := client.Snis().DeleteByName("example.com")
+```
+
+Update an SNI by name:
+```go
+updateSniRequest := &gokong.SnisRequest{
+  Name:             "example.com",
+  SslCertificateId: "a9797703-3ae6-44a9-9f0a-4ebb5d7f301f",
+}
+
+updatedSni, err := client.Snis().UpdateByName("example.com", updateSniRequest)
+```
+
+## Upstreams
+Create an Upstream ([for more information on the Upstream Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#add-upstream)):
+```go
+upstreamRequest := &gokong.UpstreamRequest{
+  Name: "test-upstream",
+  Slots: 10,
+}
+
+createdUpstream, err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().Create(upstreamRequest)
+```
+
+Get an Upstream by id:
+```go
+upstream, err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().GetById("3705d962-caa8-4d0b-b291-4f0e85fe227a")
+```
+
+Get an Upstream by name:
+```go
+upstream, err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().GetByName("test-upstream")
+```
+
+List all Upstreams:
+```go
+upstreams, err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().List()
+```
+
+List all Upstreams with a filter:
+```go
+upstreams, err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().ListFiltered(&gokong.UpstreamFilter{Name:"test-upstream", Slots:10})
+```
+
+Delete an Upstream by id:
+```go
+err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().DeleteById("3a46b122-47ee-4c5d-b2de-49be84a672e6")
+```
+
+Delete an Upstream by name:
+```go
+err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().DeleteById("3a46b122-47ee-4c5d-b2de-49be84a672e6")
+```
+
+Delete an Upstream by id:
+```go
+err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().DeleteByName("test-upstream")
+```
+
+Update an Update by id:
+```
+updateUpstreamRequest := &gokong.UpstreamRequest{
+  Name: "test-upstream",
+  Slots: 10,
+}
+
+updatedUpstream, err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().UpdateById("3a46b122-47ee-4c5d-b2de-49be84a672e6", updateUpstreamRequest)
+```
+
+Update an Upstream by name:
+```go
+updateUpstreamRequest := &gokong.UpstreamRequest{
+  Name: "test-upstream",
+  Slots: 10,
+}
+
+updatedUpstream, err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().UpdateByName("test-upstream", updateUpstreamRequest)
+```
+
 # Contributing
 I would love to get contributions to the project so please feel free to submit a PR.  To setup your dev station you need go and docker installed.
 

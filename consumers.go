@@ -75,6 +75,10 @@ func (consumerClient *ConsumerClient) Create(consumerRequest *ConsumerRequest) (
 		return nil, fmt.Errorf("could not parse consumer creation response, error: %v", err)
 	}
 
+	if createdConsumer.Id == "" {
+		return nil, fmt.Errorf("could not create consumer, error: %v", body)
+	}
+
 	return createdConsumer, nil
 }
 
@@ -133,6 +137,10 @@ func (consumerClient *ConsumerClient) UpdateById(id string, consumerRequest *Con
 	err := json.Unmarshal([]byte(body), updatedConsumer)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse consumer update response, error: %v", err)
+	}
+
+	if updatedConsumer.Id == "" {
+		return nil, fmt.Errorf("could not update consumer, error: %v", body)
 	}
 
 	return updatedConsumer, nil

@@ -20,8 +20,17 @@ func Test_CertificatesGetById(t *testing.T) {
 
 	result, err := client.Certificates().GetById(createdCertificate.Id)
 
+	assert.NotNil(t, result)
 	assert.Equal(t, createdCertificate, result)
 
+}
+
+func Test_CertificatesGetNonExistentById(t *testing.T) {
+
+	result, err := NewClient(NewDefaultConfig()).Certificates().GetById("8df4d1ed-c973-4b9a-868d-3e67d5c417da")
+
+	assert.Nil(t, err)
+	assert.Nil(t, result)
 }
 
 func Test_CertificatesCreate(t *testing.T) {
@@ -34,8 +43,19 @@ func Test_CertificatesCreate(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
+	assert.True(t, result.Id != "")
 	assert.Equal(t, certificateRequest.Cert, result.Cert)
 	assert.Equal(t, certificateRequest.Key, result.Key)
+
+}
+
+func Test_CertificatesCreateInvalid(t *testing.T) {
+	certificateRequest := &CertificateRequest{}
+
+	result, err := NewClient(NewDefaultConfig()).Certificates().Create(certificateRequest)
+
+	assert.NotNil(t, err)
+	assert.Nil(t, result)
 
 }
 
@@ -57,6 +77,28 @@ func Test_CertificatesUpdateById(t *testing.T) {
 
 	assert.Equal(t, certificateRequest.Cert, result.Cert)
 	assert.Equal(t, certificateRequest.Key, result.Key)
+
+}
+
+func Test_CertificatesUpdateByIdInvalid(t *testing.T) {
+	certificateRequest := &CertificateRequest{
+		Cert: "public key-" + uuid.NewV4().String(),
+		Key:  "private key-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdCertificate, err := client.Certificates().Create(certificateRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdCertificate)
+
+	certificateRequest.Cert = ""
+	certificateRequest.Key = ""
+
+	result, err := client.Certificates().UpdateById(createdCertificate.Id, certificateRequest)
+
+	assert.NotNil(t, err)
+	assert.Nil(t, result)
 
 }
 

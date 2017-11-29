@@ -101,3 +101,10 @@ func (kongAdminClient *KongAdminClient) Snis() *SnisClient {
 		client: kongAdminClient.client,
 	}
 }
+
+func (kongAdminClient *KongAdminClient) Upstreams() *UpstreamClient {
+	return &UpstreamClient{
+		config: kongAdminClient.config,
+		client: kongAdminClient.client,
+	}
+}

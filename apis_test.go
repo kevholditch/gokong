@@ -64,6 +64,22 @@ func Test_ApisGetByName(t *testing.T) {
 
 }
 
+func Test_ApisGetNonExistentById(t *testing.T) {
+
+	result, err := NewClient(NewDefaultConfig()).Apis().GetById("e5da4f1e-6b96-4b3b-a1aa-bdd71779e403")
+
+	assert.Nil(t, err)
+	assert.Nil(t, result)
+}
+
+func Test_ApisGetNonExistentByName(t *testing.T) {
+
+	result, err := NewClient(NewDefaultConfig()).Apis().GetByName("9706f478-fd83-413c-b086-5608f7849db0")
+
+	assert.Nil(t, err)
+	assert.Nil(t, result)
+}
+
 func Test_ApisList(t *testing.T) {
 
 	apiRequest := &ApiRequest{
@@ -196,7 +212,7 @@ func Test_ApisListFilteredByName(t *testing.T) {
 
 	results, err := client.Apis().ListFiltered(&ApiFilter{Name: createdApi2.Name})
 
-	assert.True(t, results.Total == 1)
+	assert.Nil(t, err)
 	assert.True(t, len(results.Results) == 1)
 
 	result := results.Results[0]
@@ -397,6 +413,18 @@ func Test_ApisCreate(t *testing.T) {
 	assert.Equal(t, apiRequest.UpstreamReadTimeout, result.UpstreamReadTimeout)
 	assert.Equal(t, apiRequest.HttpsOnly, result.HttpsOnly)
 	assert.Equal(t, apiRequest.HttpIfTerminated, result.HttpIfTerminated)
+}
+
+func Test_ApisCreateInvalid(t *testing.T) {
+
+	apiRequest := &ApiRequest{
+		Name: "test-" + uuid.NewV4().String(),
+	}
+
+	result, err := NewClient(NewDefaultConfig()).Apis().Create(apiRequest)
+
+	assert.NotNil(t, err)
+	assert.Nil(t, result)
 }
 
 func Test_ApisCreateWithOnlyRequiredFields(t *testing.T) {

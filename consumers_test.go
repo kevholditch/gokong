@@ -24,6 +24,14 @@ func Test_ConsumersGetById(t *testing.T) {
 
 }
 
+func Test_ConsumersGetNonExistentById(t *testing.T) {
+
+	result, err := NewClient(NewDefaultConfig()).Consumers().GetById("7c924010-fca4-4314-8a3f-725cf749eac6")
+
+	assert.Nil(t, err)
+	assert.Nil(t, result)
+}
+
 func Test_ConsumersGetByUsername(t *testing.T) {
 	consumerRequest := &ConsumerRequest{
 		Username: "username-" + uuid.NewV4().String(),
@@ -42,6 +50,14 @@ func Test_ConsumersGetByUsername(t *testing.T) {
 
 }
 
+func Test_ConsumersGetNonExistentByUsername(t *testing.T) {
+
+	result, err := NewClient(NewDefaultConfig()).Consumers().GetById("408b5b13-b7c0-4ffd-afa1-aea957f00252")
+
+	assert.Nil(t, err)
+	assert.Nil(t, result)
+}
+
 func Test_ConsumersCreate(t *testing.T) {
 	consumerRequest := &ConsumerRequest{
 		Username: "username-" + uuid.NewV4().String(),
@@ -54,6 +70,16 @@ func Test_ConsumersCreate(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, consumerRequest.Username, result.Username)
 	assert.Equal(t, consumerRequest.CustomId, result.CustomId)
+
+}
+
+func Test_ConsumersCreateInvalid(t *testing.T) {
+	consumerRequest := &ConsumerRequest{}
+
+	result, err := NewClient(NewDefaultConfig()).Consumers().Create(consumerRequest)
+
+	assert.NotNil(t, err)
+	assert.Nil(t, result)
 
 }
 
@@ -304,6 +330,29 @@ func Test_ConsumersUpdateById(t *testing.T) {
 	assert.Equal(t, consumerRequest.Username, result.Username)
 }
 
+func Test_ConsumersUpdateByIdInvalid(t *testing.T) {
+
+	consumerRequest := &ConsumerRequest{
+		Username: "username-" + uuid.NewV4().String(),
+		CustomId: "test-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdConsumer)
+	assert.Equal(t, consumerRequest.CustomId, createdConsumer.CustomId)
+
+	consumerRequest.Username = ""
+	consumerRequest.CustomId = ""
+
+	result, err := client.Consumers().UpdateById(createdConsumer.Id, consumerRequest)
+
+	assert.NotNil(t, err)
+	assert.Nil(t, result)
+}
+
 func Test_ConsumersUpdateByUsername(t *testing.T) {
 
 	consumerRequest := &ConsumerRequest{
@@ -327,4 +376,27 @@ func Test_ConsumersUpdateByUsername(t *testing.T) {
 
 	assert.Equal(t, consumerRequest.CustomId, result.CustomId)
 	assert.Equal(t, consumerRequest.Username, result.Username)
+}
+
+func Test_ConsumersUpdateByUsernameInvalid(t *testing.T) {
+
+	consumerRequest := &ConsumerRequest{
+		Username: "username-" + uuid.NewV4().String(),
+		CustomId: "test-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdConsumer)
+	assert.Equal(t, consumerRequest.CustomId, createdConsumer.CustomId)
+
+	consumerRequest.Username = ""
+	consumerRequest.CustomId = ""
+
+	result, err := client.Consumers().UpdateByUsername(createdConsumer.Username, consumerRequest)
+
+	assert.NotNil(t, err)
+	assert.Nil(t, result)
 }

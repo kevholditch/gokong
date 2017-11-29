@@ -41,6 +41,10 @@ func (snisClient *SnisClient) Create(snisRequest *SnisRequest) (*Sni, error) {
 		return nil, fmt.Errorf("could not parse sni creation response, error: %v", err)
 	}
 
+	if sni.SslCertificateId == "" {
+		return nil, fmt.Errorf("could not create sni, error: %v", body)
+	}
+
 	return sni, nil
 }
 
@@ -101,6 +105,10 @@ func (snisClient *SnisClient) UpdateByName(name string, snisRequest *SnisRequest
 	err := json.Unmarshal([]byte(body), updatedSni)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse sni update response, error: %v", err)
+	}
+
+	if updatedSni.SslCertificateId == "" {
+		return nil, fmt.Errorf("could not update sni, error: %v", body)
 	}
 
 	return updatedSni, nil
