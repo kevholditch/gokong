@@ -4,5 +4,7 @@ go:
 services:
   - docker
 env:
-  - KONG_VERSION=0.11
-  - KONG_VERSION=0.11.1
+  matrix:
+    - KONG_VERSION=0.11
+    - KONG_VERSION=0.11.1
+    - KONG_VERSION=0.11.2
