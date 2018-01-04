@@ -3,6 +3,7 @@ package gokong
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -17,7 +18,7 @@ type UpstreamRequest struct {
 }
 
 type Upstream struct {
-	Id        string `json:"id,omitempty"`
+	ID        string `json:"id,omitempty"`
 	Name      string `json:"name,omitempty"`
 	Slots     int    `json:"slots,omitempty"`
 	OrderList []int  `json:"orderlist,omitempty"`
@@ -31,7 +32,7 @@ type Upstreams struct {
 }
 
 type UpstreamFilter struct {
-	Id     string `url:"id,omitempty"`
+	ID     string `url:"id,omitempty"`
 	Name   string `url:"name,omitempty"`
 	Slots  int    `url:"slots,omitempty"`
 	Size   int    `url:"size,omitempty"`
@@ -41,10 +42,10 @@ type UpstreamFilter struct {
 const UpstreamsPath = "/upstreams/"
 
 func (upstreamClient *UpstreamClient) GetByName(name string) (*Upstream, error) {
-	return upstreamClient.GetById(name)
+	return upstreamClient.GetByID(name)
 }
 
-func (upstreamClient *UpstreamClient) GetById(id string) (*Upstream, error) {
+func (upstreamClient *UpstreamClient) GetByID(id string) (*Upstream, error) {
 
 	_, body, errs := gorequest.New().Get(upstreamClient.config.HostAddress + UpstreamsPath + id).End()
 	if errs != nil {
@@ -57,7 +58,7 @@ func (upstreamClient *UpstreamClient) GetById(id string) (*Upstream, error) {
 		return nil, fmt.Errorf("could not parse upstream get response, error: %v", err)
 	}
 
-	if upstream.Id == "" {
+	if upstream.ID == "" {
 		return nil, nil
 	}
 
@@ -77,7 +78,7 @@ func (upstreamClient *UpstreamClient) Create(upstreamRequest *UpstreamRequest) (
 		return nil, fmt.Errorf("could not parse upstream creation response, error: %v", err)
 	}
 
-	if createdUpstream.Id == "" {
+	if createdUpstream.ID == "" {
 		return nil, fmt.Errorf("could not create update, error: %v", body)
 	}
 
@@ -85,10 +86,10 @@ func (upstreamClient *UpstreamClient) Create(upstreamRequest *UpstreamRequest) (
 }
 
 func (upstreamClient *UpstreamClient) DeleteByName(name string) error {
-	return upstreamClient.DeleteById(name)
+	return upstreamClient.DeleteByID(name)
 }
 
-func (upstreamClient *UpstreamClient) DeleteById(id string) error {
+func (upstreamClient *UpstreamClient) DeleteByID(id string) error {
 
 	res, _, errs := gorequest.New().Delete(upstreamClient.config.HostAddress + UpstreamsPath + id).End()
 	if errs != nil {
@@ -125,10 +126,10 @@ func (upstreamClient *UpstreamClient) ListFiltered(filter *UpstreamFilter) (*Ups
 }
 
 func (upstreamClient *UpstreamClient) UpdateByName(name string, upstreamRequest *UpstreamRequest) (*Upstream, error) {
-	return upstreamClient.UpdateById(name, upstreamRequest)
+	return upstreamClient.UpdateByID(name, upstreamRequest)
 }
 
-func (upstreamClient *UpstreamClient) UpdateById(id string, upstreamRequest *UpstreamRequest) (*Upstream, error) {
+func (upstreamClient *UpstreamClient) UpdateByID(id string, upstreamRequest *UpstreamRequest) (*Upstream, error) {
 
 	_, body, errs := gorequest.New().Patch(upstreamClient.config.HostAddress + UpstreamsPath + id).Send(upstreamRequest).End()
 	if errs != nil {
@@ -141,7 +142,7 @@ func (upstreamClient *UpstreamClient) UpdateById(id string, upstreamRequest *Ups
 		return nil, fmt.Errorf("could not parse upstream update response, error: %v", err)
 	}
 
-	if updatedUpstream.Id == "" {
+	if updatedUpstream.ID == "" {
 		return nil, fmt.Errorf("could not update upstream, error: %v", body)
 	}
 

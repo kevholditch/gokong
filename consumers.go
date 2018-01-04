@@ -3,6 +3,7 @@ package gokong
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -12,12 +13,12 @@ type ConsumerClient struct {
 
 type ConsumerRequest struct {
 	Username string `json:"username,omitempty"`
-	CustomId string `json:"custom_id,omitempty"`
+	CustomID string `json:"custom_id,omitempty"`
 }
 
 type Consumer struct {
-	Id       string `json:"id,omitempty"`
-	CustomId string `json:"custom_id,omitempty"`
+	ID       string `json:"id,omitempty"`
+	CustomID string `json:"custom_id,omitempty"`
 	Username string `json:"username,omitempty"`
 }
 
@@ -28,8 +29,8 @@ type Consumers struct {
 }
 
 type ConsumerFilter struct {
-	Id       string `url:"id,omitempty"`
-	CustomId string `url:"custom_id,omitempty"`
+	ID       string `url:"id,omitempty"`
+	CustomID string `url:"custom_id,omitempty"`
 	Username string `url:"username,omitempty"`
 	Size     int    `url:"size,omitempty"`
 	Offset   int    `url:"offset,omitempty"`
@@ -38,10 +39,10 @@ type ConsumerFilter struct {
 const ConsumersPath = "/consumers/"
 
 func (consumerClient *ConsumerClient) GetByUsername(username string) (*Consumer, error) {
-	return consumerClient.GetById(username)
+	return consumerClient.GetByID(username)
 }
 
-func (consumerClient *ConsumerClient) GetById(id string) (*Consumer, error) {
+func (consumerClient *ConsumerClient) GetByID(id string) (*Consumer, error) {
 
 	_, body, errs := gorequest.New().Get(consumerClient.config.HostAddress + ConsumersPath + id).End()
 	if errs != nil {
@@ -54,7 +55,7 @@ func (consumerClient *ConsumerClient) GetById(id string) (*Consumer, error) {
 		return nil, fmt.Errorf("could not parse consumer get response, error: %v", err)
 	}
 
-	if consumer.Id == "" {
+	if consumer.ID == "" {
 		return nil, nil
 	}
 
@@ -74,7 +75,7 @@ func (consumerClient *ConsumerClient) Create(consumerRequest *ConsumerRequest) (
 		return nil, fmt.Errorf("could not parse consumer creation response, error: %v", err)
 	}
 
-	if createdConsumer.Id == "" {
+	if createdConsumer.ID == "" {
 		return nil, fmt.Errorf("could not create consumer, error: %v", body)
 	}
 
@@ -108,10 +109,10 @@ func (consumerClient *ConsumerClient) ListFiltered(filter *ConsumerFilter) (*Con
 }
 
 func (consumerClient *ConsumerClient) DeleteByUsername(username string) error {
-	return consumerClient.DeleteById(username)
+	return consumerClient.DeleteByID(username)
 }
 
-func (consumerClient *ConsumerClient) DeleteById(id string) error {
+func (consumerClient *ConsumerClient) DeleteByID(id string) error {
 
 	res, _, errs := gorequest.New().Delete(consumerClient.config.HostAddress + ConsumersPath + id).End()
 	if errs != nil {
@@ -122,10 +123,10 @@ func (consumerClient *ConsumerClient) DeleteById(id string) error {
 }
 
 func (consumerClient *ConsumerClient) UpdateByUsername(username string, consumerRequest *ConsumerRequest) (*Consumer, error) {
-	return consumerClient.UpdateById(username, consumerRequest)
+	return consumerClient.UpdateByID(username, consumerRequest)
 }
 
-func (consumerClient *ConsumerClient) UpdateById(id string, consumerRequest *ConsumerRequest) (*Consumer, error) {
+func (consumerClient *ConsumerClient) UpdateByID(id string, consumerRequest *ConsumerRequest) (*Consumer, error) {
 
 	_, body, errs := gorequest.New().Patch(consumerClient.config.HostAddress + ConsumersPath + id).Send(consumerRequest).End()
 	if errs != nil {
@@ -138,7 +139,7 @@ func (consumerClient *ConsumerClient) UpdateById(id string, consumerRequest *Con
 		return nil, fmt.Errorf("could not parse consumer update response, error: %v", err)
 	}
 
-	if updatedConsumer.Id == "" {
+	if updatedConsumer.ID == "" {
 		return nil, fmt.Errorf("could not update consumer, error: %v", body)
 	}
 

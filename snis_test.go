@@ -1,9 +1,10 @@
 package gokong
 
 import (
+	"testing"
+
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_SnisCreate(t *testing.T) {
@@ -21,7 +22,7 @@ func Test_SnisCreate(t *testing.T) {
 
 	snisRequest := &SnisRequest{
 		Name:             "example.com",
-		SslCertificateId: certificate.Id,
+		SslCertificateID: certificate.ID,
 	}
 
 	result, err := client.Snis().Create(snisRequest)
@@ -29,7 +30,7 @@ func Test_SnisCreate(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, snisRequest.Name, result.Name)
-	assert.Equal(t, snisRequest.SslCertificateId, result.SslCertificateId)
+	assert.Equal(t, snisRequest.SslCertificateID, result.SslCertificateID)
 }
 
 func Test_SnisCreateInvalid(t *testing.T) {
@@ -38,7 +39,7 @@ func Test_SnisCreateInvalid(t *testing.T) {
 
 	snisRequest := &SnisRequest{
 		Name:             "example.com",
-		SslCertificateId: "123",
+		SslCertificateID: "123",
 	}
 
 	result, err := client.Snis().Create(snisRequest)
@@ -61,7 +62,7 @@ func Test_SnisGetByName(t *testing.T) {
 
 	snisRequest := &SnisRequest{
 		Name:             uuid.NewV4().String() + ".com",
-		SslCertificateId: certificate.Id,
+		SslCertificateID: certificate.ID,
 	}
 
 	sni, err := client.Snis().Create(snisRequest)
@@ -74,12 +75,12 @@ func Test_SnisGetByName(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, sni.Name, result.Name)
-	assert.Equal(t, sni.SslCertificateId, result.SslCertificateId)
+	assert.Equal(t, sni.SslCertificateID, result.SslCertificateID)
 }
 
 func Test_SnisGetNonExistentByName(t *testing.T) {
 
-	result, err := NewClient(NewDefaultConfig()).Apis().GetById("dd1de132-ede6-4534-bd65-57bcf0beba4b")
+	result, err := NewClient(NewDefaultConfig()).APIs().GetByID("dd1de132-ede6-4534-bd65-57bcf0beba4b")
 
 	assert.Nil(t, err)
 	assert.Nil(t, result)
@@ -100,7 +101,7 @@ func Test_SnisList(t *testing.T) {
 
 	snisRequest := &SnisRequest{
 		Name:             uuid.NewV4().String() + ".com",
-		SslCertificateId: certificate.Id,
+		SslCertificateID: certificate.ID,
 	}
 
 	sni, err := client.Snis().Create(snisRequest)
@@ -131,7 +132,7 @@ func Test_SnisDeleteByName(t *testing.T) {
 
 	snisRequest := &SnisRequest{
 		Name:             uuid.NewV4().String() + ".com",
-		SslCertificateId: certificate.Id,
+		SslCertificateID: certificate.ID,
 	}
 
 	sni, err := client.Snis().Create(snisRequest)
@@ -164,7 +165,7 @@ func Test_SnisUpdateByName(t *testing.T) {
 
 	snisRequest := &SnisRequest{
 		Name:             uuid.NewV4().String() + ".com",
-		SslCertificateId: certificate.Id,
+		SslCertificateID: certificate.ID,
 	}
 
 	sni, err := client.Snis().Create(snisRequest)
@@ -180,14 +181,14 @@ func Test_SnisUpdateByName(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, certificate2)
 
-	snisRequest.SslCertificateId = certificate2.Id
+	snisRequest.SslCertificateID = certificate2.ID
 
 	result, err := client.Snis().UpdateByName(snisRequest.Name, snisRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, snisRequest.Name, result.Name)
-	assert.Equal(t, certificate2.Id, result.SslCertificateId)
+	assert.Equal(t, certificate2.ID, result.SslCertificateID)
 
 }
 
@@ -206,14 +207,14 @@ func Test_SnisUpdateByNameInvalid(t *testing.T) {
 
 	snisRequest := &SnisRequest{
 		Name:             uuid.NewV4().String() + ".com",
-		SslCertificateId: certificate.Id,
+		SslCertificateID: certificate.ID,
 	}
 
 	sni, err := client.Snis().Create(snisRequest)
 	assert.Nil(t, err)
 	assert.NotNil(t, sni)
 
-	snisRequest.SslCertificateId = "234"
+	snisRequest.SslCertificateID = "234"
 
 	result, err := client.Snis().UpdateByName(snisRequest.Name, snisRequest)
 
