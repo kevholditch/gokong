@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gideonw/gokong/containers"
+	"github.com/kevholditch/gokong/containers"
 	"github.com/stretchr/testify/assert"
 )
 
