@@ -3,6 +3,7 @@ package gokong
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -16,7 +17,7 @@ type CertificateRequest struct {
 }
 
 type Certificate struct {
-	Id   string `json:"id,omitempty"`
+	ID   string `json:"id,omitempty"`
 	Cert string `json:"cert,omitempty"`
 	Key  string `json:"key,omitempty"`
 }
@@ -28,7 +29,7 @@ type Certificates struct {
 
 const CertificatesPath = "/certificates/"
 
-func (certificateClient *CertificateClient) GetById(id string) (*Certificate, error) {
+func (certificateClient *CertificateClient) GetByID(id string) (*Certificate, error) {
 
 	_, body, errs := gorequest.New().Get(certificateClient.config.HostAddress + CertificatesPath + id).End()
 	if errs != nil {
@@ -41,7 +42,7 @@ func (certificateClient *CertificateClient) GetById(id string) (*Certificate, er
 		return nil, fmt.Errorf("could not parse certificate get response, error: %v", err)
 	}
 
-	if certificate.Id == "" {
+	if certificate.ID == "" {
 		return nil, nil
 	}
 
@@ -61,14 +62,14 @@ func (certificateClient *CertificateClient) Create(certificateRequest *Certifica
 		return nil, fmt.Errorf("could not parse certificate creation response, error: %v", err)
 	}
 
-	if createdCertificate.Id == "" {
+	if createdCertificate.ID == "" {
 		return nil, fmt.Errorf("could not create certificate, error: %v", body)
 	}
 
 	return createdCertificate, nil
 }
 
-func (certificateClient *CertificateClient) DeleteById(id string) error {
+func (certificateClient *CertificateClient) DeleteByID(id string) error {
 
 	res, _, errs := gorequest.New().Delete(certificateClient.config.HostAddress + CertificatesPath + id).End()
 	if errs != nil {
@@ -94,7 +95,7 @@ func (certificateClient *CertificateClient) List() (*Certificates, error) {
 	return certificates, nil
 }
 
-func (certificateClient *CertificateClient) UpdateById(id string, certificateRequest *CertificateRequest) (*Certificate, error) {
+func (certificateClient *CertificateClient) UpdateByID(id string, certificateRequest *CertificateRequest) (*Certificate, error) {
 
 	_, body, errs := gorequest.New().Patch(certificateClient.config.HostAddress + CertificatesPath + id).Send(certificateRequest).End()
 	if errs != nil {
@@ -107,7 +108,7 @@ func (certificateClient *CertificateClient) UpdateById(id string, certificateReq
 		return nil, fmt.Errorf("could not parse certificate update response, error: %v", err)
 	}
 
-	if updatedCertificate.Id == "" {
+	if updatedCertificate.ID == "" {
 		return nil, fmt.Errorf("could not update certificate, error: %v", body)
 	}
 

@@ -1,12 +1,13 @@
 package gokong
 
 import (
+	"testing"
+
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func Test_CertificatesGetById(t *testing.T) {
+func Test_CertificatesGetByID(t *testing.T) {
 	certificateRequest := &CertificateRequest{
 		Cert: "public key-" + uuid.NewV4().String(),
 		Key:  "private key-" + uuid.NewV4().String(),
@@ -18,16 +19,16 @@ func Test_CertificatesGetById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdCertificate)
 
-	result, err := client.Certificates().GetById(createdCertificate.Id)
+	result, err := client.Certificates().GetByID(createdCertificate.ID)
 
 	assert.NotNil(t, result)
 	assert.Equal(t, createdCertificate, result)
 
 }
 
-func Test_CertificatesGetNonExistentById(t *testing.T) {
+func Test_CertificatesGetNonExistentByID(t *testing.T) {
 
-	result, err := NewClient(NewDefaultConfig()).Certificates().GetById("8df4d1ed-c973-4b9a-868d-3e67d5c417da")
+	result, err := NewClient(NewDefaultConfig()).Certificates().GetByID("8df4d1ed-c973-4b9a-868d-3e67d5c417da")
 
 	assert.Nil(t, err)
 	assert.Nil(t, result)
@@ -43,7 +44,7 @@ func Test_CertificatesCreate(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.True(t, result.Id != "")
+	assert.True(t, result.ID != "")
 	assert.Equal(t, certificateRequest.Cert, result.Cert)
 	assert.Equal(t, certificateRequest.Key, result.Key)
 
@@ -59,7 +60,7 @@ func Test_CertificatesCreateInvalid(t *testing.T) {
 
 }
 
-func Test_CertificatesUpdateById(t *testing.T) {
+func Test_CertificatesUpdateByID(t *testing.T) {
 	certificateRequest := &CertificateRequest{
 		Cert: "public key-" + uuid.NewV4().String(),
 		Key:  "private key-" + uuid.NewV4().String(),
@@ -73,14 +74,14 @@ func Test_CertificatesUpdateById(t *testing.T) {
 
 	certificateRequest.Cert = "public key-" + uuid.NewV4().String()
 
-	result, err := client.Certificates().UpdateById(createdCertificate.Id, certificateRequest)
+	result, err := client.Certificates().UpdateByID(createdCertificate.ID, certificateRequest)
 
 	assert.Equal(t, certificateRequest.Cert, result.Cert)
 	assert.Equal(t, certificateRequest.Key, result.Key)
 
 }
 
-func Test_CertificatesUpdateByIdInvalid(t *testing.T) {
+func Test_CertificatesUpdateByIDInvalid(t *testing.T) {
 	certificateRequest := &CertificateRequest{
 		Cert: "public key-" + uuid.NewV4().String(),
 		Key:  "private key-" + uuid.NewV4().String(),
@@ -95,14 +96,14 @@ func Test_CertificatesUpdateByIdInvalid(t *testing.T) {
 	certificateRequest.Cert = ""
 	certificateRequest.Key = ""
 
-	result, err := client.Certificates().UpdateById(createdCertificate.Id, certificateRequest)
+	result, err := client.Certificates().UpdateByID(createdCertificate.ID, certificateRequest)
 
 	assert.NotNil(t, err)
 	assert.Nil(t, result)
 
 }
 
-func Test_CertificatesDeleteById(t *testing.T) {
+func Test_CertificatesDeleteByID(t *testing.T) {
 	certificateRequest := &CertificateRequest{
 		Cert: "public key-" + uuid.NewV4().String(),
 		Key:  "private key-" + uuid.NewV4().String(),
@@ -114,11 +115,11 @@ func Test_CertificatesDeleteById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdCertificate)
 
-	err = client.Certificates().DeleteById(createdCertificate.Id)
+	err = client.Certificates().DeleteByID(createdCertificate.ID)
 
 	assert.Nil(t, err)
 
-	deletedCertificate, err := client.Certificates().GetById(createdCertificate.Id)
+	deletedCertificate, err := client.Certificates().GetByID(createdCertificate.ID)
 
 	assert.Nil(t, err)
 	assert.Nil(t, deletedCertificate)

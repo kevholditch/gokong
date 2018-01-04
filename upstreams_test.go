@@ -1,12 +1,13 @@
 package gokong
 
 import (
+	"testing"
+
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func Test_UpstreamsGetById(t *testing.T) {
+func Test_UpstreamsGetByID(t *testing.T) {
 
 	upstreamRequest := &UpstreamRequest{
 		Name:  "upstream-" + uuid.NewV4().String(),
@@ -19,7 +20,7 @@ func Test_UpstreamsGetById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdUpstream)
 
-	result, err := client.Upstreams().GetById(createdUpstream.Id)
+	result, err := client.Upstreams().GetByID(createdUpstream.ID)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
@@ -48,16 +49,16 @@ func Test_UpstreamsGetByName(t *testing.T) {
 
 }
 
-func Test_UpstreamsGetByIdForNonExistentUpstreamById(t *testing.T) {
+func Test_UpstreamsGetByIDForNonExistentUpstreamByID(t *testing.T) {
 
-	result, err := NewClient(NewDefaultConfig()).Upstreams().GetById(uuid.NewV4().String())
+	result, err := NewClient(NewDefaultConfig()).Upstreams().GetByID(uuid.NewV4().String())
 
 	assert.Nil(t, err)
 	assert.Nil(t, result)
 
 }
 
-func Test_UpstreamsGetByIdForNonExistentUpstreamByName(t *testing.T) {
+func Test_UpstreamsGetByIDForNonExistentUpstreamByName(t *testing.T) {
 
 	result, err := NewClient(NewDefaultConfig()).Upstreams().GetByName(uuid.NewV4().String())
 
@@ -77,7 +78,7 @@ func Test_UpstreamsCreate(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.True(t, result.Id != "")
+	assert.True(t, result.ID != "")
 	assert.Equal(t, upstreamRequest.Name, result.Name)
 	assert.Equal(t, upstreamRequest.Slots, result.Slots)
 	assert.Equal(t, upstreamRequest.OrderList, result.OrderList)
@@ -118,7 +119,7 @@ func Test_UpstreamsList(t *testing.T) {
 
 }
 
-func Test_UpstreamsListFilteredById(t *testing.T) {
+func Test_UpstreamsListFilteredByID(t *testing.T) {
 	client := NewClient(NewDefaultConfig())
 
 	upstreamRequest := &UpstreamRequest{
@@ -138,7 +139,7 @@ func Test_UpstreamsListFilteredById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdUpstream2)
 
-	results, err := client.Upstreams().ListFiltered(&UpstreamFilter{Id: createdUpstream.Id})
+	results, err := client.Upstreams().ListFiltered(&UpstreamFilter{ID: createdUpstream.ID})
 
 	assert.Nil(t, err)
 	assert.NotNil(t, results)
@@ -227,7 +228,7 @@ func Test_UpstreamsListFilteredBySize(t *testing.T) {
 
 }
 
-func Test_UpstreamsDeleteById(t *testing.T) {
+func Test_UpstreamsDeleteByID(t *testing.T) {
 
 	client := NewClient(NewDefaultConfig())
 
@@ -242,10 +243,10 @@ func Test_UpstreamsDeleteById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdUpstream)
 
-	err = client.Upstreams().DeleteById(createdUpstream.Id)
+	err = client.Upstreams().DeleteByID(createdUpstream.ID)
 	assert.Nil(t, err)
 
-	result, err := client.Upstreams().GetById(createdUpstream.Id)
+	result, err := client.Upstreams().GetByID(createdUpstream.ID)
 	assert.Nil(t, err)
 	assert.Nil(t, result)
 
@@ -269,13 +270,13 @@ func Test_UpstreamsDeleteByName(t *testing.T) {
 	err = client.Upstreams().DeleteByName(createdUpstream.Name)
 	assert.Nil(t, err)
 
-	result, err := client.Upstreams().GetById(createdUpstream.Id)
+	result, err := client.Upstreams().GetByID(createdUpstream.ID)
 	assert.Nil(t, err)
 	assert.Nil(t, result)
 
 }
 
-func Test_UpstreamsUpdateById(t *testing.T) {
+func Test_UpstreamsUpdateByID(t *testing.T) {
 
 	client := NewClient(NewDefaultConfig())
 
@@ -293,7 +294,7 @@ func Test_UpstreamsUpdateById(t *testing.T) {
 	upstreamRequest.Slots = 11
 	upstreamRequest.OrderList = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
 
-	result, err := client.Upstreams().UpdateById(createdUpstream.Id, upstreamRequest)
+	result, err := client.Upstreams().UpdateByID(createdUpstream.ID, upstreamRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
@@ -331,7 +332,7 @@ func Test_UpstreamsUpdateByName(t *testing.T) {
 
 }
 
-func Test_UpstreamsUpdateByIdInvalid(t *testing.T) {
+func Test_UpstreamsUpdateByIDInvalid(t *testing.T) {
 
 	client := NewClient(NewDefaultConfig())
 
@@ -348,7 +349,7 @@ func Test_UpstreamsUpdateByIdInvalid(t *testing.T) {
 
 	upstreamRequest.Slots = 2
 
-	result, err := client.Upstreams().UpdateById(createdUpstream.Id, upstreamRequest)
+	result, err := client.Upstreams().UpdateByID(createdUpstream.ID, upstreamRequest)
 
 	assert.NotNil(t, err)
 	assert.Nil(t, result)

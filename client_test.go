@@ -1,11 +1,12 @@
 package gokong
 
 import (
-	"github.com/kevholditch/gokong/containers"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
 	"testing"
+
+	"github.com/kevholditch/gokong/containers"
+	"github.com/stretchr/testify/assert"
 )
 
 const defaultKongVersion = "0.11"

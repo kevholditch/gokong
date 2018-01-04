@@ -1,11 +1,12 @@
 package gokong
 
 import (
-	"github.com/google/go-querystring/query"
 	"net/url"
 	"os"
 	"reflect"
 	"strings"
+
+	"github.com/google/go-querystring/query"
 )
 
 const EnvKongAdminHostAddress = "KONG_ADMIN_ADDR"
@@ -18,20 +19,20 @@ type Config struct {
 	HostAddress string
 }
 
-func addQueryString(currentUrl string, filter interface{}) (string, error) {
+func addQueryString(currentURL string, filter interface{}) (string, error) {
 	v := reflect.ValueOf(filter)
 	if v.Kind() == reflect.Ptr && v.IsNil() {
-		return currentUrl, nil
+		return currentURL, nil
 	}
 
-	u, err := url.Parse(currentUrl)
+	u, err := url.Parse(currentURL)
 	if err != nil {
-		return currentUrl, err
+		return currentURL, err
 	}
 
 	qs, err := query.Values(filter)
 	if err != nil {
-		return currentUrl, err
+		return currentURL, err
 	}
 
 	u.RawQuery = qs.Encode()
@@ -63,8 +64,8 @@ func (kongAdminClient *KongAdminClient) Status() *StatusClient {
 
 }
 
-func (kongAdminClient *KongAdminClient) Apis() *ApiClient {
-	return &ApiClient{
+func (kongAdminClient *KongAdminClient) APIs() *APIClient {
+	return &APIClient{
 		config: kongAdminClient.config,
 	}
 }
