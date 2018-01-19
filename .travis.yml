@@ -8,3 +8,4 @@ env:
     - KONG_VERSION=0.11
     - KONG_VERSION=0.11.1
     - KONG_VERSION=0.11.2
+    - KONG_VERSION=0.12
