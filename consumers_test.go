@@ -400,3 +400,46 @@ func Test_ConsumersUpdateByUsernameInvalid(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Nil(t, result)
 }
+
+func Test_PluginConfig(t *testing.T) {
+	consumerRequest := &ConsumerRequest{
+		Username: "username-" + uuid.NewV4().String(),
+		CustomId: "test-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdConsumer)
+
+	pluginRequest := &PluginRequest{
+		Name: "jwt",
+		Config: map[string]interface{}{
+			"claims_to_verify": "exp",
+		},
+	}
+
+	plugin, err := client.Plugins().Create(pluginRequest)
+	assert.Nil(t, err)
+	assert.NotNil(t, plugin)
+
+	createdPluginConfig, err := client.Consumers().CreatePluginConfig(createdConsumer.Id, "jwt", "{\"key\": \"a36c3049b36249a3c9f8891cb127243c\"}")
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPluginConfig)
+	assert.NotEqual(t, "", createdPluginConfig.Id)
+	assert.Contains(t, createdPluginConfig.Body, "a36c3049b36249a3c9f8891cb127243c")
+
+	retrievedPluginConfig, err := client.Consumers().GetPluginConfig(createdConsumer.Id, "jwt", createdPluginConfig.Id)
+
+	assert.Nil(t, err)
+	assert.Equal(t, createdPluginConfig, retrievedPluginConfig)
+
+	err = client.Consumers().DeletePluginConfig(createdConsumer.Id, "jwt", createdPluginConfig.Id)
+	assert.Nil(t, err)
+
+	retrievedPluginConfig, err = client.Consumers().GetPluginConfig(createdConsumer.Id, "jwt", createdPluginConfig.Id)
+	assert.Nil(t, retrievedPluginConfig)
+
+}
