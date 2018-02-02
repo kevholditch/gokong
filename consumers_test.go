@@ -401,7 +401,7 @@ func Test_ConsumersUpdateByUsernameInvalid(t *testing.T) {
 	assert.Nil(t, result)
 }
 
-func Test_PluginConfig(t *testing.T) {
+func Test_ConsumersPluginConfig(t *testing.T) {
 	consumerRequest := &ConsumerRequest{
 		Username: "username-" + uuid.NewV4().String(),
 		CustomId: "test-" + uuid.NewV4().String(),
@@ -440,6 +440,8 @@ func Test_PluginConfig(t *testing.T) {
 	assert.Nil(t, err)
 
 	retrievedPluginConfig, err = client.Consumers().GetPluginConfig(createdConsumer.Id, "jwt", createdPluginConfig.Id)
+
 	assert.Nil(t, retrievedPluginConfig)
+	assert.Nil(t, err)
 
 }
