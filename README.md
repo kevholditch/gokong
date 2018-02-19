@@ -13,8 +13,6 @@ As per [travis build](https://travis-ci.org/kevholditch/gokong):
 KONG_VERSION=0.11
 KONG_VERSION=0.11.1
 KONG_VERSION=0.11.2
-KONG_VERSION=0.12
-KONG_VERSION=0.12.1
 ```
 
 ## Importing
