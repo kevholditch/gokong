@@ -7,6 +7,16 @@ A kong go client fully tested with no mocks!!
 ## GoKong
 GoKong is a easy to use api client for [kong](https://getkong.org/).  The difference with the gokong library is all of its tests are written against a real running kong running inside a docker container, yep that's right you won't see a horrible mock anywhere!!
 
+## Supported Kong Versions
+As per [travis build](https://travis-ci.org/kevholditch/gokong):
+```
+KONG_VERSION=0.11
+KONG_VERSION=0.11.1
+KONG_VERSION=0.11.2
+KONG_VERSION=0.12
+KONG_VERSION=0.12.1
+```
+
 ## Importing
 
 To add gokong via `go get`:

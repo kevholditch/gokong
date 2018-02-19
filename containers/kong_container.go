@@ -19,6 +19,7 @@ func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer, kongVe
 
 	envVars := []string{
 		"KONG_DATABASE=postgres",
+		"KONG_ADMIN_LISTEN=0.0.0.0:8001",
 		fmt.Sprintf("KONG_PG_HOST=%s", postgres.Name),
 		fmt.Sprintf("KONG_PG_USER=%s", postgres.DatabaseUser),
 		fmt.Sprintf("KONG_PG_PASSWORD=%s", postgres.Password),
