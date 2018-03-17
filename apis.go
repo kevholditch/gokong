@@ -66,10 +66,7 @@ func (apiClient *ApiClient) GetByName(name string) (*Api, error) {
 }
 
 func (apiClient *ApiClient) GetById(id string) (*Api, error) {
-	_, body, errs := NewRequest(apiClient.config).
-		Get(apiClient.config.HostAddress+ApisPath+id).
-		Set("If-None-Match", `W/"wyzzy"`).
-		End()
+	_, body, errs := NewRequest(apiClient.config).Get(apiClient.config.HostAddress+ApisPath+id).Set("If-None-Match", `W/"wyzzy"`).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get api, error: %v", errs)
 	}
