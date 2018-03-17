@@ -67,7 +67,7 @@ func (apiClient *ApiClient) GetByName(name string) (*Api, error) {
 
 func (apiClient *ApiClient) GetById(id string) (*Api, error) {
 	_, body, errs := NewRequest(apiClient.config).
-		Get(apiClient.config.HostAddress + ApisPath + id).
+		Get(apiClient.config.HostAddress+ApisPath+id).
 		Set("If-None-Match", `W/"wyzzy"`).
 		End()
 	if errs != nil {

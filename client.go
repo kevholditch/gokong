@@ -17,9 +17,9 @@ type KongAdminClient struct {
 }
 
 type Config struct {
-	HostAddress string;
-	Username string;
-	Password string;
+	HostAddress string
+	Username    string
+	Password    string
 }
 
 func addQueryString(currentUrl string, filter interface{}) (string, error) {
@@ -45,8 +45,8 @@ func addQueryString(currentUrl string, filter interface{}) (string, error) {
 func NewDefaultConfig() *Config {
 	config := &Config{
 		HostAddress: "http://localhost:8001",
-		Username: "",
-		Password: "",
+		Username:    "",
+		Password:    "",
 	}
 
 	if os.Getenv(EnvKongAdminHostAddress) != "" {

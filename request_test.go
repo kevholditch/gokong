@@ -2,16 +2,16 @@ package gokong
 
 import "reflect"
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
 	"github.com/parnurzeal/gorequest"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestNewRequest(t *testing.T) {
 	config := &Config{
 		HostAddress: "http://localhost:8001",
-		Username: "",
-		Password: "",
+		Username:    "",
+		Password:    "",
 	}
 
 	current := reflect.TypeOf(NewRequest(config))
@@ -22,8 +22,8 @@ func TestNewRequest(t *testing.T) {
 func TestNewRequestBasicAuth(t *testing.T) {
 	config := &Config{
 		HostAddress: "http://localhost:8001",
-		Username: "AnTestUser",
-		Password: "AnyPassword",
+		Username:    "AnTestUser",
+		Password:    "AnyPassword",
 	}
 
 	current := NewRequest(config)
