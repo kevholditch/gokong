@@ -15,6 +15,8 @@ func Test_Newclient(t *testing.T) {
 
 	assert.NotNil(t, result)
 	assert.Equal(t, os.Getenv(EnvKongAdminHostAddress), result.config.HostAddress)
+	assert.Equal(t, os.Getenv(EnvKongAdminUsername), result.config.Username)
+	assert.Equal(t, os.Getenv(EnvKongAdminPassword), result.config.Password)
 }
 
 func TestMain(m *testing.M) {

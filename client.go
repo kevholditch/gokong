@@ -9,13 +9,17 @@ import (
 )
 
 const EnvKongAdminHostAddress = "KONG_ADMIN_ADDR"
+const EnvKongAdminUsername = "KONG_ADMIN_USER"
+const EnvKongAdminPassword = "KONG_ADMIN_PASS"
 
 type KongAdminClient struct {
 	config *Config
 }
 
 type Config struct {
-	HostAddress string
+	HostAddress string;
+	Username string;
+	Password string;
 }
 
 func addQueryString(currentUrl string, filter interface{}) (string, error) {
@@ -41,10 +45,18 @@ func addQueryString(currentUrl string, filter interface{}) (string, error) {
 func NewDefaultConfig() *Config {
 	config := &Config{
 		HostAddress: "http://localhost:8001",
+		Username: "",
+		Password: "",
 	}
 
 	if os.Getenv(EnvKongAdminHostAddress) != "" {
 		config.HostAddress = strings.TrimRight(os.Getenv(EnvKongAdminHostAddress), "/")
+	}
+	if os.Getenv(EnvKongAdminHostAddress) != "" {
+		config.Username = os.Getenv(EnvKongAdminUsername)
+	}
+	if os.Getenv(EnvKongAdminPassword) != "" {
+		config.Password = os.Getenv(EnvKongAdminPassword)
 	}
 
 	return config
