@@ -9,8 +9,8 @@ import (
 )
 
 const EnvKongAdminHostAddress = "KONG_ADMIN_ADDR"
-const EnvKongAdminUsername = "KONG_ADMIN_USER"
-const EnvKongAdminPassword = "KONG_ADMIN_PASS"
+const EnvKongAdminUsername = "KONG_ADMIN_USERNAME"
+const EnvKongAdminPassword = "KONG_ADMIN_PASSWORD"
 
 type KongAdminClient struct {
 	config *Config

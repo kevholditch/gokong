@@ -49,7 +49,7 @@ You can of course create your own config with the address set to whatever you wa
 config := gokong.Config{HostAddress:"http://localhost:1234"}
 ```
 
-Also you can apply Username and Password for admin-api BaseAuth:
+Also you can apply Username and Password for admin-api Basic Auth:
 ```go
 config := gokong.Config{Username:"adminuser",Password:"yoursecret"}
 ```
