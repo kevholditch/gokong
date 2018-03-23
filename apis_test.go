@@ -15,7 +15,7 @@ func Test_ApisGetById(t *testing.T) {
 		UpstreamUrl:            "http://localhost:4140/testservice",
 		StripUri:               true,
 		PreserveHost:           true,
-		Retries:                3,
+		Retries:                "3",
 		UpstreamConnectTimeout: 1000,
 		UpstreamSendTimeout:    2000,
 		UpstreamReadTimeout:    3000,
@@ -44,7 +44,7 @@ func Test_ApisGetByName(t *testing.T) {
 		UpstreamUrl:            "http://localhost:4140/testservice",
 		StripUri:               true,
 		PreserveHost:           true,
-		Retries:                3,
+		Retries:                "3",
 		UpstreamConnectTimeout: 1000,
 		UpstreamSendTimeout:    2000,
 		UpstreamReadTimeout:    3000,
@@ -90,7 +90,7 @@ func Test_ApisList(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/myservice",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                5,
+		Retries:                "5",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -121,7 +121,7 @@ func Test_ApisListFilteredById(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/myservice",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                5,
+		Retries:                "5",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -136,7 +136,7 @@ func Test_ApisListFilteredById(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/myservice2",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                5,
+		Retries:                "5",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -176,7 +176,7 @@ func Test_ApisListFilteredByName(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/myservice",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                5,
+		Retries:                "5",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -191,7 +191,7 @@ func Test_ApisListFilteredByName(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/myservice2",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                5,
+		Retries:                "5",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -231,7 +231,7 @@ func Test_ApisListFilteredByUpstreamUrl(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/someurl",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                5,
+		Retries:                "5",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -246,7 +246,7 @@ func Test_ApisListFilteredByUpstreamUrl(t *testing.T) {
 		UpstreamUrl:            "http://upstreamunique:4140/uniqueurl",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                5,
+		Retries:                "5",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -285,7 +285,7 @@ func Test_ApisListFilteredByRetries(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/someurl",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                5,
+		Retries:                "5",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -300,7 +300,7 @@ func Test_ApisListFilteredByRetries(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/uniqueurl",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                1234,
+		Retries:                "1234",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -339,7 +339,7 @@ func Test_ApisListFilteredBySize(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/someurl",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                5,
+		Retries:                "5",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -354,7 +354,7 @@ func Test_ApisListFilteredBySize(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/uniqueurl",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                1234,
+		Retries:                "1234",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -389,7 +389,7 @@ func Test_ApisCreate(t *testing.T) {
 		UpstreamUrl:            "http://localhost:4140/testservice",
 		StripUri:               false,
 		PreserveHost:           true,
-		Retries:                3,
+		Retries:                "3",
 		UpstreamConnectTimeout: 1000,
 		UpstreamSendTimeout:    2000,
 		UpstreamReadTimeout:    3000,
@@ -443,6 +443,7 @@ func Test_ApisCreateWithOnlyRequiredFields(t *testing.T) {
 	assert.Nil(t, result.Uris)
 	assert.Nil(t, result.Methods)
 	assert.Equal(t, apiRequest.UpstreamUrl, result.UpstreamUrl)
+	assert.Equal(t, 5, result.Retries)
 	assert.Equal(t, false, result.StripUri)
 	assert.Equal(t, false, result.PreserveHost)
 	assert.Equal(t, 60000, result.UpstreamConnectTimeout)
@@ -462,7 +463,7 @@ func Test_ApisDeleteById(t *testing.T) {
 		UpstreamUrl:            "http://localhost:4140/testservice",
 		StripUri:               true,
 		PreserveHost:           true,
-		Retries:                3,
+		Retries:                "3",
 		UpstreamConnectTimeout: 1000,
 		UpstreamSendTimeout:    2000,
 		UpstreamReadTimeout:    3000,
@@ -496,7 +497,7 @@ func Test_ApisDeleteByName(t *testing.T) {
 		UpstreamUrl:            "http://localhost:4140/testservice",
 		StripUri:               true,
 		PreserveHost:           true,
-		Retries:                3,
+		Retries:                "3",
 		UpstreamConnectTimeout: 1000,
 		UpstreamSendTimeout:    2000,
 		UpstreamReadTimeout:    3000,
@@ -530,7 +531,7 @@ func Test_ApisUpdateApiById(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/someurl",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                5,
+		Retries:                "5",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -549,7 +550,7 @@ func Test_ApisUpdateApiById(t *testing.T) {
 	apiRequest.Name = "kevin"
 	apiRequest.StripUri = true
 	apiRequest.PreserveHost = true
-	apiRequest.Retries = 10
+	apiRequest.Retries = "10"
 	apiRequest.UpstreamConnectTimeout = 1000
 	apiRequest.UpstreamSendTimeout = 4000
 	apiRequest.UpstreamReadTimeout = 7000
@@ -566,7 +567,7 @@ func Test_ApisUpdateApiById(t *testing.T) {
 	assert.Equal(t, apiRequest.UpstreamUrl, result.UpstreamUrl)
 	assert.Equal(t, apiRequest.StripUri, result.StripUri)
 	assert.Equal(t, apiRequest.PreserveHost, result.PreserveHost)
-	assert.Equal(t, apiRequest.Retries, result.Retries)
+	assert.Equal(t, 10, result.Retries)
 	assert.Equal(t, apiRequest.UpstreamConnectTimeout, result.UpstreamConnectTimeout)
 	assert.Equal(t, apiRequest.UpstreamSendTimeout, result.UpstreamSendTimeout)
 	assert.Equal(t, apiRequest.UpstreamReadTimeout, result.UpstreamReadTimeout)
@@ -584,7 +585,7 @@ func Test_ApisUpdateApiByName(t *testing.T) {
 		UpstreamUrl:            "http://linkerd:4140/someurl",
 		StripUri:               false,
 		PreserveHost:           false,
-		Retries:                5,
+		Retries:                "5",
 		UpstreamConnectTimeout: 2222,
 		UpstreamSendTimeout:    1233,
 		UpstreamReadTimeout:    1234,
@@ -601,7 +602,7 @@ func Test_ApisUpdateApiByName(t *testing.T) {
 	apiRequest.Methods = []string{"POST"}
 	apiRequest.StripUri = true
 	apiRequest.PreserveHost = true
-	apiRequest.Retries = 3
+	apiRequest.Retries = "3"
 	apiRequest.UpstreamConnectTimeout = 1000
 	apiRequest.UpstreamSendTimeout = 888
 	apiRequest.UpstreamReadTimeout = 234
@@ -618,7 +619,7 @@ func Test_ApisUpdateApiByName(t *testing.T) {
 	assert.Equal(t, apiRequest.UpstreamUrl, result.UpstreamUrl)
 	assert.Equal(t, apiRequest.StripUri, result.StripUri)
 	assert.Equal(t, apiRequest.PreserveHost, result.PreserveHost)
-	assert.Equal(t, apiRequest.Retries, result.Retries)
+	assert.Equal(t, 3, result.Retries)
 	assert.Equal(t, apiRequest.UpstreamConnectTimeout, result.UpstreamConnectTimeout)
 	assert.Equal(t, apiRequest.UpstreamSendTimeout, result.UpstreamSendTimeout)
 	assert.Equal(t, apiRequest.UpstreamReadTimeout, result.UpstreamReadTimeout)
