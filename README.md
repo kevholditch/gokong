@@ -54,6 +54,11 @@ Also you can apply Username and Password for admin-api Basic Auth:
 config := gokong.Config{HostAddress:"http://localhost:1234",Username:"adminuser",Password:"yoursecret"}
 ```
 
+If you need to ignore TLS verification, you can set InsecureSkipVerify:
+```go
+config := gokong.Config{InsecureSkipVerify: true}
+```
+This might be needed if your Kong installation is using a self-signed certificate, or if you are proxying to the Kong admin port.
 
 Getting the status of the kong server:
 ```go
