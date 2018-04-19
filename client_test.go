@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-const defaultKongVersion = "0.11.1"
+const defaultKongVersion = "0.13.0"
 
 func Test_Newclient(t *testing.T) {
 	result := NewClient(NewDefaultConfig())
