@@ -166,12 +166,12 @@ func TestRouteClient_UpdateRoute(t *testing.T) {
 	assert.NotNil(t, createdRoute)
 
 	routeRequest.Paths = []string{"/qux"}
-	updatedService, err := client.Routes().UpdateRoute(createdRoute.Id, routeRequest)
+	updatedRoute, err := client.Routes().UpdateRoute(createdRoute.Id, routeRequest)
 	result, err := client.Routes().GetRoute(createdRoute.Id)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.Equal(t, updatedService, result)
+	assert.Equal(t, updatedRoute, result)
 
 	client.Routes().DeleteRoute(createdRoute.Id)
 	client.Services().DeleteServiceById(createdService.Id)
