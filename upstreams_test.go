@@ -68,9 +68,39 @@ func Test_UpstreamsGetByIdForNonExistentUpstreamByName(t *testing.T) {
 
 func Test_UpstreamsCreate(t *testing.T) {
 	upstreamRequest := &UpstreamRequest{
-		Name:      "upstream-" + uuid.NewV4().String(),
-		Slots:     10,
-		OrderList: []int{2, 1, 3, 4, 5, 6, 7, 8, 9, 10},
+		Name:  "upstream-" + uuid.NewV4().String(),
+		Slots: 10,
+		HealthChecks: &UpstreamHealthCheck{
+			Active: &UpstreamHealthCheckActive{
+				Concurrency: 10,
+				HttpPath:    "/",
+				Timeout:     1,
+				Healthy: &ActiveHealthy{
+					HttpStatuses: []int{200, 302},
+					Interval:     0,
+					Successes:    0,
+				},
+				Unhealthy: &ActiveUnhealthy{
+					HttpFailures: 0,
+					HttpStatuses: []int{429, 404, 500, 501, 502, 503, 504, 505},
+					Interval:     0,
+					TcpFailures:  0,
+					Timeouts:     0,
+				},
+			},
+			Passive: &UpstreamHealthCheckPassive{
+				Healthy: &PassiveHealthy{
+					HttpStatuses: []int{200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308},
+					Successes:    0,
+				},
+				Unhealthy: &PassiveUnhealthy{
+					HttpFailures: 0,
+					HttpStatuses: []int{429, 500, 503},
+					TcpFailures:  0,
+					Timeouts:     0,
+				},
+			},
+		},
 	}
 
 	result, err := NewClient(NewDefaultConfig()).Upstreams().Create(upstreamRequest)
@@ -80,15 +110,15 @@ func Test_UpstreamsCreate(t *testing.T) {
 	assert.True(t, result.Id != "")
 	assert.Equal(t, upstreamRequest.Name, result.Name)
 	assert.Equal(t, upstreamRequest.Slots, result.Slots)
-	assert.Equal(t, upstreamRequest.OrderList, result.OrderList)
+	assert.Equal(t, upstreamRequest.HealthChecks, result.HealthChecks)
 
 }
 
 func Test_UpstreamsCreateInvalid(t *testing.T) {
 	upstreamRequest := &UpstreamRequest{
-		Name:      "upstream-" + uuid.NewV4().String(),
-		Slots:     2,
-		OrderList: []int{2, 1, 3, 4, 5, 6, 7, 8, 9, 10},
+		Name:         "upstream-" + uuid.NewV4().String(),
+		Slots:        2,
+		HealthChecks: &UpstreamHealthCheck{},
 	}
 
 	result, err := NewClient(NewDefaultConfig()).Upstreams().Create(upstreamRequest)
@@ -232,9 +262,9 @@ func Test_UpstreamsDeleteById(t *testing.T) {
 	client := NewClient(NewDefaultConfig())
 
 	upstreamRequest := &UpstreamRequest{
-		Name:      "upstream-" + uuid.NewV4().String(),
-		Slots:     10,
-		OrderList: []int{2, 1, 3, 4, 5, 6, 7, 8, 9, 10},
+		Name:         "upstream-" + uuid.NewV4().String(),
+		Slots:        10,
+		HealthChecks: &UpstreamHealthCheck{},
 	}
 
 	createdUpstream, err := client.Upstreams().Create(upstreamRequest)
@@ -256,9 +286,9 @@ func Test_UpstreamsDeleteByName(t *testing.T) {
 	client := NewClient(NewDefaultConfig())
 
 	upstreamRequest := &UpstreamRequest{
-		Name:      "upstream-" + uuid.NewV4().String(),
-		Slots:     10,
-		OrderList: []int{2, 1, 3, 4, 5, 6, 7, 8, 9, 10},
+		Name:         "upstream-" + uuid.NewV4().String(),
+		Slots:        10,
+		HealthChecks: &UpstreamHealthCheck{},
 	}
 
 	createdUpstream, err := client.Upstreams().Create(upstreamRequest)
@@ -282,6 +312,37 @@ func Test_UpstreamsUpdateById(t *testing.T) {
 	upstreamRequest := &UpstreamRequest{
 		Name:  "upstream-" + uuid.NewV4().String(),
 		Slots: 10,
+		HealthChecks: &UpstreamHealthCheck{
+			Active: &UpstreamHealthCheckActive{
+				Concurrency: 10,
+				HttpPath:    "/",
+				Timeout:     1,
+				Healthy: &ActiveHealthy{
+					HttpStatuses: []int{200, 302},
+					Interval:     0,
+					Successes:    0,
+				},
+				Unhealthy: &ActiveUnhealthy{
+					HttpFailures: 0,
+					HttpStatuses: []int{429, 404, 500, 501, 502, 503, 504, 505},
+					Interval:     0,
+					TcpFailures:  0,
+					Timeouts:     0,
+				},
+			},
+			Passive: &UpstreamHealthCheckPassive{
+				Healthy: &PassiveHealthy{
+					HttpStatuses: []int{200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308},
+					Successes:    0,
+				},
+				Unhealthy: &PassiveUnhealthy{
+					HttpFailures: 0,
+					HttpStatuses: []int{429, 500, 503},
+					TcpFailures:  0,
+					Timeouts:     0,
+				},
+			},
+		},
 	}
 
 	createdUpstream, err := client.Upstreams().Create(upstreamRequest)
@@ -291,7 +352,6 @@ func Test_UpstreamsUpdateById(t *testing.T) {
 	assert.Equal(t, 10, createdUpstream.Slots)
 
 	upstreamRequest.Slots = 11
-	upstreamRequest.OrderList = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
 
 	result, err := client.Upstreams().UpdateById(createdUpstream.Id, upstreamRequest)
 
@@ -299,7 +359,7 @@ func Test_UpstreamsUpdateById(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, upstreamRequest.Name, result.Name)
 	assert.Equal(t, upstreamRequest.Slots, result.Slots)
-	assert.Equal(t, upstreamRequest.OrderList, result.OrderList)
+	assert.Equal(t, upstreamRequest.HealthChecks, result.HealthChecks)
 
 }
 
@@ -310,6 +370,37 @@ func Test_UpstreamsUpdateByName(t *testing.T) {
 	upstreamRequest := &UpstreamRequest{
 		Name:  "upstream-" + uuid.NewV4().String(),
 		Slots: 10,
+		HealthChecks: &UpstreamHealthCheck{
+			Active: &UpstreamHealthCheckActive{
+				Concurrency: 10,
+				HttpPath:    "/",
+				Timeout:     1,
+				Healthy: &ActiveHealthy{
+					HttpStatuses: []int{200, 302},
+					Interval:     0,
+					Successes:    0,
+				},
+				Unhealthy: &ActiveUnhealthy{
+					HttpFailures: 0,
+					HttpStatuses: []int{429, 404, 500, 501, 502, 503, 504, 505},
+					Interval:     0,
+					TcpFailures:  0,
+					Timeouts:     0,
+				},
+			},
+			Passive: &UpstreamHealthCheckPassive{
+				Healthy: &PassiveHealthy{
+					HttpStatuses: []int{200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308},
+					Successes:    0,
+				},
+				Unhealthy: &PassiveUnhealthy{
+					HttpFailures: 0,
+					HttpStatuses: []int{429, 500, 503},
+					TcpFailures:  0,
+					Timeouts:     0,
+				},
+			},
+		},
 	}
 
 	createdUpstream, err := client.Upstreams().Create(upstreamRequest)
@@ -319,7 +410,6 @@ func Test_UpstreamsUpdateByName(t *testing.T) {
 	assert.Equal(t, 10, createdUpstream.Slots)
 
 	upstreamRequest.Slots = 12
-	upstreamRequest.OrderList = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
 
 	result, err := client.Upstreams().UpdateByName(createdUpstream.Name, upstreamRequest)
 
@@ -327,7 +417,7 @@ func Test_UpstreamsUpdateByName(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, upstreamRequest.Name, result.Name)
 	assert.Equal(t, upstreamRequest.Slots, result.Slots)
-	assert.Equal(t, upstreamRequest.OrderList, result.OrderList)
+	assert.Equal(t, upstreamRequest.HealthChecks, result.HealthChecks)
 
 }
 

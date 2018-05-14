@@ -113,3 +113,15 @@ func (kongAdminClient *KongAdminClient) Upstreams() *UpstreamClient {
 		config: kongAdminClient.config,
 	}
 }
+
+func (kongAdminClient *KongAdminClient) Routes() *RouteClient {
+	return &RouteClient{
+		config: kongAdminClient.config,
+	}
+}
+
+func (kongAdminClient *KongAdminClient) Services() *ServiceClient {
+	return &ServiceClient{
+		config: kongAdminClient.config,
+	}
+}

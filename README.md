@@ -72,7 +72,7 @@ status, err := gokong.NewClient(gokong.NewDefaultConfig()).Status().Get()
 ```
 
 ## APIs
-Create a new API ([for more information on the API fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#api-object):
+Create a new API ([for more information on the API fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#api-object):
 ```go
 apiRequest := &gokong.ApiRequest{
 	Name:                   "Example",
@@ -167,7 +167,7 @@ updatedApi, err :=  gokong.NewClient(gokong.NewDefaultConfig()).Apis().UpdateByN
 
 
 ## Consumers
-Create a new Consumer ([for more information on the Consumer Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#consumer-object)):
+Create a new Consumer ([for more information on the Consumer Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#consumer-object)):
 ```go
 consumerRequest := &gokong.ConsumerRequest{
   Username: "User1",
@@ -229,7 +229,7 @@ updatedConsumer, err :=  gokong.NewClient(gokong.NewDefaultConfig()).Consumers()
 
 ## Plugins
 Create a new Plugin to be applied to all APIs and consumers do not set `ApiId` or `ConsumerId`.  Not all plugins can be configured in this way
- ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#add-plugin)):
+ ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#add-plugin)):
 
 ```go
 pluginRequest := &gokong.PluginRequest{
@@ -242,7 +242,7 @@ pluginRequest := &gokong.PluginRequest{
 createdPlugin, err := gokong.NewClient(gokong.NewDefaultConfig()).Plugins().Create(pluginRequest)
 ```
 
-Create a new Plugin for a single API (only set `ApiId`), not all plugins can be configured in this way ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#plugin-object)):
+Create a new Plugin for a single API (only set `ApiId`), not all plugins can be configured in this way ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#plugin-object)):
 ```go
 client := gokong.NewClient(gokong.NewDefaultConfig())
 
@@ -275,7 +275,7 @@ pluginRequest := &gokong.PluginRequest{
 createdPlugin, err :=  client.Plugins().Create(pluginRequest)
 ```
 
-Create a new Plugin for a single Consumer (only set `ConsumerId`), Not all plugins can be configured in this way ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#plugin-object)):
+Create a new Plugin for a single Consumer (only set `ConsumerId`), Not all plugins can be configured in this way ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#plugin-object)):
 ```go
 client := gokong.NewClient(gokong.NewDefaultConfig())
 
@@ -297,7 +297,7 @@ pluginRequest := &gokong.PluginRequest{
 createdPlugin, err :=  client.Plugins().Create(pluginRequest)
 ```
 
-Create a new Plugin for a single Consumer and Api (set `ConsumerId` and `ApiId`), Not all plugins can be configured in this way ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#plugin-object)):
+Create a new Plugin for a single Consumer and Api (set `ConsumerId` and `ApiId`), Not all plugins can be configured in this way ([for more information on the Plugin Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#plugin-object)):
 ```go
 client := gokong.NewClient(gokong.NewDefaultConfig())
 
@@ -391,7 +391,7 @@ err := gokong.NewClient(gokong.NewDefaultConfig()).Consumers().DeletePluginConfi
 ```
 
 ## Certificates
-Create a Certificate ([for more information on the Certificate Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#certificate-object)):
+Create a Certificate ([for more information on the Certificate Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#certificate-object)):
 
 ```go
 certificateRequest := &gokong.CertificateRequest{
@@ -427,9 +427,157 @@ updateCertificateRequest := &gokong.CertificateRequest{
 updatedCertificate, err := gokong.NewClient(gokong.NewDefaultConfig()).Certificates().UpdateById("1dc11281-30a6-4fb9-aec2-c6ff33445375", updateCertificateRequest)
 ```
 
+# Routes
+
+Create a Route ([for more information on the Sni Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#route-object)):
+```go
+serviceRequest := &ServiceRequest{
+  Name:     "service-name" + uuid.NewV4().String(),
+  Protocol: "http",
+  Host:     "foo.com",
+}
+
+client := NewClient(NewDefaultConfig())
+
+createdService, err := client.Services().AddService(serviceRequest)
+
+routeRequest := &RouteRequest{
+  Protocols:    []string{"http"},
+  Methods:      []string{"GET"},
+  Hosts:        []string{"foo.com"},
+  StripPath:    true,
+  PreserveHost: true,
+  Service:      &RouteServiceObject{Id: createdService.Id},
+  Paths: []string{"/bar"}
+}
+
+createdRoute, err := client.Routes().AddRoute(routeRequest)
+```
+
+Get a route by ID: 
+```go
+result, err := client.Routes().GetRoute(createdRoute.Id)
+```
+
+Get all routes: 
+```go
+result, err := client.Routes().GetRoutes(&RouteQueryString{})
+```
+
+Get routes from service ID or Name:
+```go
+result, err := client.Routes().GetRoutesFromServiceId(createdService.Id)
+```
+
+Update a route:
+```go
+routeRequest := &RouteRequest{
+  Protocols:    []string{"http"},
+  Methods:      []string{"GET"},
+  Hosts:        []string{"foo.com"},
+  Paths:        []string{"/bar"},
+  StripPath:    true,
+  PreserveHost: true,
+  Service:      &RouteServiceObject{Id: createdService.Id},
+}
+
+createdRoute, err := client.Routes().AddRoute(routeRequest)
+
+routeRequest.Paths = []string{"/qux"}
+updatedRoute, err := client.Routes().UpdateRoute(createdRoute.Id, routeRequest)
+```
+
+Delete a route:
+```go
+client.Routes().DeleteRoute(createdRoute.Id)
+```
+
+# Services
+
+Create an Service ([for more information on the Sni Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#service-object)):
+```go
+serviceRequest := &ServiceRequest{
+		Name:     "service-name-0",
+		Protocol: "http",
+		Host:     "foo.com",
+	}
+
+	client := NewClient(NewDefaultConfig())
+
+	createdService, err := client.Services().AddService(serviceRequest)
+```
+
+Get information about a service with the service ID or Name
+```go
+serviceRequest := &ServiceRequest{
+		Name:     "service-name-0",
+		Protocol: "http",
+		Host:     "foo.com",
+	}
+
+client := NewClient(NewDefaultConfig())
+
+createdService, err := client.Services().AddService(serviceRequest)
+
+resultFromId, err := client.Services().GetServiceById(createdService.Id)
+
+resultFromName, err := client.Services().GetServiceByName(createdService.Id)
+```
+
+Get information about a service with the route ID 
+```go
+result, err := client.Services().GetServiceRouteId(routeInformation.Id)
+```
+
+Get many services information
+```go
+result, err := client.Services().GetServices(&ServiceQueryString{
+	Size: 500
+	Offset: 300
+})
+```
+
+Update a service with the service ID or Name
+```go
+serviceRequest := &ServiceRequest{
+  Name:     "service-name-0",
+  Protocol: "http",
+  Host:     "foo.com",
+}
+
+client := NewClient(NewDefaultConfig())
+
+createdService, err := client.Services().AddService(serviceRequest)
+
+serviceRequest.Host = "bar.io"
+updatedService, err := client.Services().UpdateServiceById(createdService.Id, serviceRequest)
+result, err := client.Services().GetServiceById(createdService.Id)
+```
+
+Update a service by the route ID
+```go
+serviceRequest := &ServiceRequest{
+  Name:     "service-name-0",
+  Protocol: "http",
+  Host:     "foo.com",
+}
+
+client := NewClient(NewDefaultConfig())
+
+createdService, err := client.Services().AddService(serviceRequest)
+
+serviceRequest.Host = "bar.io"
+updatedService, err := client.Services().UpdateServiceById(createdService.Id, serviceRequest)
+result, err := client.Services().UpdateServicebyRouteId(routeInformation.Id)
+```
+
+Delete a service
+```go
+err = client.Services().DeleteServiceById(createdService.Id)
+```
 
 ## SNIs
-Create an SNI ([for more information on the Sni Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#sni-objects)):
+Create an SNI ([for more information on the Sni Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#sni-objects)):
 ```go
 client := gokong.NewClient(gokong.NewDefaultConfig())
 
@@ -474,7 +622,7 @@ updatedSni, err := client.Snis().UpdateByName("example.com", updateSniRequest)
 ```
 
 ## Upstreams
-Create an Upstream ([for more information on the Upstream Fields see the Kong documentation](https://getkong.org/docs/0.11.x/admin-api/#upstream-objects)):
+Create an Upstream ([for more information on the Upstream Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#upstream-objects)):
 ```go
 upstreamRequest := &gokong.UpstreamRequest{
   Name: "test-upstream",
