@@ -84,8 +84,6 @@ func TestRouteClient_GetRoutes(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	t.Log(result)
-	t.Log(createdRoutes.Data)
 	assert.Subset(t, createdRoutes.Data, result)
 
 	for _, route := range createdRoutes.Data {
@@ -130,7 +128,6 @@ func TestRouteClient_GetRoutesFromServiceId(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	t.Log(createdService)
 	assert.Equal(t, result[0], createdRoute)
 
 	client.Routes().DeleteRoute(createdRoute.Id)
