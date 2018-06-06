@@ -130,19 +130,19 @@ err :=  gokong.NewClient(gokong.NewDefaultConfig()).Apis().DeleteByName("Example
 Update an API by id:
 ```go
 apiRequest := &gokong.ApiRequest{
-  Name:                   "Example",
-  Hosts:                  []string{"example.com"},
-  Uris:                   []string{"/example"},
-  Methods:                []string{"GET", "POST"},
-  UpstreamUrl:            "http://localhost:4140/testservice",
-  StripUri:               true,
-  PreserveHost:           true,
-  Retries:                "3",
-  UpstreamConnectTimeout: 1000,
-  UpstreamSendTimeout:    2000,
-  UpstreamReadTimeout:    3000,
-  HttpsOnly:              true,
-  HttpIfTerminated:       true,
+  	Name:                   "Example",
+  	Hosts:                  gokong.StringSlice([]string{"example.com"}),
+    Uris:                   gokong.StringSlice([]string{"/example"}),
+    Methods:                gokong.StringSlice([]string{"GET", "POST"}),
+    UpstreamUrl:            gokong.String("http://localhost:4140/testservice"),
+    StripUri:               gokong.Bool(true),
+    PreserveHost:           gokong.Bool(true),
+    Retries:                gokong.Int(3),
+    UpstreamConnectTimeout: gokong.Int(1000),
+    UpstreamSendTimeout:    gokong.Int(2000),
+    UpstreamReadTimeout:    gokong.Int(3000),
+    HttpsOnly:              gokong.Bool(true),
+    HttpIfTerminated:       gokong.Bool(true),
 }
 
 updatedApi, err :=  gokong.NewClient(gokong.NewDefaultConfig()).Apis().UpdateById("1213a00d-2b12-4d65-92ad-5a02d6c710c2", apiRequest)
@@ -151,20 +151,19 @@ updatedApi, err :=  gokong.NewClient(gokong.NewDefaultConfig()).Apis().UpdateByI
 Update an API by name:
 ```go
 apiRequest := &gokong.ApiRequest{
-  Name:                   "Example",
-  Hosts:                  []string{"example.com"},
-  Uris:                   []string{"/example"},
-  Methods:                []string{"GET", "POST"},
-  UpstreamUrl:            "http://localhost:4140/testservice",
-  StripUri:               true,
-  PreserveHost:           true,
-  Retries:                "3",
-  UpstreamConnectTimeout: 1000,
-  UpstreamSendTimeout:    2000,
-  UpstreamReadTimeout:    3000,
-  HttpsOnly:              true,
-  HttpIfTerminated:       true,
-}
+ 	Name:                   "Example",
+ 	Hosts:                  gokong.StringSlice([]string{"example.com"}),
+  Uris:                   gokong.StringSlice([]string{"/example"}),
+  Methods:                gokong.StringSlice([]string{"GET", "POST"}),
+  UpstreamUrl:            gokong.String("http://localhost:4140/testservice"),
+  StripUri:               gokong.Bool(true),
+  PreserveHost:           gokong.Bool(true),
+  Retries:                gokong.Int(3),
+  UpstreamConnectTimeout: gokong.Int(1000),
+  UpstreamSendTimeout:    gokong.Int(2000),
+  UpstreamReadTimeout:    gokong.Int(3000),
+  HttpsOnly:              gokong.Bool(true),
+  HttpIfTerminated:       gokong.Bool(true),
 
 updatedApi, err :=  gokong.NewClient(gokong.NewDefaultConfig()).Apis().UpdateByName("Example", apiRequest)
 ```
@@ -399,8 +398,8 @@ Create a Certificate ([for more information on the Certificate Fields see the Ko
 
 ```go
 certificateRequest := &gokong.CertificateRequest{
-  Cert: "public key --- 123",
-  Key:  "private key --- 456",
+  Cert: gokong.String("public key --- 123"),
+  Key:  gokong.String("private key --- 456"),
 }
 
 createdCertificate, err := gokong.NewClient(gokong.NewDefaultConfig()).Certificates().Create(certificateRequest)
@@ -424,8 +423,8 @@ err := gokong.NewClient(gokong.NewDefaultConfig()).Certificates().DeleteById("db
 Update a Certificate:
 ```go
 updateCertificateRequest := &gokong.CertificateRequest{
-  Cert: "public key --- 789",
-  Key:  "private key --- 111",
+  Cert: gokong.String("public key --- 789"),
+  Key:  gokong.String("private key --- 111"),
 }
 
 updatedCertificate, err := gokong.NewClient(gokong.NewDefaultConfig()).Certificates().UpdateById("1dc11281-30a6-4fb9-aec2-c6ff33445375", updateCertificateRequest)
