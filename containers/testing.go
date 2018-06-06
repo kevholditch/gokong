@@ -1,9 +1,10 @@
 package containers
 
 import (
-	"gopkg.in/ory-am/dockertest.v3"
 	"log"
 	"os"
+
+	"gopkg.in/ory-am/dockertest.v3"
 )
 
 type TestContext struct {

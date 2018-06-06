@@ -2,9 +2,10 @@ package gokong
 
 import "reflect"
 import (
+	"testing"
+
 	"github.com/parnurzeal/gorequest"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestNewRequest(t *testing.T) {

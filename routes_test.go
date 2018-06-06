@@ -2,9 +2,10 @@ package gokong
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestRouteClient_GetRoute(t *testing.T) {

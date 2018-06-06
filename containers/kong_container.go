@@ -3,9 +3,10 @@ package containers
 import (
 	"errors"
 	"fmt"
-	"gopkg.in/ory-am/dockertest.v3"
 	"log"
 	"net/http"
+
+	"gopkg.in/ory-am/dockertest.v3"
 )
 
 type kongContainer struct {
