@@ -16,7 +16,7 @@ func Test_ApisGetById(t *testing.T) {
 		UpstreamUrl:            String("http://localhost:4140/testservice"),
 		StripUri:               Bool(true),
 		PreserveHost:           Bool(true),
-		Retries:                String("3"),
+		Retries:                Int(3),
 		UpstreamConnectTimeout: Int(1000),
 		UpstreamSendTimeout:    Int(2000),
 		UpstreamReadTimeout:    Int(3000),
@@ -45,7 +45,7 @@ func Test_ApisGetByName(t *testing.T) {
 		UpstreamUrl:            String("http://localhost:4140/testservice"),
 		StripUri:               Bool(true),
 		PreserveHost:           Bool(true),
-		Retries:                String("3"),
+		Retries:                Int(3),
 		UpstreamConnectTimeout: Int(1000),
 		UpstreamSendTimeout:    Int(2000),
 		UpstreamReadTimeout:    Int(3000),
@@ -91,7 +91,7 @@ func Test_ApisList(t *testing.T) {
 		UpstreamUrl:            String("http://linkerd:4140/myservice"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(222),
 		UpstreamSendTimeout:    Int(233),
 		UpstreamReadTimeout:    Int(234),
@@ -122,7 +122,7 @@ func Test_ApisListFilteredById(t *testing.T) {
 		UpstreamUrl:            String("http://linkerd:4140/myservice"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -137,7 +137,7 @@ func Test_ApisListFilteredById(t *testing.T) {
 		UpstreamUrl:            String("http://linkerd:4140/myservice2"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -177,7 +177,7 @@ func Test_ApisListFilteredByName(t *testing.T) {
 		UpstreamUrl:            String("http://linkerd:4140/myservice"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -192,7 +192,7 @@ func Test_ApisListFilteredByName(t *testing.T) {
 		UpstreamUrl:            String("http://linkerd:4140/myservice2"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -232,7 +232,7 @@ func Test_ApisListFilteredByUpstreamUrl(t *testing.T) {
 		UpstreamUrl:            String("http://linkerd:4140/someurl"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -248,7 +248,7 @@ func Test_ApisListFilteredByUpstreamUrl(t *testing.T) {
 		UpstreamUrl:            String("http://upstreamunique:4140/uniqueurl"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -287,7 +287,7 @@ func Test_ApisListFilteredByRetries(t *testing.T) {
 		UpstreamUrl:            String("http://linkerd:4140/someurl"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -302,7 +302,7 @@ func Test_ApisListFilteredByRetries(t *testing.T) {
 		UpstreamUrl:            String("http://linkerd:4140/uniqueurl"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("1234"),
+		Retries:                Int(1234),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -341,7 +341,7 @@ func Test_ApisListFilteredBySize(t *testing.T) {
 		UpstreamUrl:            String("http://linkerd:4140/someurl"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -357,7 +357,7 @@ func Test_ApisListFilteredBySize(t *testing.T) {
 		UpstreamUrl:            String("http://upstreamunique:4140/uniqueurl"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -392,7 +392,7 @@ func Test_ApisCreate(t *testing.T) {
 		UpstreamUrl:            String("http://localhost:4140/testservice"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(true),
-		Retries:                String("3"),
+		Retries:                Int(3),
 		UpstreamConnectTimeout: Int(1000),
 		UpstreamSendTimeout:    Int(2000),
 		UpstreamReadTimeout:    Int(3000),
@@ -466,7 +466,7 @@ func Test_ApisDeleteById(t *testing.T) {
 		UpstreamUrl:            String("http://localhost:4140/testservice"),
 		StripUri:               Bool(true),
 		PreserveHost:           Bool(true),
-		Retries:                String("3"),
+		Retries:                Int(3),
 		UpstreamConnectTimeout: Int(1000),
 		UpstreamSendTimeout:    Int(2000),
 		UpstreamReadTimeout:    Int(3000),
@@ -500,7 +500,7 @@ func Test_ApisDeleteByName(t *testing.T) {
 		UpstreamUrl:            String("http://localhost:4140/testservice"),
 		StripUri:               Bool(true),
 		PreserveHost:           Bool(true),
-		Retries:                String("3"),
+		Retries:                Int(3),
 		UpstreamConnectTimeout: Int(1000),
 		UpstreamSendTimeout:    Int(2000),
 		UpstreamReadTimeout:    Int(3000),
@@ -534,7 +534,7 @@ func Test_ApisUpdateApiById(t *testing.T) {
 		UpstreamUrl:            String("http://linkerd:4140/someurl"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -553,7 +553,7 @@ func Test_ApisUpdateApiById(t *testing.T) {
 	apiRequest.Name = String("kevin")
 	apiRequest.StripUri = Bool(true)
 	apiRequest.PreserveHost = Bool(true)
-	apiRequest.Retries = String("10")
+	apiRequest.Retries = Int(10)
 	apiRequest.UpstreamConnectTimeout = Int(1000)
 	apiRequest.UpstreamSendTimeout = Int(4000)
 	apiRequest.UpstreamReadTimeout = Int(7000)
@@ -570,7 +570,7 @@ func Test_ApisUpdateApiById(t *testing.T) {
 	assert.Equal(t, apiRequest.UpstreamUrl, result.UpstreamUrl)
 	assert.Equal(t, apiRequest.StripUri, result.StripUri)
 	assert.Equal(t, apiRequest.PreserveHost, result.PreserveHost)
-	assert.Equal(t, 10, *result.Retries)
+	assert.Equal(t, apiRequest.Retries, result.Retries)
 	assert.Equal(t, apiRequest.UpstreamConnectTimeout, result.UpstreamConnectTimeout)
 	assert.Equal(t, apiRequest.UpstreamSendTimeout, result.UpstreamSendTimeout)
 	assert.Equal(t, apiRequest.UpstreamReadTimeout, result.UpstreamReadTimeout)
@@ -588,7 +588,7 @@ func Test_ApisUpdateApiByName(t *testing.T) {
 		UpstreamUrl:            String("http://linkerd:4140/someurl"),
 		StripUri:               Bool(false),
 		PreserveHost:           Bool(false),
-		Retries:                String("5"),
+		Retries:                Int(5),
 		UpstreamConnectTimeout: Int(2222),
 		UpstreamSendTimeout:    Int(1233),
 		UpstreamReadTimeout:    Int(1234),
@@ -605,7 +605,7 @@ func Test_ApisUpdateApiByName(t *testing.T) {
 	apiRequest.Methods = StringSlice([]string{"POST"})
 	apiRequest.StripUri = Bool(true)
 	apiRequest.PreserveHost = Bool(true)
-	apiRequest.Retries = String("3")
+	apiRequest.Retries = Int(3)
 	apiRequest.UpstreamConnectTimeout = Int(1000)
 	apiRequest.UpstreamSendTimeout = Int(888)
 	apiRequest.UpstreamReadTimeout = Int(234)
@@ -622,7 +622,7 @@ func Test_ApisUpdateApiByName(t *testing.T) {
 	assert.Equal(t, apiRequest.UpstreamUrl, result.UpstreamUrl)
 	assert.Equal(t, apiRequest.StripUri, result.StripUri)
 	assert.Equal(t, apiRequest.PreserveHost, result.PreserveHost)
-	assert.Equal(t, 3, *result.Retries)
+	assert.Equal(t, apiRequest.Retries, result.Retries)
 	assert.Equal(t, apiRequest.UpstreamConnectTimeout, result.UpstreamConnectTimeout)
 	assert.Equal(t, apiRequest.UpstreamSendTimeout, result.UpstreamSendTimeout)
 	assert.Equal(t, apiRequest.UpstreamReadTimeout, result.UpstreamReadTimeout)

@@ -4,15 +4,19 @@ GoKong
 ======
 A kong go client fully tested with no mocks!!
 
+## Notice
+As per version v1.0.0 all values are now pointer to type, this is to allow detection between setting the zero value of the type versus not setting it.
+For example if you want to set a string to "" this will be omitted when serializing to json if you use `string` so to get round this we can use *string.
+This is as per the way the aws go sdk does it.
+
+
 ## GoKong
 GoKong is a easy to use api client for [kong](https://getkong.org/).  The difference with the gokong library is all of its tests are written against a real running kong running inside a docker container, yep that's right you won't see a horrible mock anywhere!!
 
 ## Supported Kong Versions
 As per [travis build](https://travis-ci.org/kevholditch/gokong):
 ```
-KONG_VERSION=0.11
-KONG_VERSION=0.11.1
-KONG_VERSION=0.11.2
+KONG_VERSION=0.13.0
 ```
 
 ## Importing
@@ -76,18 +80,18 @@ Create a new API ([for more information on the API fields see the Kong documenta
 ```go
 apiRequest := &gokong.ApiRequest{
 	Name:                   "Example",
-	Hosts:                  []string{"example.com"},
-	Uris:                   []string{"/example"},
-	Methods:                []string{"GET", "POST"},
-	UpstreamUrl:            "http://localhost:4140/testservice",
-	StripUri:               true,
-	PreserveHost:           true,
-	Retries:                "3",
-	UpstreamConnectTimeout: 1000,
-	UpstreamSendTimeout:    2000,
-	UpstreamReadTimeout:    3000,
-	HttpsOnly:              true,
-	HttpIfTerminated:       true,
+	Hosts:                  gokong.StringSlice([]string{"example.com"}),
+  Uris:                   gokong.StringSlice([]string{"/example"}),
+  Methods:                gokong.StringSlice([]string{"GET", "POST"}),
+  UpstreamUrl:            gokong.String("http://localhost:4140/testservice"),
+  StripUri:               gokong.Bool(true),
+  PreserveHost:           gokong.Bool(true),
+  Retries:                gokong.Int(3),
+  UpstreamConnectTimeout: gokong.Int(1000),
+  UpstreamSendTimeout:    gokong.Int(2000),
+  UpstreamReadTimeout:    gokong.Int(3000),
+  HttpsOnly:              gokong.Bool(true),
+  HttpIfTerminated:       gokong.Bool(true),
 }
 
 api, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().Create(apiRequest)
@@ -454,12 +458,12 @@ routeRequest := &RouteRequest{
 createdRoute, err := client.Routes().AddRoute(routeRequest)
 ```
 
-Get a route by ID: 
+Get a route by ID:
 ```go
 result, err := client.Routes().GetRoute(createdRoute.Id)
 ```
 
-Get all routes: 
+Get all routes:
 ```go
 result, err := client.Routes().GetRoutes(&RouteQueryString{})
 ```
@@ -524,7 +528,7 @@ resultFromId, err := client.Services().GetServiceById(createdService.Id)
 resultFromName, err := client.Services().GetServiceByName(createdService.Id)
 ```
 
-Get information about a service with the route ID 
+Get information about a service with the route ID
 ```go
 result, err := client.Services().GetServiceRouteId(routeInformation.Id)
 ```
