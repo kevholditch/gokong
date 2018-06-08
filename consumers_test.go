@@ -1,9 +1,10 @@
 package gokong
 
 import (
+	"testing"
+
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func Test_ConsumersGetById(t *testing.T) {
