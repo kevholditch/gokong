@@ -11,5 +11,10 @@ func NewRequest(adminConfig *Config) *gorequest.SuperAgent {
 	if adminConfig.Username != "" || adminConfig.Password != "" {
 		request.SetBasicAuth(adminConfig.Username, adminConfig.Password)
 	}
+
+	if adminConfig.ApiKeyHeaderName != "" && adminConfig.ApiKeyHeaderValue != "" {
+		request.Set(adminConfig.ApiKeyHeaderName, adminConfig.ApiKeyHeaderValue)
+	}
+
 	return request
 }
