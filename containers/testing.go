@@ -8,8 +8,8 @@ import (
 )
 
 type TestContext struct {
-	containers      []container
-	KongHostAddress string
+	containers         []container
+	KongHostAddress    string
 	KongApiHostAddress string
 }
 

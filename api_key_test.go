@@ -1,20 +1,21 @@
 package gokong
 
 import (
-	"github.com/satori/go.uuid"
-	"github.com/stretchr/testify/assert"
-	"testing"
 	"encoding/json"
 	"fmt"
 	"os"
+	"testing"
+
+	"github.com/satori/go.uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_ApiKeyPassedViaHeader(t *testing.T) {
 
 	apiRequest := &ApiRequest{
-		Name:                   String("admin-api"),
-		Uris:                   StringSlice([]string{"/admin-api"}),
-		UpstreamUrl:            String("http://localhost:8001"),
+		Name:        String("admin-api"),
+		Uris:        StringSlice([]string{"/admin-api"}),
+		UpstreamUrl: String("http://localhost:8001"),
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -62,7 +63,7 @@ func Test_ApiKeyPassedViaHeader(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Nil(t, api)
 
-	authorisedClient := NewClient(&Config{HostAddress: kongApiAddress, ApiKeyHeaderName:"apikey", ApiKeyHeaderValue:key})
+	authorisedClient := NewClient(&Config{HostAddress: kongApiAddress, ApiKeyHeaderName: "apikey", ApiKeyHeaderValue: key})
 
 	api, err = authorisedClient.Apis().GetByName("admin-api")
 	assert.Nil(t, err)
