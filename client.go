@@ -13,6 +13,7 @@ const EnvKongAdminHostAddress = "KONG_ADMIN_ADDR"
 const EnvKongApiHostAddress = "KONG_API_ADDR"
 const EnvKongAdminUsername = "KONG_ADMIN_USERNAME"
 const EnvKongAdminPassword = "KONG_ADMIN_PASSWORD"
+const EnvKongApiKey = "KONG_API_KEY"
 
 type KongAdminClient struct {
 	config *Config
@@ -23,8 +24,7 @@ type Config struct {
 	Username           string
 	Password           string
 	InsecureSkipVerify bool
-	ApiKeyHeaderName   string
-	ApiKeyHeaderValue  string
+	ApiKey             string
 }
 
 func addQueryString(currentUrl string, filter interface{}) (string, error) {
@@ -63,6 +63,9 @@ func NewDefaultConfig() *Config {
 	}
 	if os.Getenv(EnvKongAdminPassword) != "" {
 		config.Password = os.Getenv(EnvKongAdminPassword)
+	}
+	if os.Getenv(EnvKongApiKey) != "" {
+		config.ApiKey = os.Getenv(EnvKongApiKey)
 	}
 
 	return config

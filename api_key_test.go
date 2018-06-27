@@ -63,7 +63,7 @@ func Test_ApiKeyPassedViaHeader(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Nil(t, api)
 
-	authorisedClient := NewClient(&Config{HostAddress: kongApiAddress, ApiKeyHeaderName: "apikey", ApiKeyHeaderValue: key})
+	authorisedClient := NewClient(&Config{HostAddress: kongApiAddress, ApiKey: key})
 
 	api, err = authorisedClient.Apis().GetByName("admin-api")
 	assert.Nil(t, err)
