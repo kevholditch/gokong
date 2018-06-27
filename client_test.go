@@ -29,6 +29,11 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Could not set kong host address env variable: %v", err)
 	}
 
+	err = os.Setenv(EnvKongApiHostAddress, testContext.KongApiHostAddress)
+	if err != nil {
+		log.Fatalf("Could not set kong api host address env variable: %v", err)
+	}
+
 	code := m.Run()
 
 	containers.StopKong(testContext)

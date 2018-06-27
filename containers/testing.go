@@ -8,8 +8,9 @@ import (
 )
 
 type TestContext struct {
-	containers      []container
-	KongHostAddress string
+	containers         []container
+	KongHostAddress    string
+	KongApiHostAddress string
 }
 
 func StartKong(kongVersion string) *TestContext {
@@ -24,7 +25,7 @@ func StartKong(kongVersion string) *TestContext {
 	postgres := NewPostgresContainer(pool)
 	kong := NewKongContainer(pool, postgres, kongVersion)
 
-	return &TestContext{containers: []container{postgres, kong}, KongHostAddress: kong.HostAddress}
+	return &TestContext{containers: []container{postgres, kong}, KongHostAddress: kong.HostAddress, KongApiHostAddress: kong.HostApiAddress}
 }
 
 func StopKong(testContext *TestContext) {
