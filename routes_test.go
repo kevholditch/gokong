@@ -23,12 +23,12 @@ func TestRouteClient_GetRoute(t *testing.T) {
 	assert.NotNil(t, createdService)
 
 	routeRequest := &RouteRequest{
-		Protocols:    []string{"http"},
-		Methods:      []string{"GET"},
-		Hosts:        []string{"foo.com"},
-		Paths:        []string{"/bar"},
-		StripPath:    true,
-		PreserveHost: true,
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{"foo.com"}),
+		Paths:        StringSlice([]string{"/bar"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(true),
 		Service:      &RouteServiceObject{Id: createdService.Id},
 	}
 
@@ -37,13 +37,13 @@ func TestRouteClient_GetRoute(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdRoute)
 
-	result, err := client.Routes().GetRoute(createdRoute.Id)
+	result, err := client.Routes().GetRoute(*createdRoute.Id)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, createdRoute, result)
 
-	client.Routes().DeleteRoute(createdRoute.Id)
+	client.Routes().DeleteRoute(*createdRoute.Id)
 	client.Services().DeleteServiceById(createdService.Id)
 }
 
@@ -62,16 +62,16 @@ func TestRouteClient_GetRoutes(t *testing.T) {
 	assert.NotNil(t, createdService)
 
 	routeRequest := &RouteRequest{
-		Protocols:    []string{"http"},
-		Methods:      []string{"GET"},
-		Hosts:        []string{"foo.com"},
-		StripPath:    true,
-		PreserveHost: true,
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{"foo.com"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(true),
 		Service:      &RouteServiceObject{Id: createdService.Id},
 	}
 
 	for i := 0; i < 5; i++ {
-		routeRequest.Paths = []string{fmt.Sprintf("/bar-%s", uuid.NewV4().String())}
+		routeRequest.Paths = StringSlice([]string{fmt.Sprintf("/bar-%s", uuid.NewV4().String())})
 		createdRoute, err := client.Routes().AddRoute(routeRequest)
 
 		assert.Nil(t, err)
@@ -87,7 +87,7 @@ func TestRouteClient_GetRoutes(t *testing.T) {
 	assert.Subset(t, createdRoutes.Data, result)
 
 	for _, route := range createdRoutes.Data {
-		err := client.Routes().DeleteRoute(route.Id)
+		err := client.Routes().DeleteRoute(*route.Id)
 		assert.Nil(t, err)
 	}
 
@@ -110,12 +110,12 @@ func TestRouteClient_GetRoutesFromServiceId(t *testing.T) {
 	assert.NotNil(t, createdService)
 
 	routeRequest := &RouteRequest{
-		Protocols:    []string{"http"},
-		Methods:      []string{"GET"},
-		Hosts:        []string{"foo.com"},
-		Paths:        []string{"/bar"},
-		StripPath:    true,
-		PreserveHost: true,
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{"foo.com"}),
+		Paths:        StringSlice([]string{"/bar"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(true),
 		Service:      &RouteServiceObject{Id: createdService.Id},
 	}
 
@@ -130,7 +130,7 @@ func TestRouteClient_GetRoutesFromServiceId(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, result[0], createdRoute)
 
-	client.Routes().DeleteRoute(createdRoute.Id)
+	client.Routes().DeleteRoute(*createdRoute.Id)
 	client.Services().DeleteServiceById(createdService.Id)
 }
 
@@ -149,12 +149,12 @@ func TestRouteClient_UpdateRoute(t *testing.T) {
 	assert.NotNil(t, createdService)
 
 	routeRequest := &RouteRequest{
-		Protocols:    []string{"http"},
-		Methods:      []string{"GET"},
-		Hosts:        []string{"foo.com"},
-		Paths:        []string{"/bar"},
-		StripPath:    true,
-		PreserveHost: true,
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{"foo.com"}),
+		Paths:        StringSlice([]string{"/bar"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(true),
 		Service:      &RouteServiceObject{Id: createdService.Id},
 	}
 
@@ -163,14 +163,14 @@ func TestRouteClient_UpdateRoute(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdRoute)
 
-	routeRequest.Paths = []string{"/qux"}
-	updatedRoute, err := client.Routes().UpdateRoute(createdRoute.Id, routeRequest)
-	result, err := client.Routes().GetRoute(createdRoute.Id)
+	routeRequest.Paths = StringSlice([]string{"/qux"})
+	updatedRoute, err := client.Routes().UpdateRoute(*createdRoute.Id, routeRequest)
+	result, err := client.Routes().GetRoute(*createdRoute.Id)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, updatedRoute, result)
 
-	client.Routes().DeleteRoute(createdRoute.Id)
+	client.Routes().DeleteRoute(*createdRoute.Id)
 	client.Services().DeleteServiceById(createdService.Id)
 }
