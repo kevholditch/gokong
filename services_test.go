@@ -13,6 +13,7 @@ func TestServiceClient_GetServiceById(t *testing.T) {
 		Name:     fmt.Sprintf("service-name-%s", uuid.NewV4().String()),
 		Protocol: "http",
 		Host:     "foo.com",
+		Port:     8080,
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -21,12 +22,16 @@ func TestServiceClient_GetServiceById(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
+	assert.EqualValues(t, createdService.Name, serviceRequest.Name)
+	assert.EqualValues(t, createdService.Protocol, serviceRequest.Protocol)
+	assert.EqualValues(t, createdService.Host, serviceRequest.Host)
+	assert.EqualValues(t, createdService.Port, serviceRequest.Port)
 
 	result, err := client.Services().GetServiceById(createdService.Id)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.Equal(t, createdService, result)
+	assert.EqualValues(t, createdService, result)
 
 	err = client.Services().DeleteServiceById(createdService.Id)
 	assert.Nil(t, err)
