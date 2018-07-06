@@ -31,7 +31,7 @@ func TestServiceClient_GetServiceById(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
-	assert.EqualValues(t, createdService, result)
+	assert.Equal(t, createdService, result)
 
 	err = client.Services().DeleteServiceById(createdService.Id)
 	assert.Nil(t, err)
