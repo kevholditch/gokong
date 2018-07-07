@@ -27,7 +27,7 @@ type Service struct {
 	UpdatedAt      int    `json:"updated_at"`
 	Protocol       string `json:"protocol"`
 	Host           string `json:"host"`
-	Port           int    `json:"int"`
+	Port           int    `json:"port"`
 	Path           string `json:"path"`
 	Name           string `json:"name"`
 	Retries        int    `json:"retries"`
