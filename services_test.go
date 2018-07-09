@@ -10,10 +10,10 @@ import (
 
 func TestServiceClient_GetServiceById(t *testing.T) {
 	serviceRequest := &ServiceRequest{
-		Name:     fmt.Sprintf("service-name-%s", uuid.NewV4().String()),
-		Protocol: "http",
-		Host:     "foo.com",
-		Port:     8080,
+		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+		Port:     Int(8080),
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -27,26 +27,26 @@ func TestServiceClient_GetServiceById(t *testing.T) {
 	assert.EqualValues(t, createdService.Host, serviceRequest.Host)
 	assert.EqualValues(t, createdService.Port, serviceRequest.Port)
 
-	result, err := client.Services().GetServiceById(createdService.Id)
+	result, err := client.Services().GetServiceById(*createdService.Id)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, createdService, result)
 
-	err = client.Services().DeleteServiceById(createdService.Id)
+	err = client.Services().DeleteServiceById(*createdService.Id)
 	assert.Nil(t, err)
 }
 
 func TestServiceClient_GetServices(t *testing.T) {
 	serviceRequest := &ServiceRequest{
-		Protocol: "http",
-		Host:     "foo.com",
+		Protocol: String("http"),
+		Host:     String("foo.com"),
 	}
 	createdServices := &Services{}
 	client := NewClient(NewDefaultConfig())
 
 	for i := 0; i < 5; i++ {
-		serviceRequest.Name = fmt.Sprintf("service-name-%s", uuid.NewV4().String())
+		serviceRequest.Name = String(fmt.Sprintf("service-name-%s", uuid.NewV4().String()))
 		createdService, err := client.Services().AddService(serviceRequest)
 
 		assert.Nil(t, err)
@@ -62,16 +62,16 @@ func TestServiceClient_GetServices(t *testing.T) {
 	assert.Subset(t, createdServices.Data, result)
 
 	for _, service := range createdServices.Data {
-		err = client.Services().DeleteServiceById(service.Id)
+		err = client.Services().DeleteServiceById(*service.Id)
 		assert.Nil(t, err)
 	}
 }
 
 func TestServiceClient_UpdateServiceById(t *testing.T) {
 	serviceRequest := &ServiceRequest{
-		Name:     fmt.Sprintf("service-name-%s", uuid.NewV4().String()),
-		Protocol: "http",
-		Host:     "foo.com",
+		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -81,14 +81,30 @@ func TestServiceClient_UpdateServiceById(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
 
-	serviceRequest.Host = "bar.io"
-	updatedService, err := client.Services().UpdateServiceById(createdService.Id, serviceRequest)
-	result, err := client.Services().GetServiceById(createdService.Id)
+	serviceRequest.Host = String("bar.io")
+	updatedService, err := client.Services().UpdateServiceById(*createdService.Id, serviceRequest)
+	result, err := client.Services().GetServiceById(*createdService.Id)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, updatedService, result)
 
-	err = client.Services().DeleteServiceById(createdService.Id)
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
+}
+
+func Test_ServicesGetNonExistentById(t *testing.T) {
+
+	service, err := NewClient(NewDefaultConfig()).Services().GetServiceById(uuid.NewV4().String())
+
+	assert.Nil(t, service)
+	assert.Nil(t, err)
+}
+
+func Test_ServicesGetNonExistentByName(t *testing.T) {
+
+	service, err := NewClient(NewDefaultConfig()).Services().GetServiceByName(uuid.NewV4().String())
+
+	assert.Nil(t, service)
 	assert.Nil(t, err)
 }

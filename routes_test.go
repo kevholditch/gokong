@@ -10,9 +10,9 @@ import (
 
 func TestRouteClient_GetRoute(t *testing.T) {
 	serviceRequest := &ServiceRequest{
-		Name:     "service-name" + uuid.NewV4().String(),
-		Protocol: "http",
-		Host:     "foo.com",
+		Name:     String("service-name" + uuid.NewV4().String()),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -29,7 +29,7 @@ func TestRouteClient_GetRoute(t *testing.T) {
 		Paths:        StringSlice([]string{"/bar"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
-		Service:      &RouteServiceObject{Id: createdService.Id},
+		Service:      &RouteServiceObject{Id: *createdService.Id},
 	}
 
 	createdRoute, err := client.Routes().AddRoute(routeRequest)
@@ -44,14 +44,14 @@ func TestRouteClient_GetRoute(t *testing.T) {
 	assert.Equal(t, createdRoute, result)
 
 	client.Routes().DeleteRoute(*createdRoute.Id)
-	client.Services().DeleteServiceById(createdService.Id)
+	client.Services().DeleteServiceById(*createdService.Id)
 }
 
 func TestRouteClient_GetRoutes(t *testing.T) {
 	serviceRequest := &ServiceRequest{
-		Name:     "service-name" + uuid.NewV4().String(),
-		Protocol: "http",
-		Host:     "foo.com",
+		Name:     String("service-name" + uuid.NewV4().String()),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -67,7 +67,7 @@ func TestRouteClient_GetRoutes(t *testing.T) {
 		Hosts:        StringSlice([]string{"foo.com"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
-		Service:      &RouteServiceObject{Id: createdService.Id},
+		Service:      &RouteServiceObject{Id: *createdService.Id},
 	}
 
 	for i := 0; i < 5; i++ {
@@ -91,15 +91,15 @@ func TestRouteClient_GetRoutes(t *testing.T) {
 		assert.Nil(t, err)
 	}
 
-	err = client.Services().DeleteServiceById(createdService.Id)
+	err = client.Services().DeleteServiceById(*createdService.Id)
 	assert.Nil(t, err)
 }
 
 func TestRouteClient_GetRoutesFromServiceId(t *testing.T) {
 	serviceRequest := &ServiceRequest{
-		Name:     "service-name" + uuid.NewV4().String(),
-		Protocol: "http",
-		Host:     "foo.com",
+		Name:     String("service-name" + uuid.NewV4().String()),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -116,7 +116,7 @@ func TestRouteClient_GetRoutesFromServiceId(t *testing.T) {
 		Paths:        StringSlice([]string{"/bar"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
-		Service:      &RouteServiceObject{Id: createdService.Id},
+		Service:      &RouteServiceObject{Id: *createdService.Id},
 	}
 
 	createdRoute, err := client.Routes().AddRoute(routeRequest)
@@ -124,21 +124,21 @@ func TestRouteClient_GetRoutesFromServiceId(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdRoute)
 
-	result, err := client.Routes().GetRoutesFromServiceId(createdService.Id)
+	result, err := client.Routes().GetRoutesFromServiceId(*createdService.Id)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 	assert.Equal(t, result[0], createdRoute)
 
 	client.Routes().DeleteRoute(*createdRoute.Id)
-	client.Services().DeleteServiceById(createdService.Id)
+	client.Services().DeleteServiceById(*createdService.Id)
 }
 
 func TestRouteClient_UpdateRoute(t *testing.T) {
 	serviceRequest := &ServiceRequest{
-		Name:     "service-name" + uuid.NewV4().String(),
-		Protocol: "http",
-		Host:     "foo.com",
+		Name:     String("service-name" + uuid.NewV4().String()),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
 	}
 
 	client := NewClient(NewDefaultConfig())
@@ -155,7 +155,7 @@ func TestRouteClient_UpdateRoute(t *testing.T) {
 		Paths:        StringSlice([]string{"/bar"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
-		Service:      &RouteServiceObject{Id: createdService.Id},
+		Service:      &RouteServiceObject{Id: *createdService.Id},
 	}
 
 	createdRoute, err := client.Routes().AddRoute(routeRequest)
@@ -172,5 +172,5 @@ func TestRouteClient_UpdateRoute(t *testing.T) {
 	assert.Equal(t, updatedRoute, result)
 
 	client.Routes().DeleteRoute(*createdRoute.Id)
-	client.Services().DeleteServiceById(createdService.Id)
+	client.Services().DeleteServiceById(*createdService.Id)
 }
