@@ -45,6 +45,10 @@ func TestRouteClient_GetRoute(t *testing.T) {
 
 	client.Routes().DeleteRoute(*createdRoute.Id)
 	client.Services().DeleteServiceById(*createdService.Id)
+
+	route, err := client.Routes().GetRoute(*createdRoute.Id)
+	assert.Nil(t, route)
+	assert.Nil(t, err)
 }
 
 func TestRouteClient_GetRoutes(t *testing.T) {
@@ -89,10 +93,15 @@ func TestRouteClient_GetRoutes(t *testing.T) {
 	for _, route := range createdRoutes.Data {
 		err := client.Routes().DeleteRoute(*route.Id)
 		assert.Nil(t, err)
+
+		route, err := client.Routes().GetRoute(*route.Id)
+		assert.Nil(t, route)
+		assert.Nil(t, err)
 	}
 
 	err = client.Services().DeleteServiceById(*createdService.Id)
 	assert.Nil(t, err)
+
 }
 
 func TestRouteClient_GetRoutesFromServiceId(t *testing.T) {
@@ -130,8 +139,16 @@ func TestRouteClient_GetRoutesFromServiceId(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, result[0], createdRoute)
 
-	client.Routes().DeleteRoute(*createdRoute.Id)
-	client.Services().DeleteServiceById(*createdService.Id)
+	err = client.Routes().DeleteRoute(*createdRoute.Id)
+	assert.Nil(t, err)
+
+	route, err := client.Routes().GetRoute(*createdRoute.Id)
+	assert.Nil(t, route)
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
+
 }
 
 func TestRouteClient_UpdateRoute(t *testing.T) {
@@ -171,6 +188,9 @@ func TestRouteClient_UpdateRoute(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, updatedRoute, result)
 
-	client.Routes().DeleteRoute(*createdRoute.Id)
-	client.Services().DeleteServiceById(*createdService.Id)
+	err = client.Routes().DeleteRoute(*createdRoute.Id)
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
 }
