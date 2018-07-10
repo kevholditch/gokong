@@ -1,6 +1,7 @@
 package gokong
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/satori/go.uuid"
@@ -103,6 +104,8 @@ func Test_PluginsCreateForASpecificApi(t *testing.T) {
 	assert.Equal(t, pluginRequest.Name, createdPlugin.Name)
 	assert.True(t, createdPlugin.Enabled)
 	assert.Equal(t, "", createdPlugin.ConsumerId)
+	assert.Equal(t, "", createdPlugin.ServiceId)
+	assert.Equal(t, "", createdPlugin.RouteId)
 	assert.Equal(t, *createdApi.Id, createdPlugin.ApiId)
 
 	err = client.Plugins().DeleteById(createdPlugin.Id)
@@ -141,6 +144,8 @@ func Test_PluginsCreateForASpecificConsumer(t *testing.T) {
 	assert.True(t, createdPlugin.Enabled)
 	assert.Equal(t, createdConsumer.Id, createdPlugin.ConsumerId)
 	assert.Equal(t, "", createdPlugin.ApiId)
+	assert.Equal(t, "", createdPlugin.ServiceId)
+	assert.Equal(t, "", createdPlugin.RouteId)
 
 	err = client.Plugins().DeleteById(createdPlugin.Id)
 
@@ -199,6 +204,112 @@ func Test_PluginsCreateForASpecificApiAndConsumer(t *testing.T) {
 	assert.Equal(t, *createdApi.Id, createdPlugin.ApiId)
 
 	err = client.Plugins().DeleteById(createdPlugin.Id)
+
+	assert.Nil(t, err)
+
+}
+
+func Test_PluginsCreateForASpecificService(t *testing.T) {
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String(fmt.Sprintf("%s.example.com", uuid.NewV4().String())),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdService, err := client.Services().AddService(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	pluginRequest := &PluginRequest{
+		Name:      "response-ratelimiting",
+		ServiceId: *createdService.Id,
+		Config: map[string]interface{}{
+			"limits.sms.minute": 20,
+		},
+	}
+
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+
+	assert.Equal(t, pluginRequest.Name, createdPlugin.Name)
+	assert.True(t, createdPlugin.Enabled)
+	assert.Equal(t, *createdService.Id, createdPlugin.ServiceId)
+	assert.Equal(t, "", createdPlugin.ApiId)
+	assert.Equal(t, "", createdPlugin.RouteId)
+	assert.Equal(t, "", createdPlugin.ConsumerId)
+
+	err = client.Plugins().DeleteById(createdPlugin.Id)
+
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+
+	assert.Nil(t, err)
+}
+
+func Test_PluginsCreateForASpecificRoute(t *testing.T) {
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String(fmt.Sprintf("%s.example.com", uuid.NewV4().String())),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdService, err := client.Services().AddService(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	routeRequest := &RouteRequest{
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{fmt.Sprintf("%s.example.com", uuid.NewV4().String())}),
+		Paths:        StringSlice([]string{"/"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(false),
+		Service:      &RouteServiceObject{Id: *createdService.Id},
+	}
+
+	createdRoute, err := client.Routes().AddRoute(routeRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdRoute)
+
+	pluginRequest := &PluginRequest{
+		Name:    "response-ratelimiting",
+		RouteId: *createdRoute.Id,
+		Config: map[string]interface{}{
+			"limits.sms.minute": 20,
+		},
+	}
+
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+
+	assert.Equal(t, pluginRequest.Name, createdPlugin.Name)
+	assert.True(t, createdPlugin.Enabled)
+	assert.Equal(t, *createdRoute.Id, createdPlugin.RouteId)
+	assert.Equal(t, "", createdPlugin.ConsumerId)
+	assert.Equal(t, "", createdPlugin.ServiceId)
+	assert.Equal(t, "", createdPlugin.ApiId)
+
+	err = client.Plugins().DeleteById(createdPlugin.Id)
+
+	assert.Nil(t, err)
+
+	err = client.Routes().DeleteRoute(*createdRoute.Id)
+
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
 
 	assert.Nil(t, err)
 
@@ -601,6 +712,186 @@ func Test_PluginsListFilteredByConsumerId(t *testing.T) {
 	err = client.Plugins().DeleteById(createdPlugin2.Id)
 	assert.Nil(t, err)
 
+}
+
+func Test_PluginsListFilteredByServiceId(t *testing.T) {
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String(fmt.Sprintf("%s.example.com", uuid.NewV4().String())),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdService, err := client.Services().AddService(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	pluginRequest := &PluginRequest{
+		Name:      "rate-limiting",
+		ServiceId: *createdService.Id,
+		Config: map[string]interface{}{
+			"minute": float64(22),
+			"hour":   float64(111),
+		},
+	}
+
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+
+	serviceRequest2 := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String(fmt.Sprintf("%s.example.com", uuid.NewV4().String())),
+	}
+
+	createdService2, err := client.Services().AddService(serviceRequest2)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService2)
+
+	pluginRequest2 := &PluginRequest{
+		Name:      "response-ratelimiting",
+		ServiceId: *createdService2.Id,
+		Config: map[string]interface{}{
+			"limits.sms.minute": 20,
+		},
+	}
+
+	createdPlugin2, err := client.Plugins().Create(pluginRequest2)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin2)
+
+	results, err := client.Plugins().ListFiltered(&PluginFilter{ServiceId: *createdService.Id})
+
+	assert.Nil(t, err)
+	assert.NotNil(t, results)
+	assert.True(t, len(results.Results) == 1)
+	assert.Equal(t, createdPlugin, results.Results[0])
+
+	err = client.Plugins().DeleteById(createdPlugin.Id)
+	assert.Nil(t, err)
+
+	err = client.Plugins().DeleteById(createdPlugin2.Id)
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService2.Id)
+	assert.Nil(t, err)
+}
+
+func Test_PluginsListFilteredByRouteId(t *testing.T) {
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String(fmt.Sprintf("%s.example.com", uuid.NewV4().String())),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdService, err := client.Services().AddService(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	routeRequest := &RouteRequest{
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{fmt.Sprintf("%s.example.com", uuid.NewV4().String())}),
+		Paths:        StringSlice([]string{"/"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(false),
+		Service:      &RouteServiceObject{Id: *createdService.Id},
+	}
+
+	createdRoute, err := client.Routes().AddRoute(routeRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdRoute)
+
+	pluginRequest := &PluginRequest{
+		Name:    "rate-limiting",
+		RouteId: *createdRoute.Id,
+		Config: map[string]interface{}{
+			"minute": float64(22),
+			"hour":   float64(111),
+		},
+	}
+
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+
+	serviceRequest2 := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String(fmt.Sprintf("%s.example.com", uuid.NewV4().String())),
+	}
+
+	createdService2, err := client.Services().AddService(serviceRequest2)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService2)
+
+	routeRequest2 := &RouteRequest{
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{fmt.Sprintf("%s.example.com", uuid.NewV4().String())}),
+		Paths:        StringSlice([]string{"/"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(false),
+		Service:      &RouteServiceObject{Id: *createdService2.Id},
+	}
+
+	createdRoute2, err := client.Routes().AddRoute(routeRequest2)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdRoute2)
+
+	pluginRequest2 := &PluginRequest{
+		Name:    "response-ratelimiting",
+		RouteId: *createdRoute2.Id,
+		Config: map[string]interface{}{
+			"limits.sms.minute": 20,
+		},
+	}
+
+	createdPlugin2, err := client.Plugins().Create(pluginRequest2)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin2)
+
+	results, err := client.Plugins().ListFiltered(&PluginFilter{RouteId: *createdRoute.Id})
+
+	assert.Nil(t, err)
+	assert.NotNil(t, results)
+	assert.True(t, len(results.Results) == 1)
+	assert.Equal(t, createdPlugin, results.Results[0])
+
+	err = client.Plugins().DeleteById(createdPlugin.Id)
+	assert.Nil(t, err)
+
+	err = client.Plugins().DeleteById(createdPlugin2.Id)
+	assert.Nil(t, err)
+
+	err = client.Routes().DeleteRoute(*createdRoute.Id)
+	assert.Nil(t, err)
+
+	err = client.Routes().DeleteRoute(*createdRoute2.Id)
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService2.Id)
+	assert.Nil(t, err)
 }
 
 func Test_PluginsListFilteredBySize(t *testing.T) {
