@@ -10,13 +10,14 @@ type RouteClient struct {
 }
 
 type RouteRequest struct {
-	Protocols    []*string           `json:"protocols"`
-	Methods      []*string           `json:"methods,omitempty"`
-	Hosts        []*string           `json:"hosts,omitempty"`
-	Paths        []*string           `json:"paths,omitempty"`
-	StripPath    *bool               `json:"strip_path,omitempty"`
-	PreserveHost *bool               `json:"preserve_host,omitempty"`
-	Service      *RouteServiceObject `json:"service"`
+	Protocols     []*string           `json:"protocols"`
+	Methods       []*string           `json:"methods,omitempty"`
+	Hosts         []*string           `json:"hosts,omitempty"`
+	Paths         []*string           `json:"paths,omitempty"`
+	RegexPriority *int                `json:"regex_priority,omitempty"`
+	StripPath     *bool               `json:"strip_path,omitempty"`
+	PreserveHost  *bool               `json:"preserve_host,omitempty"`
+	Service       *RouteServiceObject `json:"service"`
 }
 
 type RouteServiceObject struct {
