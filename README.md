@@ -504,7 +504,7 @@ updatedCertificate, err := gokong.NewClient(gokong.NewDefaultConfig()).Certifica
 
 # Routes
 
-Create a Route ([for more information on the Sni Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#route-object)):
+Create a Route ([for more information on the Route Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#route-object)):
 ```go
 serviceRequest := &gokong.ServiceRequest{
   Name:     gokong.String("service-name" + uuid.NewV4().String()),
@@ -569,7 +569,7 @@ client.Routes().DeleteRoute(createdRoute.Id)
 
 # Services
 
-Create an Service ([for more information on the Sni Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#service-object)):
+Create an Service ([for more information on the Service Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#service-object)):
 ```go
 serviceRequest := &ServiceRequest{
 		Name:     gokong.String("service-name-0"),
