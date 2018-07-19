@@ -93,8 +93,8 @@ status, err := gokong.NewClient(gokong.NewDefaultConfig()).Status().Get()
 Create a new API ([for more information on the API fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#api-object):
 ```go
 apiRequest := &gokong.ApiRequest{
-	Name:                   "Example",
-	Hosts:                  gokong.StringSlice([]string{"example.com"}),
+  Name:                   "Example",
+  Hosts:                  gokong.StringSlice([]string{"example.com"}),
   Uris:                   gokong.StringSlice([]string{"/example"}),
   Methods:                gokong.StringSlice([]string{"GET", "POST"}),
   UpstreamUrl:            gokong.String("http://localhost:4140/testservice"),
@@ -144,8 +144,8 @@ err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().DeleteByName("Example"
 Update an API by id:
 ```go
 apiRequest := &gokong.ApiRequest{
-  	Name:                   "Example",
-  	Hosts:                  gokong.StringSlice([]string{"example.com"}),
+    Name:                   "Example",
+    Hosts:                  gokong.StringSlice([]string{"example.com"}),
     Uris:                   gokong.StringSlice([]string{"/example"}),
     Methods:                gokong.StringSlice([]string{"GET", "POST"}),
     UpstreamUrl:            gokong.String("http://localhost:4140/testservice"),
@@ -164,9 +164,9 @@ updatedApi, err := gokong.NewClient(gokong.NewDefaultConfig()).Apis().UpdateById
 
 Update an API by name:
 ```go
-apiRequest := &gokong.ApiRequest{
- 	Name:                   "Example",
- 	Hosts:                  gokong.StringSlice([]string{"example.com"}),
+apiRequest := &gokong.ApiRequest{ 
+  Name:                   "Example",
+  Hosts:                  gokong.StringSlice([]string{"example.com"}),
   Uris:                   gokong.StringSlice([]string{"/example"}),
   Methods:                gokong.StringSlice([]string{"GET", "POST"}),
   UpstreamUrl:            gokong.String("http://localhost:4140/testservice"),
