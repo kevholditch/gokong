@@ -127,7 +127,6 @@ func Test_ConsumersList(t *testing.T) {
 
 	results, err := client.Consumers().List()
 
-	assert.True(t, results.Total > 0)
 	assert.True(t, len(results.Results) > 0)
 
 }

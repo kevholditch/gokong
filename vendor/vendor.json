@@ -27,6 +27,12 @@
 			"revisionTime": "2012-06-04T00:48:16Z"
 		},
 		{
+			"checksumSHA1": "f423Rwr9K0TMRFwPgJgjojAmZd8=",
+			"path": "github.com/blang/semver",
+			"revision": "c5e971dbed7850a93c23aa6ff69db5771d8e23b3",
+			"revisionTime": "2018-03-05T13:03:54Z"
+		},
+		{
 			"checksumSHA1": "BkXphDj0I6VmogVzOSg8xfBHXdQ=",
 			"path": "github.com/cenk/backoff",
 			"revision": "309aa717adbf351e92864cbedf9cca0b769a4b5a",
