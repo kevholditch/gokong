@@ -44,23 +44,6 @@ type Api struct {
 	HttpIfTerminated       *bool     `json:"http_if_terminated,omitempty"`
 }
 
-type apiNoHosts struct {
-	Id                     *string   `json:"id"`
-	CreatedAt              *int      `json:"created_at"`
-	Name                   *string   `json:"name"`
-	Uris                   []*string `json:"uris,omitempty"`
-	Methods                []*string `json:"methods,omitempty"`
-	UpstreamUrl            *string   `json:"upstream_url"`
-	StripUri               *bool     `json:"strip_uri,omitempty"`
-	PreserveHost           *bool     `json:"preserve_host,omitempty"`
-	Retries                *int      `json:"retries,omitempty"`
-	UpstreamConnectTimeout *int      `json:"upstream_connect_timeout,omitempty"`
-	UpstreamSendTimeout    *int      `json:"upstream_send_timeout,omitempty"`
-	UpstreamReadTimeout    *int      `json:"upstream_read_timeout,omitempty"`
-	HttpsOnly              *bool     `json:"https_only,omitempty"`
-	HttpIfTerminated       *bool     `json:"http_if_terminated,omitempty"`
-}
-
 type Apis struct {
 	Results []*Api `json:"data,omitempty"`
 	Total   int    `json:"total,omitempty"`
@@ -93,41 +76,7 @@ func (apiClient *ApiClient) GetById(id string) (*Api, error) {
 	api := &Api{}
 	err := json.Unmarshal([]byte(body), api)
 	if err != nil {
-
-		// explicitly check for case where user has updated hosts to [] as there is bug in Kong where an empty object is returned
-		// {} instead of empty array
-		unMarshalTypeError, ok := err.(*json.UnmarshalTypeError)
-		if ok && unMarshalTypeError.Field == "hosts" {
-
-			apiNoHosts := &apiNoHosts{}
-			err = json.Unmarshal([]byte(body), apiNoHosts)
-
-			if err != nil {
-				return nil, fmt.Errorf("could not parse api get response, error: %v", err)
-			}
-
-			api.Id = apiNoHosts.Id
-			api.CreatedAt = apiNoHosts.CreatedAt
-			api.Hosts = StringSlice([]string{})
-			api.Name = apiNoHosts.Name
-			api.Uris = apiNoHosts.Uris
-			api.Methods = apiNoHosts.Methods
-			api.UpstreamUrl = apiNoHosts.UpstreamUrl
-			api.StripUri = apiNoHosts.StripUri
-			api.PreserveHost = apiNoHosts.PreserveHost
-			api.Retries = apiNoHosts.Retries
-			api.UpstreamConnectTimeout = apiNoHosts.UpstreamConnectTimeout
-			api.UpstreamSendTimeout = apiNoHosts.UpstreamSendTimeout
-			api.UpstreamReadTimeout = apiNoHosts.UpstreamReadTimeout
-			api.HttpsOnly = apiNoHosts.HttpsOnly
-			api.HttpIfTerminated = apiNoHosts.HttpIfTerminated
-
-		}
-
-		if err != nil {
-			return nil, fmt.Errorf("could not parse api get response, error: %v", err)
-		}
-
+		return nil, fmt.Errorf("could not parse api get response, error: %v", err)
 	}
 
 	if api.Id == nil {
