@@ -629,3 +629,39 @@ func Test_ApisUpdateApiByName(t *testing.T) {
 	assert.Equal(t, apiRequest.HttpsOnly, result.HttpsOnly)
 	assert.Equal(t, apiRequest.HttpIfTerminated, result.HttpIfTerminated)
 }
+
+func Test_ApisUpdateToEmptyHostsArray(t *testing.T) {
+	apiRequest := &ApiRequest{
+		Name:        String("test-" + uuid.NewV4().String()),
+		Hosts:       StringSlice([]string{"example.com"}),
+		UpstreamUrl: String("http://localhost:4140/testservice"),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdApi)
+
+	_, _, errs := newPatch(client.config, client.config.HostAddress+ApisPath+*createdApi.Id).Send(`{"hosts":[]}`).End()
+
+	assert.Nil(t, errs)
+
+	result, err := client.Apis().GetById(*createdApi.Id)
+	assert.Nil(t, err)
+
+	assert.Equal(t, apiRequest.Name, result.Name)
+	assert.Equal(t, StringSlice([]string{}), result.Hosts)
+	assert.Nil(t, result.Uris)
+	assert.Nil(t, result.Methods)
+	assert.Equal(t, apiRequest.UpstreamUrl, result.UpstreamUrl)
+	assert.Equal(t, 5, *result.Retries)
+	assert.Equal(t, true, *result.StripUri)
+	assert.Equal(t, false, *result.PreserveHost)
+	assert.Equal(t, 60000, *result.UpstreamConnectTimeout)
+	assert.Equal(t, 60000, *result.UpstreamSendTimeout)
+	assert.Equal(t, 60000, *result.UpstreamReadTimeout)
+	assert.Equal(t, false, *result.HttpsOnly)
+	assert.Equal(t, false, *result.HttpIfTerminated)
+
+}
