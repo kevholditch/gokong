@@ -56,11 +56,11 @@ func Test_ApiKeyPassedViaHeader(t *testing.T) {
 	fmt.Print(key)
 
 	kongApiAddress := os.Getenv(EnvKongApiHostAddress) + "/admin-api"
-	testClient := NewClient(&Config{HostAddress: kongApiAddress})
+	unauthorisedClient := NewClient(&Config{HostAddress: kongApiAddress})
 
-	api, err := testClient.Apis().GetByName("admin-api")
+	api, err := unauthorisedClient.Apis().GetByName("admin-api")
 
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, api)
 
 	authorisedClient := NewClient(&Config{HostAddress: kongApiAddress, ApiKey: key})
@@ -70,6 +70,10 @@ func Test_ApiKeyPassedViaHeader(t *testing.T) {
 	assert.NotNil(t, api)
 
 	err = client.Plugins().DeleteById(createdPlugin.Id)
+
+	assert.Nil(t, err)
+
+	err = client.Apis().DeleteById(*createdApi.Id)
 
 	assert.Nil(t, err)
 
