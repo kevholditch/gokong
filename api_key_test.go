@@ -2,7 +2,6 @@ package gokong
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"testing"
 
@@ -52,9 +51,6 @@ func Test_ApiKeyPassedViaHeader(t *testing.T) {
 	m := make(map[string]interface{})
 	json.Unmarshal([]byte(c.Body), &m)
 
-	key := m["key"].(string)
-	fmt.Print(key)
-
 	kongApiAddress := os.Getenv(EnvKongApiHostAddress) + "/admin-api"
 	unauthorisedClient := NewClient(&Config{HostAddress: kongApiAddress})
 
@@ -63,7 +59,7 @@ func Test_ApiKeyPassedViaHeader(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.Nil(t, api)
 
-	authorisedClient := NewClient(&Config{HostAddress: kongApiAddress, ApiKey: key})
+	authorisedClient := NewClient(&Config{HostAddress: kongApiAddress, ApiKey: m["key"].(string)})
 
 	api, err = authorisedClient.Apis().GetByName("admin-api")
 	assert.Nil(t, err)

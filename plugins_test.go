@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"os"
+
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -932,4 +934,95 @@ func Test_PluginsListFilteredBySize(t *testing.T) {
 
 	err = client.Plugins().DeleteById(createdPlugin2.Id)
 	assert.Nil(t, err)
+}
+
+func Test_AllPluginEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T) {
+
+	apiRequest := &ApiRequest{
+		Name:        String("admin-api"),
+		Uris:        StringSlice([]string{"/admin-api"}),
+		UpstreamUrl: String("http://localhost:8001"),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdApi, err := client.Apis().Create(apiRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdApi)
+
+	consumerRequest := &ConsumerRequest{
+		Username: "username-" + uuid.NewV4().String(),
+		CustomId: "test-" + uuid.NewV4().String(),
+	}
+
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdConsumer)
+
+	pluginRequest := &PluginRequest{
+		Name:  "key-auth",
+		ApiId: *createdApi.Id,
+		Config: map[string]interface{}{
+			"hide_credentials": true,
+		},
+	}
+
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+
+	testPluginRequest := &PluginRequest{
+		Name: "request-size-limiting",
+		Config: map[string]interface{}{
+			"allowed_payload_size": 128,
+		},
+	}
+
+	testPlugin, err := client.Plugins().Create(testPluginRequest)
+	assert.NotNil(t, testPlugin)
+	assert.Nil(t, err)
+
+	_, err = client.Consumers().CreatePluginConfig(createdConsumer.Id, "key-auth", "")
+	assert.Nil(t, err)
+
+	kongApiAddress := os.Getenv(EnvKongApiHostAddress) + "/admin-api"
+	unauthorisedClient := NewClient(&Config{HostAddress: kongApiAddress})
+
+	p, err := unauthorisedClient.Plugins().GetById(testPlugin.Id)
+	assert.NotNil(t, err)
+	assert.Nil(t, p)
+
+	results, err := unauthorisedClient.Plugins().List()
+	assert.NotNil(t, err)
+	assert.Nil(t, results)
+
+	err = unauthorisedClient.Plugins().DeleteById(testPlugin.Id)
+	assert.NotNil(t, err)
+
+	createNewPluginRequest := &PluginRequest{
+		Name: "response-ratelimiting",
+		Config: map[string]interface{}{
+			"limits.sms.minute": 20,
+		},
+	}
+
+	newPlugin, err := unauthorisedClient.Plugins().Create(createNewPluginRequest)
+	assert.Nil(t, newPlugin)
+	assert.NotNil(t, err)
+
+	updatedPlugin, err := unauthorisedClient.Plugins().UpdateById(testPlugin.Id, createNewPluginRequest)
+	assert.Nil(t, updatedPlugin)
+	assert.NotNil(t, err)
+
+	err = client.Plugins().DeleteById(createdPlugin.Id)
+	assert.Nil(t, err)
+
+	err = client.Plugins().DeleteById(testPlugin.Id)
+	assert.Nil(t, err)
+
+	err = client.Apis().DeleteById(*createdApi.Id)
+	assert.Nil(t, err)
+
 }

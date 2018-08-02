@@ -3,8 +3,6 @@ package gokong
 import (
 	"testing"
 
-	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/satori/go.uuid"
@@ -811,18 +809,17 @@ func Test_AllApiEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T) 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdPlugin)
 
-	c, err := client.Consumers().CreatePluginConfig(createdConsumer.Id, "key-auth", "")
-
-	m := make(map[string]interface{})
-	json.Unmarshal([]byte(c.Body), &m)
-
-	key := m["key"].(string)
-	fmt.Print(key)
+	_, err = client.Consumers().CreatePluginConfig(createdConsumer.Id, "key-auth", "")
+	assert.Nil(t, err)
 
 	kongApiAddress := os.Getenv(EnvKongApiHostAddress) + "/admin-api"
 	unauthorisedClient := NewClient(&Config{HostAddress: kongApiAddress})
 
-	api, err := unauthorisedClient.Apis().GetByName("admin-api")
+	api, err := unauthorisedClient.Apis().GetByName(*createdApi.Name)
+	assert.NotNil(t, err)
+	assert.Nil(t, api)
+
+	api, err = unauthorisedClient.Apis().GetById(*createdApi.Id)
 	assert.NotNil(t, err)
 	assert.Nil(t, api)
 
@@ -831,6 +828,9 @@ func Test_AllApiEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T) 
 	assert.Nil(t, results)
 
 	err = unauthorisedClient.Apis().DeleteById(*createdApi.Id)
+	assert.NotNil(t, err)
+
+	err = unauthorisedClient.Apis().DeleteByName(*createdApi.Name)
 	assert.NotNil(t, err)
 
 	apiResult, err := unauthorisedClient.Apis().Create(&ApiRequest{
@@ -842,6 +842,14 @@ func Test_AllApiEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T) 
 	assert.NotNil(t, err)
 
 	updatedApi, err := unauthorisedClient.Apis().UpdateById(*createdApi.Id, &ApiRequest{
+		Name:        String("admin-api-updated"),
+		Uris:        StringSlice([]string{"/admin-api"}),
+		UpstreamUrl: String("http://localhost:8001"),
+	})
+	assert.Nil(t, updatedApi)
+	assert.NotNil(t, err)
+
+	updatedApi, err = unauthorisedClient.Apis().UpdateByName(*createdApi.Name, &ApiRequest{
 		Name:        String("admin-api-updated"),
 		Uris:        StringSlice([]string{"/admin-api"}),
 		UpstreamUrl: String("http://localhost:8001"),
