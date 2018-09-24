@@ -3,6 +3,7 @@ package gokong
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -133,8 +134,10 @@ func (serviceClient *ServiceClient) getService(endpoint string) (*Service, error
 
 			return service, nil
 		}
+
+		log.Println("Retry on retrieving service", count, endpoint, r)
 	}
-	return nil, fmt.Errorf("Unable to retrieve service after 5 retries")
+	return nil, fmt.Errorf("unable to retrieve service after 5 retries")
 }
 
 func (serviceClient *ServiceClient) GetServices(query *ServiceQueryString) ([]*Service, error) {

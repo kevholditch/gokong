@@ -19,7 +19,7 @@ type PluginRequest struct {
 }
 
 type Plugin struct {
-	Id         string                 `json:"id"`
+	Id         *string                 `json:"id"`
 	Name       string                 `json:"name"`
 	ApiId      string                 `json:"api_id,omitempty"`
 	ConsumerId string                 `json:"consumer_id,omitempty"`
