@@ -1,5 +1,3 @@
-This is a fork of gokong library from [github](https://github.com/kevholditch/gokong).  The reason why it is forked is because the original code mistakenly returns a nil object when kong returns error 500.  An issue has been filed [here](https://github.com/kevholditch/gokong/issues/29).  When this issue is fixed, we remove this repo and go back to using the original.
-
 GoKong
 ======
 A kong go client fully tested with no mocks!!
