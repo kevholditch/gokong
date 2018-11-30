@@ -2,6 +2,7 @@ package gokong
 
 import (
 	"crypto/tls"
+	"fmt"
 	"time"
 
 	"github.com/parnurzeal/gorequest"
@@ -61,9 +62,13 @@ func (ka *KongAgent) End(callback ...func(response gorequest.Response, body stri
 			return r, body, errs
 		}
 
+		errors = append(errors, fmt.Errorf("retry attempt %v", count))
 		errors = append(errors, errs...)
-		time.Sleep(ka.retryInterval)
+		if count < (ka.maxRetries - 1) { // Don't sleep if it is leaving the loop
+			time.Sleep(ka.retryInterval)
+		}
 	}
+
 	return nil, "", errors
 }
 
