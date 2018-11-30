@@ -3,7 +3,6 @@ package gokong
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
 )
 
 type ServiceClient struct {
@@ -106,35 +105,26 @@ func (serviceClient *ServiceClient) GetServiceFromRouteId(id string) (*Service, 
 }
 
 func (serviceClient *ServiceClient) getService(endpoint string) (*Service, error) {
-	for count := 0; count < 5; count++ {
-		r, body, errs := newGet(serviceClient.config, endpoint).End()
-		if errs != nil {
-			return nil, fmt.Errorf("could not get the service, error: %v", errs)
-		}
-
-		if r.StatusCode == 401 || r.StatusCode == 403 { // Return immediately if it's unauthorized
-			return nil, fmt.Errorf("not authorised, message from kong: %s", body)
-		}
-
-		if r.StatusCode == 404 {
-			return nil, nil
-		}
-
-		if r.StatusCode == http.StatusOK { // Return immediately if it's OK.
-			service := &Service{}
-			err := json.Unmarshal([]byte(body), service)
-			if err != nil {
-				return nil, fmt.Errorf("could not parse service get response, error: %v", err)
-			}
-
-			if service.Id == nil {
-				return nil, nil
-			}
-
-			return service, nil
-		}
+	r, body, errs := newGet(serviceClient.config, endpoint).End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not get the service, error: %v", errs)
 	}
-	return nil, fmt.Errorf("Unable to retrieve service after 5 retries")
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	service := &Service{}
+	err := json.Unmarshal([]byte(body), service)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse service get response, error: %v", err)
+	}
+
+	if service.Id == nil {
+		return nil, nil
+	}
+
+	return service, nil
 }
 
 func (serviceClient *ServiceClient) GetServices(query *ServiceQueryString) ([]*Service, error) {
