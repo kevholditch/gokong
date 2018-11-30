@@ -17,6 +17,8 @@ const EnvKongAdminPassword = "KONG_ADMIN_PASSWORD"
 const EnvKongTLSSkipVerify = "TLS_SKIP_VERIFY"
 const EnvKongApiKey = "KONG_API_KEY"
 const EnvKongAdminToken = "KONG_ADMIN_TOKEN"
+const EnvKongMaxRetries = "KONG_MAX_RETRIES"
+const EnvKongRetryInterval = "KONG_RETRY_INTERVAL"
 
 type KongAdminClient struct {
 	config *Config
@@ -29,6 +31,8 @@ type Config struct {
 	InsecureSkipVerify bool
 	ApiKey             string
 	AdminToken         string
+	MaxRetries         int
+	RetryInterval      int
 }
 
 func addQueryString(currentUrl string, filter interface{}) (string, error) {
@@ -57,6 +61,8 @@ func NewDefaultConfig() *Config {
 		Username:           "",
 		Password:           "",
 		InsecureSkipVerify: false,
+		MaxRetries:         10,
+		RetryInterval:      5,
 	}
 
 	if os.Getenv(EnvKongAdminHostAddress) != "" {
@@ -79,6 +85,18 @@ func NewDefaultConfig() *Config {
 	}
 	if os.Getenv(EnvKongAdminToken) != "" {
 		config.AdminToken = os.Getenv(EnvKongAdminToken)
+	}
+
+	if val, exists := os.LookupEnv(EnvKongMaxRetries); exists {
+		if maxRetries, err := strconv.Atoi(val); err == nil {
+			config.MaxRetries = maxRetries
+		}
+	}
+
+	if val, exists := os.LookupEnv(EnvKongRetryInterval); exists {
+		if retryInterval, err := strconv.Atoi(val); err == nil {
+			config.RetryInterval = retryInterval
+		}
 	}
 
 	return config
