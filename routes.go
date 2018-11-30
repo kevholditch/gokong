@@ -3,8 +3,6 @@ package gokong
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-	"net/http"
 )
 
 type RouteClient struct {
@@ -76,38 +74,26 @@ func (routeClient *RouteClient) AddRoute(routeRequest *RouteRequest) (*Route, er
 }
 
 func (routeClient *RouteClient) GetRoute(id string) (*Route, error) {
-	for count := 0; count < 5; count++ {
-		r, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+RoutesPath+id).End()
-		if errs != nil { // Return on technical problems on connectivity
-			return nil, fmt.Errorf("could not get the route, error: %v", errs)
-		}
-
-		if r.StatusCode == 401 || r.StatusCode == 403 { // return immediately if can't auth
-			return nil, fmt.Errorf("not authorised, message from kong: %s", body)
-		}
-
-		if r.StatusCode == 404 { // Return nil if not found.
-			return nil, nil
-		}
-
-		if r.StatusCode == http.StatusOK {
-			route := &Route{}
-			err := json.Unmarshal([]byte(body), route)
-			if err != nil {
-				return nil, fmt.Errorf("could not parse route get response, error: %v", err)
-			}
-
-			if route.Id == nil { // Can this really happen?
-				return nil, nil
-			}
-
-			return route, nil
-		}
-
-		log.Println("Retrying on getting route", count, id, r)
-
+	r, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+RoutesPath+id).End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not get the route, error: %v", errs)
 	}
-	return nil, fmt.Errorf("unable to retrieve route after 5 retries")
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	route := &Route{}
+	err := json.Unmarshal([]byte(body), route)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse route get response, error: %v", err)
+	}
+
+	if route.Id == nil {
+		return nil, nil
+	}
+
+	return route, nil
 }
 
 func (routeClient *RouteClient) GetRoutes(query *RouteQueryString) ([]*Route, error) {
