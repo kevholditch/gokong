@@ -39,6 +39,33 @@ func TestServiceClient_GetServiceById(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestServiceClient_GetServiceByIdWithUrl(t *testing.T) {
+	serviceRequest := &ServiceRequest{
+		Name: String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Url:  String("http://foo.com:8080"),
+	}
+
+	client := NewClient(NewDefaultConfig())
+
+	createdService, err := client.Services().AddService(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+	assert.EqualValues(t, createdService.Name, serviceRequest.Name)
+	assert.EqualValues(t, createdService.Protocol, String("http"))
+	assert.EqualValues(t, createdService.Host, String("foo.com"))
+	assert.EqualValues(t, createdService.Port, Int(8080))
+
+	result, err := client.Services().GetServiceById(*createdService.Id)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, createdService, result)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
+}
+
 func TestServiceClient_GetServices(t *testing.T) {
 	serviceRequest := &ServiceRequest{
 		Protocol: String("http"),
