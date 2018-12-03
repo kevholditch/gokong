@@ -59,15 +59,15 @@ func (ka *KongAgent) End(callback ...func(response gorequest.Response, body stri
 	for count := 0; count < ka.maxRetries; count++ {
 		r, body, errs := ka.SuperAgent.End()
 
-		if errs != nil || (r.StatusCode > 400 && r.StatusCode < 500) || (r.StatusCode >= 200 || r.StatusCode < 300) {
-			log.Printf("Success on %v", count)
+		if errs != nil || (r.StatusCode >= 400 && r.StatusCode < 500) || (r.StatusCode >= 200 && r.StatusCode < 300) {
+			log.Printf("Success on %v: %v=%v", count, r.StatusCode, r)
 			return r, body, errs
 		}
 
+		log.Printf("Attempt %v unsuccessful: %v\n", count, r)
 		errors = append(errors, fmt.Errorf("retry attempt %v", count))
 		errors = append(errors, errs...)
 		if count < (ka.maxRetries - 1) { // Don't sleep if it is leaving the loop
-			log.Printf("Attempt %v unsuccessful: %v\n", count, errs)
 			time.Sleep(ka.retryInterval)
 		}
 	}
@@ -85,7 +85,6 @@ func newKongAgent(config *Config) *KongAgent {
 		retryInterval = 5
 	}
 	ka := KongAgent{*gorequest.New(), maxRetries, time.Duration(retryInterval) * time.Second}
-	log.Printf("new kong agent returned\n")
 	return &ka
 }
 
