@@ -60,7 +60,6 @@ func (ka *KongAgent) End(callback ...func(response gorequest.Response, body stri
 		r, body, errs := ka.SuperAgent.End()
 
 		if errs != nil || (r.StatusCode >= 400 && r.StatusCode < 500) || (r.StatusCode >= 200 && r.StatusCode < 300) {
-			log.Printf("Success on %v: %v=%v", count, r.StatusCode, r)
 			return r, body, errs
 		}
 
