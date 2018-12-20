@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/kevholditch/gokong.svg?branch=master)](https://travis-ci.org/kevholditch/gokong)
+
 GoKong
 ======
 A kong go client fully tested with no mocks!!
