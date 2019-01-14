@@ -32,7 +32,7 @@ func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer, kongVe
 		Tag:        kongVersion,
 		Env:        envVars,
 		Links:      []string{postgres.Name},
-		Cmd:        []string{"kong", "migrations", "up"},
+		Cmd:        []string{"kong", "migrations", "bootstrap"},
 	}
 
 	migrations, err := pool.RunWithOptions(options)
@@ -73,7 +73,7 @@ func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer, kongVe
 
 	if err := pool.Retry(func() error {
 		var err error
-		curlEndpoint := fmt.Sprintf("%s/apis", kongAddress)
+		curlEndpoint := fmt.Sprintf("%s/status", kongAddress)
 		if err != nil {
 			return err
 		}

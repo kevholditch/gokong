@@ -1,9 +1,8 @@
 package gokong
 
 import (
-	"testing"
-
 	"os"
+	"testing"
 
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"

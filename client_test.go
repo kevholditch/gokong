@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const defaultKongVersion = "0.13.0"
+const defaultKongVersion = "1.0.0"
 
 func Test_Newclient(t *testing.T) {
 	result := NewClient(NewDefaultConfig())
