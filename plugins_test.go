@@ -2,7 +2,6 @@ package gokong
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/satori/go.uuid"
@@ -65,56 +64,6 @@ func Test_PluginsCreateForAllApisAndConsumers(t *testing.T) {
 
 }
 
-func Test_PluginsCreateForASpecificApi(t *testing.T) {
-
-	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"example.com"}),
-		Uris:                   StringSlice([]string{"/example"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
-	}
-
-	client := NewClient(NewDefaultConfig())
-	createdApi, err := client.Apis().Create(apiRequest)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, createdApi)
-
-	pluginRequest := &PluginRequest{
-		Name:  "basic-auth",
-		ApiId: *createdApi.Id,
-		Config: map[string]interface{}{
-			"hide_credentials": true,
-		},
-	}
-
-	createdPlugin, err := client.Plugins().Create(pluginRequest)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, createdPlugin)
-
-	assert.Equal(t, pluginRequest.Name, createdPlugin.Name)
-	assert.True(t, createdPlugin.Enabled)
-	assert.Equal(t, "", createdPlugin.ConsumerId)
-	assert.Equal(t, "", createdPlugin.ServiceId)
-	assert.Equal(t, "", createdPlugin.RouteId)
-	assert.Equal(t, *createdApi.Id, createdPlugin.ApiId)
-
-	err = client.Plugins().DeleteById(createdPlugin.Id)
-
-	assert.Nil(t, err)
-
-}
-
 func Test_PluginsCreateForASpecificConsumer(t *testing.T) {
 
 	consumerRequest := &ConsumerRequest{
@@ -147,62 +96,6 @@ func Test_PluginsCreateForASpecificConsumer(t *testing.T) {
 	assert.Equal(t, "", createdPlugin.ApiId)
 	assert.Equal(t, "", createdPlugin.ServiceId)
 	assert.Equal(t, "", createdPlugin.RouteId)
-
-	err = client.Plugins().DeleteById(createdPlugin.Id)
-
-	assert.Nil(t, err)
-
-}
-
-func Test_PluginsCreateForASpecificApiAndConsumer(t *testing.T) {
-
-	consumerRequest := &ConsumerRequest{
-		Username: "username-" + uuid.NewV4().String(),
-		CustomId: "test-" + uuid.NewV4().String(),
-	}
-
-	client := NewClient(NewDefaultConfig())
-	createdConsumer, err := client.Consumers().Create(consumerRequest)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, createdConsumer)
-
-	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"example.com"}),
-		Uris:                   StringSlice([]string{"/example"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
-	}
-
-	createdApi, err := client.Apis().Create(apiRequest)
-
-	pluginRequest := &PluginRequest{
-		Name:       "response-ratelimiting",
-		ConsumerId: createdConsumer.Id,
-		ApiId:      *createdApi.Id,
-		Config: map[string]interface{}{
-			"limits.sms.minute": 20,
-		},
-	}
-
-	createdPlugin, err := client.Plugins().Create(pluginRequest)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, createdPlugin)
-
-	assert.Equal(t, pluginRequest.Name, createdPlugin.Name)
-	assert.True(t, createdPlugin.Enabled)
-	assert.Equal(t, createdConsumer.Id, createdPlugin.ConsumerId)
-	assert.Equal(t, *createdApi.Id, createdPlugin.ApiId)
 
 	err = client.Plugins().DeleteById(createdPlugin.Id)
 
@@ -564,92 +457,6 @@ func Test_PluginsListFilteredByName(t *testing.T) {
 
 }
 
-func Test_PluginsListFilteredByApiId(t *testing.T) {
-
-	apiRequest := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"example.com"}),
-		Uris:                   StringSlice([]string{"/example"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
-	}
-
-	client := NewClient(NewDefaultConfig())
-	createdApi, err := client.Apis().Create(apiRequest)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, createdApi)
-
-	pluginRequest := &PluginRequest{
-		Name:  "rate-limiting",
-		ApiId: *createdApi.Id,
-		Config: map[string]interface{}{
-			"minute": float64(22),
-			"hour":   float64(111),
-		},
-	}
-	createdPlugin, err := client.Plugins().Create(pluginRequest)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, createdPlugin)
-
-	apiRequest2 := &ApiRequest{
-		Name:                   String("test-" + uuid.NewV4().String()),
-		Hosts:                  StringSlice([]string{"example.com"}),
-		Uris:                   StringSlice([]string{"/example"}),
-		Methods:                StringSlice([]string{"GET", "POST"}),
-		UpstreamUrl:            String("http://localhost:4140/testservice"),
-		StripUri:               Bool(true),
-		PreserveHost:           Bool(true),
-		Retries:                Int(3),
-		UpstreamConnectTimeout: Int(1000),
-		UpstreamSendTimeout:    Int(2000),
-		UpstreamReadTimeout:    Int(3000),
-		HttpsOnly:              Bool(true),
-		HttpIfTerminated:       Bool(true),
-	}
-
-	createdApi2, err := client.Apis().Create(apiRequest2)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, createdApi2)
-
-	pluginRequest2 := &PluginRequest{
-		Name:  "response-ratelimiting",
-		ApiId: *createdApi2.Id,
-		Config: map[string]interface{}{
-			"limits.sms.minute": 20,
-		},
-	}
-
-	createdPlugin2, err := client.Plugins().Create(pluginRequest2)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, createdPlugin2)
-
-	results, err := client.Plugins().ListFiltered(&PluginFilter{ApiId: *createdApi.Id})
-
-	assert.Nil(t, err)
-	assert.NotNil(t, results)
-	assert.True(t, len(results.Results) == 1)
-	assert.Equal(t, createdPlugin, results.Results[0])
-
-	err = client.Plugins().DeleteById(createdPlugin.Id)
-	assert.Nil(t, err)
-
-	err = client.Plugins().DeleteById(createdPlugin2.Id)
-	assert.Nil(t, err)
-
-}
-
 func Test_PluginsListFilteredByConsumerId(t *testing.T) {
 
 	consumerRequest := &ConsumerRequest{
@@ -933,95 +740,4 @@ func Test_PluginsListFilteredBySize(t *testing.T) {
 
 	err = client.Plugins().DeleteById(createdPlugin2.Id)
 	assert.Nil(t, err)
-}
-
-func Test_AllPluginEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T) {
-
-	apiRequest := &ApiRequest{
-		Name:        String("admin-api"),
-		Uris:        StringSlice([]string{"/admin-api"}),
-		UpstreamUrl: String("http://localhost:8001"),
-	}
-
-	client := NewClient(NewDefaultConfig())
-	createdApi, err := client.Apis().Create(apiRequest)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, createdApi)
-
-	consumerRequest := &ConsumerRequest{
-		Username: "username-" + uuid.NewV4().String(),
-		CustomId: "test-" + uuid.NewV4().String(),
-	}
-
-	createdConsumer, err := client.Consumers().Create(consumerRequest)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, createdConsumer)
-
-	pluginRequest := &PluginRequest{
-		Name:  "key-auth",
-		ApiId: *createdApi.Id,
-		Config: map[string]interface{}{
-			"hide_credentials": true,
-		},
-	}
-
-	createdPlugin, err := client.Plugins().Create(pluginRequest)
-
-	assert.Nil(t, err)
-	assert.NotNil(t, createdPlugin)
-
-	testPluginRequest := &PluginRequest{
-		Name: "request-size-limiting",
-		Config: map[string]interface{}{
-			"allowed_payload_size": 128,
-		},
-	}
-
-	testPlugin, err := client.Plugins().Create(testPluginRequest)
-	assert.NotNil(t, testPlugin)
-	assert.Nil(t, err)
-
-	_, err = client.Consumers().CreatePluginConfig(createdConsumer.Id, "key-auth", "")
-	assert.Nil(t, err)
-
-	kongApiAddress := os.Getenv(EnvKongApiHostAddress) + "/admin-api"
-	unauthorisedClient := NewClient(&Config{HostAddress: kongApiAddress})
-
-	p, err := unauthorisedClient.Plugins().GetById(testPlugin.Id)
-	assert.NotNil(t, err)
-	assert.Nil(t, p)
-
-	results, err := unauthorisedClient.Plugins().List()
-	assert.NotNil(t, err)
-	assert.Nil(t, results)
-
-	err = unauthorisedClient.Plugins().DeleteById(testPlugin.Id)
-	assert.NotNil(t, err)
-
-	createNewPluginRequest := &PluginRequest{
-		Name: "response-ratelimiting",
-		Config: map[string]interface{}{
-			"limits.sms.minute": 20,
-		},
-	}
-
-	newPlugin, err := unauthorisedClient.Plugins().Create(createNewPluginRequest)
-	assert.Nil(t, newPlugin)
-	assert.NotNil(t, err)
-
-	updatedPlugin, err := unauthorisedClient.Plugins().UpdateById(testPlugin.Id, createNewPluginRequest)
-	assert.Nil(t, updatedPlugin)
-	assert.NotNil(t, err)
-
-	err = client.Plugins().DeleteById(createdPlugin.Id)
-	assert.Nil(t, err)
-
-	err = client.Plugins().DeleteById(testPlugin.Id)
-	assert.Nil(t, err)
-
-	err = client.Apis().DeleteById(*createdApi.Id)
-	assert.Nil(t, err)
-
 }
