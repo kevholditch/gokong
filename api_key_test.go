@@ -2,7 +2,6 @@ package gokong
 
 import (
 	"testing"
-
 )
 
 func Test_ApiKeyPassedViaHeader(t *testing.T) {
