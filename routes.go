@@ -10,13 +10,18 @@ type RouteClient struct {
 }
 
 type RouteRequest struct {
-	Protocols    []*string           `json:"protocols"`
-	Methods      []*string           `json:"methods"`
-	Hosts        []*string           `json:"hosts"`
-	Paths        []*string           `json:"paths"`
-	StripPath    *bool               `json:"strip_path"`
-	PreserveHost *bool               `json:"preserve_host"`
-	Service      *RouteServiceObject `json:"service"`
+	Name          *string             `json:"name"`
+	Protocols     []*string           `json:"protocols"`
+	Methods       []*string           `json:"methods"`
+	Hosts         []*string           `json:"hosts"`
+	Paths         []*string           `json:"paths"`
+	RegexPriority *int                `json:"regex_priority"`
+	StripPath     *bool               `json:"strip_path"`
+	PreserveHost  *bool               `json:"preserve_host"`
+	Snis          []*string           `json:"snis"`
+	Sources       []*string           `json:"sources"`
+	Destinations  []*string           `json:"destinations"`
+	Service       *RouteServiceObject `json:"service"`
 }
 
 type RouteServiceObject struct {
@@ -25,6 +30,7 @@ type RouteServiceObject struct {
 
 type Route struct {
 	Id            *string             `json:"id"`
+	Name          *string             `json:"name"`
 	CreatedAt     *int                `json:"created_at"`
 	UpdatedAt     *int                `json:"updated_at"`
 	Protocols     []*string           `json:"protocols"`
@@ -34,6 +40,9 @@ type Route struct {
 	RegexPriority *int                `json:"regex_priority"`
 	StripPath     *bool               `json:"strip_path"`
 	PreserveHost  *bool               `json:"preserve_host"`
+	Snis          []*string           `json:"snis"`
+	Sources       []*string           `json:"sources"`
+	Destinations  []*string           `json:"destinations"`
 	Service       *RouteServiceObject `json:"service"`
 }
 

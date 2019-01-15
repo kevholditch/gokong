@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-
 func Test_CertificatesGetById(t *testing.T) {
 
 	certificateRequest := &CertificateRequest{

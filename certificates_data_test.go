@@ -1,7 +1,7 @@
 package gokong
 
 const (
-	testKey1 =  `-----BEGIN PRIVATE KEY-----
+	testKey1 = `-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDXi8zFDavAN7fl
 RJO2G4oLj6NIT86BJnzM3XqtGl6pvfp0bo9so+h/0HhGtnIh7Je4BL7PGsv5BSdg
 6EDDZDXZn/ZDe3jje+Ee1sfn98H+1mjTDlm0U2it/cWaZ+a8GEhPwidWyI1AeS4O
@@ -50,7 +50,7 @@ RQzGLmfi0TxOiCNCb9fArIaxlXYfR/yBoV/NdEKrFdpQg3pxKNKu0+IYJHomJDpZ
 +Hr3Nf7YNDiX/eCuG//beQaE2H4A9/K7i15szIbv/inpIkcx7z5eIGULR7Hykw==
 -----END CERTIFICATE-----`
 
-testKey2 = `-----BEGIN PRIVATE KEY-----
+	testKey2 = `-----BEGIN PRIVATE KEY-----
 MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDIuH4e8oJC3D9I
 E1PXHuE+CDyUwM0/UWMbuZXCu1LslE8kY10WN60qmvUc+JcLXKTyo1tfhsglcDEj
 ac0tl7WYAF0MbLQRSuO2XTMcCByMXxt4CclNE6irl075y2lZxgvvu+dokpGSDcK7
@@ -79,7 +79,7 @@ mFxZ8nw7YTuIpXNYhDbYgcreqMH05z65dCrNLisBx3LYC/Vi/W34k0lbgr3So0Fr
 Y3BwgknnyHoyRu+wW0xmcg==
 -----END PRIVATE KEY-----`
 
-testCert2 = `-----BEGIN CERTIFICATE-----
+	testCert2 = `-----BEGIN CERTIFICATE-----
 MIIC/jCCAeYCCQCpd2Zgh3uOqDANBgkqhkiG9w0BAQsFADBBMQswCQYDVQQGEwJH
 QjENMAsGA1UECAwEQ0FNQjESMBAGA1UEBwwJQ2FtYnJpZGdlMQ8wDQYDVQQDDAZn
 b2tvbmcwHhcNMTkwMTE0MjEyODAzWhcNMjkwMTExMjEyODAzWjBBMQswCQYDVQQG
@@ -98,11 +98,9 @@ MU9gkS6sckqx5jED6t3tAR29sdMs7j2+PjeQAG8wLYPj/4l0k6tJ9Rr6DHp+XRfq
 Q3ZTKuoA+/0S3D+KmwXmFW2lwY2y0DQxXbwzl8M4F6tBUQAbD0jA/htPpI5uw6+R
 6+8=
 -----END CERTIFICATE-----`
-
-
 )
 
 type testCert struct {
 	privateKey string
-	publicKey string
+	publicKey  string
 }

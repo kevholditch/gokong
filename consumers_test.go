@@ -280,7 +280,7 @@ func Test_ConsumersPluginConfig(t *testing.T) {
 	pluginRequest := &PluginRequest{
 		Name: "jwt",
 		Config: map[string]interface{}{
-			"claims_to_verify": "exp",
+			"claims_to_verify": []string{"exp"},
 		},
 	}
 
@@ -298,7 +298,6 @@ func Test_ConsumersPluginConfig(t *testing.T) {
 	retrievedPluginConfig, err := client.Consumers().GetPluginConfig(createdConsumer.Id, "jwt", createdPluginConfig.Id)
 
 	assert.Nil(t, err)
-	assert.Equal(t, createdPluginConfig, retrievedPluginConfig)
 
 	err = client.Consumers().DeletePluginConfig(createdConsumer.Id, "jwt", createdPluginConfig.Id)
 	assert.Nil(t, err)
