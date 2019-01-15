@@ -29,7 +29,7 @@ func TestRouteClient_GetRoute(t *testing.T) {
 		Paths:        StringSlice([]string{"/bar"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
-		Service:      &RouteServiceObject{Id: *createdService.Id},
+		Service:      ToId(*createdService.Id),
 	}
 
 	createdRoute, err := client.Routes().AddRoute(routeRequest)
@@ -71,7 +71,7 @@ func TestRouteClient_GetRoutes(t *testing.T) {
 		Hosts:        StringSlice([]string{"foo.com"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
-		Service:      &RouteServiceObject{Id: *createdService.Id},
+		Service:      ToId(*createdService.Id),
 	}
 
 	for i := 0; i < 5; i++ {
@@ -125,7 +125,7 @@ func TestRouteClient_GetRoutesFromServiceId(t *testing.T) {
 		Paths:        StringSlice([]string{"/bar"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
-		Service:      &RouteServiceObject{Id: *createdService.Id},
+		Service:      ToId(*createdService.Id),
 	}
 
 	createdRoute, err := client.Routes().AddRoute(routeRequest)
@@ -172,7 +172,7 @@ func TestRouteClient_UpdateRoute(t *testing.T) {
 		Paths:        StringSlice([]string{"/bar"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
-		Service:      &RouteServiceObject{Id: *createdService.Id},
+		Service:      ToId(*createdService.Id),
 	}
 
 	createdRoute, err := client.Routes().AddRoute(routeRequest)
@@ -215,7 +215,7 @@ func TestRouteClient_UpdateRouteMethodsToEmptyArray(t *testing.T) {
 		Paths:        StringSlice([]string{"/foo"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
-		Service:      &RouteServiceObject{Id: *createdService.Id},
+		Service:      ToId(*createdService.Id),
 	}
 
 	createdRoute, err := client.Routes().AddRoute(routeRequest)
@@ -272,7 +272,7 @@ func TestRouteClient_UpdateRouteHostsToEmptyArray(t *testing.T) {
 		Paths:        StringSlice([]string{"/foo"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
-		Service:      &RouteServiceObject{Id: *createdService.Id},
+		Service:      ToId(*createdService.Id),
 	}
 
 	createdRoute, err := client.Routes().AddRoute(routeRequest)
@@ -329,7 +329,7 @@ func TestRouteClient_UpdateRoutePathsToEmptyArray(t *testing.T) {
 		Paths:        StringSlice([]string{"/foo"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
-		Service:      &RouteServiceObject{Id: *createdService.Id},
+		Service:      ToId(*createdService.Id),
 	}
 
 	createdRoute, err := client.Routes().AddRoute(routeRequest)

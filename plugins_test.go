@@ -164,7 +164,7 @@ func Test_PluginsCreateForASpecificRoute(t *testing.T) {
 		Paths:        StringSlice([]string{"/"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(false),
-		Service:      &RouteServiceObject{Id: *createdService.Id},
+		Service:      ToId(*createdService.Id),
 	}
 
 	createdRoute, err := client.Routes().AddRoute(routeRequest)
