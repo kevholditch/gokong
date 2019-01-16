@@ -167,7 +167,7 @@ func Test_PluginsCreateForASpecificRoute(t *testing.T) {
 		Service:      ToId(*createdService.Id),
 	}
 
-	createdRoute, err := client.Routes().AddRoute(routeRequest)
+	createdRoute, err := client.Routes().Create(routeRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdRoute)
@@ -195,7 +195,7 @@ func Test_PluginsCreateForASpecificRoute(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	err = client.Routes().DeleteRoute(*createdRoute.Id)
+	err = client.Routes().DeleteById(*createdRoute.Id)
 
 	assert.Nil(t, err)
 
