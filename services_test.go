@@ -18,7 +18,7 @@ func TestServiceClient_GetServiceById(t *testing.T) {
 
 	client := NewClient(NewDefaultConfig())
 
-	createdService, err := client.Services().AddService(serviceRequest)
+	createdService, err := client.Services().Create(serviceRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
@@ -47,7 +47,7 @@ func TestServiceClient_GetServices(t *testing.T) {
 
 	for i := 0; i < 5; i++ {
 		serviceRequest.Name = String(fmt.Sprintf("service-name-%s", uuid.NewV4().String()))
-		createdService, err := client.Services().AddService(serviceRequest)
+		createdService, err := client.Services().Create(serviceRequest)
 
 		assert.Nil(t, err)
 		assert.NotNil(t, createdService)
@@ -76,7 +76,7 @@ func TestServiceClient_UpdateServiceById(t *testing.T) {
 
 	client := NewClient(NewDefaultConfig())
 
-	createdService, err := client.Services().AddService(serviceRequest)
+	createdService, err := client.Services().Create(serviceRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
@@ -155,7 +155,7 @@ func Test_AllServiceEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing
 	//	Host:     String("foo.com"),
 	//}
 	//
-	//createdService, err := client.Services().AddService(serviceRequest)
+	//createdService, err := client.Services().Create(serviceRequest)
 	//
 	//assert.Nil(t, err)
 	//assert.NotNil(t, createdService)
@@ -187,7 +187,7 @@ func Test_AllServiceEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing
 	//	Host:     String("foo.com"),
 	//}
 	//
-	//newService, err := unauthorisedClient.Services().AddService(createServiceRequest)
+	//newService, err := unauthorisedClient.Services().Create(createServiceRequest)
 	//assert.Nil(t, newService)
 	//assert.NotNil(t, err)
 	//

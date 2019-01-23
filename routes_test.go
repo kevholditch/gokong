@@ -17,7 +17,7 @@ func TestRoutes_GetById(t *testing.T) {
 
 	client := NewClient(NewDefaultConfig())
 
-	createdService, err := client.Services().AddService(serviceRequest)
+	createdService, err := client.Services().Create(serviceRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
@@ -60,7 +60,7 @@ func TestRoutes_List(t *testing.T) {
 
 	client := NewClient(NewDefaultConfig())
 	createdRoutes := &Routes{}
-	createdService, err := client.Services().AddService(serviceRequest)
+	createdService, err := client.Services().Create(serviceRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
@@ -113,7 +113,7 @@ func TestRoutes_GetRoutesFromServiceId(t *testing.T) {
 
 	client := NewClient(NewDefaultConfig())
 
-	createdService, err := client.Services().AddService(serviceRequest)
+	createdService, err := client.Services().Create(serviceRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
@@ -160,7 +160,7 @@ func TestRoutes_UpdateRouteById(t *testing.T) {
 
 	client := NewClient(NewDefaultConfig())
 
-	createdService, err := client.Services().AddService(serviceRequest)
+	createdService, err := client.Services().Create(serviceRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
@@ -203,7 +203,7 @@ func TestRoutes_UpdateRouteMethodsToEmptyArray(t *testing.T) {
 	}
 
 	client := NewClient(NewDefaultConfig())
-	createdService, err := client.Services().AddService(serviceRequest)
+	createdService, err := client.Services().Create(serviceRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
@@ -260,7 +260,7 @@ func TestRoutes_UpdateRouteHostsToEmptyArray(t *testing.T) {
 	}
 
 	client := NewClient(NewDefaultConfig())
-	createdService, err := client.Services().AddService(serviceRequest)
+	createdService, err := client.Services().Create(serviceRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
@@ -317,7 +317,7 @@ func TestRoutes_UpdateRoutePathsToEmptyArray(t *testing.T) {
 	}
 
 	client := NewClient(NewDefaultConfig())
-	createdService, err := client.Services().AddService(serviceRequest)
+	createdService, err := client.Services().Create(serviceRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
@@ -412,7 +412,7 @@ func Test_AllRouteEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T
 	//	Host:     String("foo.com"),
 	//}
 	//
-	//createdService, err := client.Services().AddService(serviceRequest)
+	//createdService, err := client.Services().Create(serviceRequest)
 	//
 	//assert.Nil(t, err)
 	//assert.NotNil(t, createdService)

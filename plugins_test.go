@@ -110,7 +110,7 @@ func Test_PluginsCreateForASpecificService(t *testing.T) {
 	}
 
 	client := NewClient(NewDefaultConfig())
-	createdService, err := client.Services().AddService(serviceRequest)
+	createdService, err := client.Services().Create(serviceRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
@@ -152,7 +152,7 @@ func Test_PluginsCreateForASpecificRoute(t *testing.T) {
 	}
 
 	client := NewClient(NewDefaultConfig())
-	createdService, err := client.Services().AddService(serviceRequest)
+	createdService, err := client.Services().Create(serviceRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdService)
