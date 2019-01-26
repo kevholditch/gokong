@@ -47,8 +47,6 @@ func TestMain(m *testing.M) {
 
 	code := m.Run()
 
-	stopSignal <- true
-
 	containers.StopKong(testContext)
 
 	os.Exit(code)
