@@ -67,12 +67,12 @@ func StartServer(port int, ch <-chan bool) {
 	address := fmt.Sprintf(":%d", port)
 	server := &http.Server{Addr: address, Handler: &serveHttp{code: 401}}
 	go func() {
-		fmt.Printf("Server started on %s", address)
+		fmt.Printf("Server started on %s \n", address)
 		<-ch
-		fmt.Printf("Shutting down")
+		fmt.Printf("Shutting down \n")
 		server.Shutdown(context.Background())
 	}()
-	fmt.Printf("listening on localhost:%d", port)
+	fmt.Printf("listening on localhost:%d \n", port)
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
