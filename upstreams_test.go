@@ -362,100 +362,45 @@ func Test_UpstreamsUpdateByNameInvalid(t *testing.T) {
 
 func Test_AllUpstreamEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T) {
 
-	//apiRequest := &ApiRequest{
-	//	Name:        String("admin-api"),
-	//	Uris:        StringSlice([]string{"/admin-api"}),
-	//	UpstreamUrl: String("http://localhost:8001"),
-	//}
-	//
-	//client := NewClient(NewDefaultConfig())
-	//createdApi, err := client.Apis().Create(apiRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdApi)
-	//
-	//consumerRequest := &ConsumerRequest{
-	//	Username: "username-" + uuid.NewV4().String(),
-	//	CustomId: "test-" + uuid.NewV4().String(),
-	//}
-	//
-	//createdConsumer, err := client.Consumers().Create(consumerRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdConsumer)
-	//
-	//pluginRequest := &PluginRequest{
-	//	Name:  "key-auth",
-	//	ApiId: *createdApi.Id,
-	//	Config: map[string]interface{}{
-	//		"hide_credentials": true,
-	//	},
-	//}
-	//
-	//createdPlugin, err := client.Plugins().Create(pluginRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdPlugin)
-	//
-	//_, err = client.Consumers().CreatePluginConfig(createdConsumer.Id, "key-auth", "")
-	//assert.Nil(t, err)
-	//
-	//upstreamRequest := &UpstreamRequest{
-	//	Name:  "upstream-" + uuid.NewV4().String(),
-	//	Slots: 10,
-	//}
-	//
-	//createdUpstream, err := client.Upstreams().Create(upstreamRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdUpstream)
-	//
-	//kongApiAddress := os.Getenv(EnvKongApiHostAddress) + "/admin-api"
-	//unauthorisedClient := NewClient(&Config{HostAddress: kongApiAddress})
-	//
-	//upstream, err := unauthorisedClient.Upstreams().GetByName(createdUpstream.Name)
-	//assert.NotNil(t, err)
-	//assert.Nil(t, upstream)
-	//
-	//upstream, err = unauthorisedClient.Upstreams().GetById(createdUpstream.Id)
-	//assert.NotNil(t, err)
-	//assert.Nil(t, upstream)
-	//
-	//results, err := unauthorisedClient.Upstreams().List()
-	//assert.NotNil(t, err)
-	//assert.Nil(t, results)
-	//
-	//err = unauthorisedClient.Upstreams().DeleteByName(createdUpstream.Name)
-	//assert.NotNil(t, err)
-	//
-	//err = unauthorisedClient.Upstreams().DeleteById(createdUpstream.Id)
-	//assert.NotNil(t, err)
-	//
-	//upstreamResult, err := unauthorisedClient.Upstreams().Create(&UpstreamRequest{
-	//	Name:  "upstream-" + uuid.NewV4().String(),
-	//	Slots: 10,
-	//})
-	//assert.Nil(t, upstreamResult)
-	//assert.NotNil(t, err)
-	//
-	//updatedUpstream, err := unauthorisedClient.Upstreams().UpdateByName(createdUpstream.Name, &UpstreamRequest{
-	//	Name:  "upstream-" + uuid.NewV4().String(),
-	//	Slots: 10,
-	//})
-	//assert.Nil(t, updatedUpstream)
-	//assert.NotNil(t, err)
-	//
-	//updatedUpstream, err = unauthorisedClient.Upstreams().UpdateById(createdUpstream.Id, &UpstreamRequest{
-	//	Name:  "upstream-" + uuid.NewV4().String(),
-	//	Slots: 10,
-	//})
-	//assert.Nil(t, updatedUpstream)
-	//assert.NotNil(t, err)
-	//
-	//err = client.Plugins().DeleteById(createdPlugin.Id)
-	//assert.Nil(t, err)
-	//
-	//err = client.Apis().DeleteById(*createdApi.Id)
-	//assert.Nil(t, err)
+	unauthorisedClient := NewClient(&Config{HostAddress: kong401Server})
+
+	upstream, err := unauthorisedClient.Upstreams().GetByName("foo")
+	assert.NotNil(t, err)
+	assert.Nil(t, upstream)
+
+	upstream, err = unauthorisedClient.Upstreams().GetById(uuid.NewV4().String())
+	assert.NotNil(t, err)
+	assert.Nil(t, upstream)
+
+	results, err := unauthorisedClient.Upstreams().List()
+	assert.NotNil(t, err)
+	assert.Nil(t, results)
+
+	err = unauthorisedClient.Upstreams().DeleteByName("bar")
+	assert.NotNil(t, err)
+
+	err = unauthorisedClient.Upstreams().DeleteById(uuid.NewV4().String())
+	assert.NotNil(t, err)
+
+	upstreamResult, err := unauthorisedClient.Upstreams().Create(&UpstreamRequest{
+		Name:  "upstream-" + uuid.NewV4().String(),
+		Slots: 10,
+	})
+	assert.Nil(t, upstreamResult)
+	assert.NotNil(t, err)
+
+	updatedUpstream, err := unauthorisedClient.Upstreams().UpdateByName("foo", &UpstreamRequest{
+		Name:  "upstream-" + uuid.NewV4().String(),
+		Slots: 10,
+	})
+	assert.Nil(t, updatedUpstream)
+	assert.NotNil(t, err)
+
+	updatedUpstream, err = unauthorisedClient.Upstreams().UpdateById(uuid.NewV4().String(), &UpstreamRequest{
+		Name:  "upstream-" + uuid.NewV4().String(),
+		Slots: 10,
+	})
+	assert.Nil(t, updatedUpstream)
+	assert.NotNil(t, err)
 
 }

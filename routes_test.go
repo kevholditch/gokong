@@ -368,120 +368,43 @@ func TestRoutes_UpdateRoutePathsToEmptyArray(t *testing.T) {
 
 func Test_AllRouteEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T) {
 
-	//apiRequest := &ApiRequest{
-	//	Name:        String("admin-api"),
-	//	Uris:        StringSlice([]string{"/admin-api"}),
-	//	UpstreamUrl: String("http://localhost:8001"),
-	//}
-	//
-	//client := NewClient(NewDefaultConfig())
-	//createdApi, err := client.Apis().Create(apiRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdApi)
-	//
-	//consumerRequest := &ConsumerRequest{
-	//	Username: "username-" + uuid.NewV4().String(),
-	//	CustomId: "test-" + uuid.NewV4().String(),
-	//}
-	//
-	//createdConsumer, err := client.Consumers().Create(consumerRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdConsumer)
-	//
-	//pluginRequest := &PluginRequest{
-	//	Name:  "key-auth",
-	//	ApiId: *createdApi.Id,
-	//	Config: map[string]interface{}{
-	//		"hide_credentials": true,
-	//	},
-	//}
-	//
-	//createdPlugin, err := client.Plugins().Create(pluginRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdPlugin)
-	//
-	//_, err = client.Consumers().CreatePluginConfig(createdConsumer.Id, "key-auth", "")
-	//assert.Nil(t, err)
-	//
-	//serviceRequest := &ServiceRequest{
-	//	Name:     String("service-name" + uuid.NewV4().String()),
-	//	Protocol: String("http"),
-	//	Host:     String("foo.com"),
-	//}
-	//
-	//createdService, err := client.Services().Create(serviceRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdService)
-	//
-	//routeRequest := &RouteRequest{
-	//	Protocols:    StringSlice([]string{"http"}),
-	//	Methods:      StringSlice([]string{"GET"}),
-	//	Hosts:        StringSlice([]string{"foo.com"}),
-	//	Paths:        StringSlice([]string{"/bar"}),
-	//	StripPath:    Bool(true),
-	//	PreserveHost: Bool(true),
-	//	Service:      &RouteServiceObject{Id: *createdService.Id},
-	//}
-	//
-	//createdRoute, err := client.Routes().Create(routeRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdRoute)
-	//
-	//kongApiAddress := os.Getenv(EnvKongApiHostAddress) + "/admin-api"
-	//unauthorisedClient := NewClient(&Config{HostAddress: kongApiAddress})
-	//
-	//r, err := unauthorisedClient.Routes().GetById(*createdRoute.Id)
-	//assert.NotNil(t, err)
-	//assert.Nil(t, r)
-	//
-	//results, err := unauthorisedClient.Routes().List(&RouteQueryString{})
-	//assert.NotNil(t, err)
-	//assert.Nil(t, results)
-	//
-	//results, err = unauthorisedClient.Routes().GetRoutesFromServiceId(*createdService.Id)
-	//assert.NotNil(t, err)
-	//assert.Nil(t, results)
-	//
-	//results, err = unauthorisedClient.Routes().GetRoutesFromServiceName(*createdService.Name)
-	//assert.NotNil(t, err)
-	//assert.Nil(t, results)
-	//
-	//err = unauthorisedClient.Routes().DeleteById(*createdRoute.Id)
-	//assert.NotNil(t, err)
-	//
-	//createNewRouteRequest := &RouteRequest{
-	//	Protocols:    StringSlice([]string{"http"}),
-	//	Methods:      StringSlice([]string{"POST"}),
-	//	Hosts:        StringSlice([]string{"foo.com"}),
-	//	Paths:        StringSlice([]string{"/bar"}),
-	//	StripPath:    Bool(true),
-	//	PreserveHost: Bool(true),
-	//	Service:      &RouteServiceObject{Id: *createdService.Id},
-	//}
-	//
-	//newRoute, err := unauthorisedClient.Routes().Create(createNewRouteRequest)
-	//assert.Nil(t, newRoute)
-	//assert.NotNil(t, err)
-	//
-	//updatedRoute, err := unauthorisedClient.Routes().UpdateById(*createdRoute.Id, createNewRouteRequest)
-	//assert.Nil(t, updatedRoute)
-	//assert.NotNil(t, err)
-	//
-	//err = client.Plugins().DeleteById(createdPlugin.Id)
-	//assert.Nil(t, err)
-	//
-	//err = client.Apis().DeleteById(*createdApi.Id)
-	//assert.Nil(t, err)
-	//
-	//err = client.Routes().DeleteById(*createdRoute.Id)
-	//assert.Nil(t, err)
-	//
-	//err = client.Services().DeleteServiceById(*createdService.Id)
-	//assert.Nil(t, err)
+	unauthorisedClient := NewClient(&Config{HostAddress: kong401Server})
+
+	r, err := unauthorisedClient.Routes().GetById(uuid.NewV4().String())
+	assert.NotNil(t, err)
+	assert.Nil(t, r)
+
+	results, err := unauthorisedClient.Routes().List(&RouteQueryString{})
+	assert.NotNil(t, err)
+	assert.Nil(t, results)
+
+	results, err = unauthorisedClient.Routes().GetRoutesFromServiceId(uuid.NewV4().String())
+	assert.NotNil(t, err)
+	assert.Nil(t, results)
+
+	results, err = unauthorisedClient.Routes().GetRoutesFromServiceName("foo")
+	assert.NotNil(t, err)
+	assert.Nil(t, results)
+
+	err = unauthorisedClient.Routes().DeleteById(uuid.NewV4().String())
+	assert.NotNil(t, err)
+
+	createNewRouteRequest := &RouteRequest{
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"POST"}),
+		Hosts:        StringSlice([]string{"foo.com"}),
+		Paths:        StringSlice([]string{"/bar"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(true),
+		Service:      ToId(uuid.NewV4().String()),
+	}
+
+	newRoute, err := unauthorisedClient.Routes().Create(createNewRouteRequest)
+	assert.Nil(t, newRoute)
+	assert.NotNil(t, err)
+
+	updatedRoute, err := unauthorisedClient.Routes().UpdateById(uuid.NewV4().String(), createNewRouteRequest)
+	assert.Nil(t, updatedRoute)
+	assert.NotNil(t, err)
 
 }

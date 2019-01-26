@@ -311,96 +311,51 @@ func Test_ConsumersPluginConfig(t *testing.T) {
 
 func Test_AllConsumerEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T) {
 
-	//apiRequest := &ApiRequest{
-	//	Name:        String("admin-api"),
-	//	Uris:        StringSlice([]string{"/admin-api"}),
-	//	UpstreamUrl: String("http://localhost:8001"),
-	//}
-	//
-	//client := NewClient(NewDefaultConfig())
-	//createdApi, err := client.Apis().Create(apiRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdApi)
-	//
-	//consumerRequest := &ConsumerRequest{
-	//	Username: "username-" + uuid.NewV4().String(),
-	//	CustomId: "test-" + uuid.NewV4().String(),
-	//}
-	//
-	//createdConsumer, err := client.Consumers().Create(consumerRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdConsumer)
-	//
-	//pluginRequest := &PluginRequest{
-	//	Name:  "key-auth",
-	//	ApiId: *createdApi.Id,
-	//	Config: map[string]interface{}{
-	//		"hide_credentials": true,
-	//	},
-	//}
-	//
-	//createdPlugin, err := client.Plugins().Create(pluginRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdPlugin)
-	//
-	//_, err = client.Consumers().CreatePluginConfig(createdConsumer.Id, "key-auth", "")
-	//assert.Nil(t, err)
-	//
-	//kongApiAddress := os.Getenv(EnvKongApiHostAddress) + "/admin-api"
-	//unauthorisedClient := NewClient(&Config{HostAddress: kongApiAddress})
-	//
-	//consumer, err := unauthorisedClient.Consumers().GetById(createdConsumer.Id)
-	//assert.NotNil(t, err)
-	//assert.Nil(t, consumer)
-	//
-	//consumer, err = unauthorisedClient.Consumers().GetByUsername(createdConsumer.Username)
-	//assert.NotNil(t, err)
-	//assert.Nil(t, consumer)
-	//
-	//results, err := unauthorisedClient.Consumers().List()
-	//assert.NotNil(t, err)
-	//assert.Nil(t, results)
-	//
-	//err = unauthorisedClient.Consumers().DeleteById(createdConsumer.Id)
-	//assert.NotNil(t, err)
-	//
-	//err = unauthorisedClient.Consumers().DeleteByUsername(createdConsumer.Username)
-	//assert.NotNil(t, err)
-	//
-	//createNewConsumer := &ConsumerRequest{
-	//	Username: "username-" + uuid.NewV4().String(),
-	//	CustomId: "test-" + uuid.NewV4().String(),
-	//}
-	//newConsumer, err := unauthorisedClient.Consumers().Create(createNewConsumer)
-	//assert.Nil(t, newConsumer)
-	//assert.NotNil(t, err)
-	//
-	//updatedConsumer, err := unauthorisedClient.Consumers().UpdateById(createdConsumer.Id, createNewConsumer)
-	//assert.Nil(t, updatedConsumer)
-	//assert.NotNil(t, err)
-	//
-	//updatedConsumer, err = unauthorisedClient.Consumers().UpdateByUsername(createdConsumer.Username, createNewConsumer)
-	//assert.Nil(t, updatedConsumer)
-	//assert.NotNil(t, err)
-	//
-	//createdPluginConfig, err := unauthorisedClient.Consumers().CreatePluginConfig(createdConsumer.Id, "jwt", "{\"key\": \"a36c3049b36249a3c9f8891cb127243c\"}")
-	//assert.Nil(t, createdPluginConfig)
-	//assert.NotNil(t, err)
-	//
-	//pluginConfig, err := unauthorisedClient.Consumers().GetPluginConfig(createdConsumer.Id, "jwt", "id")
-	//assert.Nil(t, pluginConfig)
-	//assert.NotNil(t, err)
-	//
-	//err = unauthorisedClient.Consumers().DeletePluginConfig(createdConsumer.Id, "jwt", "id")
-	//assert.NotNil(t, err)
-	//
-	//err = client.Plugins().DeleteById(createdPlugin.Id)
-	//assert.Nil(t, err)
-	//
-	//err = client.Apis().DeleteById(*createdApi.Id)
-	//assert.Nil(t, err)
+	unauthorisedClient := NewClient(&Config{HostAddress: kong401Server})
+
+	consumer, err := unauthorisedClient.Consumers().GetById(uuid.NewV4().String())
+	assert.NotNil(t, err)
+	assert.Nil(t, consumer)
+
+	consumer, err = unauthorisedClient.Consumers().GetByUsername("foo")
+	assert.NotNil(t, err)
+	assert.Nil(t, consumer)
+
+	results, err := unauthorisedClient.Consumers().List()
+	assert.NotNil(t, err)
+	assert.Nil(t, results)
+
+	err = unauthorisedClient.Consumers().DeleteById(uuid.NewV4().String())
+	assert.NotNil(t, err)
+
+	err = unauthorisedClient.Consumers().DeleteByUsername("bar")
+	assert.NotNil(t, err)
+
+	createNewConsumer := &ConsumerRequest{
+		Username: "username-" + uuid.NewV4().String(),
+		CustomId: "test-" + uuid.NewV4().String(),
+	}
+	newConsumer, err := unauthorisedClient.Consumers().Create(createNewConsumer)
+	assert.Nil(t, newConsumer)
+	assert.NotNil(t, err)
+
+	updatedConsumer, err := unauthorisedClient.Consumers().UpdateById(uuid.NewV4().String(), createNewConsumer)
+	assert.Nil(t, updatedConsumer)
+	assert.NotNil(t, err)
+
+	updatedConsumer, err = unauthorisedClient.Consumers().UpdateByUsername("foo", createNewConsumer)
+	assert.Nil(t, updatedConsumer)
+	assert.NotNil(t, err)
+
+	createdPluginConfig, err := unauthorisedClient.Consumers().CreatePluginConfig(uuid.NewV4().String(), "jwt", "{\"key\": \"a36c3049b36249a3c9f8891cb127243c\"}")
+	assert.Nil(t, createdPluginConfig)
+	assert.NotNil(t, err)
+
+	pluginConfig, err := unauthorisedClient.Consumers().GetPluginConfig(uuid.NewV4().String(), "jwt", "id")
+	assert.Nil(t, pluginConfig)
+	assert.NotNil(t, err)
+
+	err = unauthorisedClient.Consumers().DeletePluginConfig(uuid.NewV4().String(), "jwt", "id")
+	assert.NotNil(t, err)
 
 }

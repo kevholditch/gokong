@@ -3,6 +3,7 @@ package gokong
 import (
 	"testing"
 
+	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -177,82 +178,28 @@ func Test_CertificatesList(t *testing.T) {
 
 func Test_AllCertificateEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T) {
 
-	//apiRequest := &ApiRequest{
-	//	Name:        String("admin-api"),
-	//	Uris:        StringSlice([]string{"/admin-api"}),
-	//	UpstreamUrl: String("http://localhost:8001"),
-	//}
-	//
-	//client := NewClient(NewDefaultConfig())
-	//createdApi, err := client.Apis().Create(apiRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdApi)
-	//
-	//consumerRequest := &ConsumerRequest{
-	//	Username: "username-" + uuid.NewV4().String(),
-	//	CustomId: "test-" + uuid.NewV4().String(),
-	//}
-	//
-	//createdConsumer, err := client.Consumers().Create(consumerRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdConsumer)
-	//
-	//pluginRequest := &PluginRequest{
-	//	Name:  "key-auth",
-	//	ApiId: *createdApi.Id,
-	//	Config: map[string]interface{}{
-	//		"hide_credentials": true,
-	//	},
-	//}
-	//
-	//createdPlugin, err := client.Plugins().Create(pluginRequest)
-	//
-	//assert.Nil(t, err)
-	//assert.NotNil(t, createdPlugin)
-	//
-	//_, err = client.Consumers().CreatePluginConfig(createdConsumer.Id, "key-auth", "")
-	//assert.Nil(t, err)
-	//
-	//certificateRequest := &CertificateRequest{
-	//	Cert: String("public key-" + uuid.NewV4().String()),
-	//	Key:  String("private key-" + uuid.NewV4().String()),
-	//}
-	//createdCertificate, err := client.Certificates().Create(certificateRequest)
-	//
-	//assert.NotNil(t, createdCertificate)
-	//assert.Nil(t, err)
-	//
-	//kongApiAddress := os.Getenv(EnvKongApiHostAddress) + "/admin-api"
-	//unauthorisedClient := NewClient(&Config{HostAddress: kongApiAddress})
-	//
-	//certificate, err := unauthorisedClient.Certificates().GetById(*createdCertificate.Id)
-	//assert.NotNil(t, err)
-	//assert.Nil(t, certificate)
-	//
-	//results, err := unauthorisedClient.Certificates().List()
-	//assert.NotNil(t, err)
-	//assert.Nil(t, results)
-	//
-	//err = unauthorisedClient.Certificates().DeleteById(*createdCertificate.Id)
-	//assert.NotNil(t, err)
-	//
-	//certificateResult, err := unauthorisedClient.Certificates().Create(&CertificateRequest{
-	//	Cert: String("public key-" + uuid.NewV4().String()),
-	//	Key:  String("private key-" + uuid.NewV4().String()),
-	//})
-	//assert.Nil(t, certificateResult)
-	//assert.NotNil(t, err)
-	//
-	//updatedCertificate, err := unauthorisedClient.Certificates().UpdateById(*createdCertificate.Id, certificateRequest)
-	//assert.Nil(t, updatedCertificate)
-	//assert.NotNil(t, err)
-	//
-	//err = client.Plugins().DeleteById(createdPlugin.Id)
-	//assert.Nil(t, err)
-	//
-	//err = client.Apis().DeleteById(*createdApi.Id)
-	//assert.Nil(t, err)
+	unauthorisedClient := NewClient(&Config{HostAddress: kong401Server})
+
+	certificate, err := unauthorisedClient.Certificates().GetById(uuid.NewV4().String())
+	assert.NotNil(t, err)
+	assert.Nil(t, certificate)
+
+	results, err := unauthorisedClient.Certificates().List()
+	assert.NotNil(t, err)
+	assert.Nil(t, results)
+
+	err = unauthorisedClient.Certificates().DeleteById(uuid.NewV4().String())
+	assert.NotNil(t, err)
+
+	certificateResult, err := unauthorisedClient.Certificates().Create(&CertificateRequest{
+		Cert: String(testCert1),
+		Key:  String(testKey1),
+	})
+	assert.Nil(t, certificateResult)
+	assert.NotNil(t, err)
+
+	updatedCertificate, err := unauthorisedClient.Certificates().UpdateById(uuid.NewV4().String(), &CertificateRequest{})
+	assert.Nil(t, updatedCertificate)
+	assert.NotNil(t, err)
 
 }
