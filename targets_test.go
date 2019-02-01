@@ -2,6 +2,7 @@ package gokong
 
 import (
 	"testing"
+	"time"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
@@ -175,6 +176,10 @@ func TestTargets_SetTargetHealthFromUpstreamByHostPort(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.NotNil(t, createdTarget)
+
+	// HACK: This is just plain old nasty - but tests fail on occassion as Kong hasn't setup the load balancer and
+	// health checks for the upstream/targets by the time we start trying to set their health status below
+	time.Sleep(2 * time.Second)
 
 	result := client.Targets().SetTargetFromUpstreamByHostPortAsUnhealthy(createdUpstream.Name, *createdTarget.Target)
 
