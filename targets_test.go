@@ -177,15 +177,24 @@ func TestTargets_SetTargetHealthFromUpstreamByHostPort(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdTarget)
 
-	// HACK: This is just plain old nasty - but tests fail on occassion as Kong hasn't setup the load balancer and
-	// health checks for the upstream/targets by the time we start trying to set their health status below
-	time.Sleep(2 * time.Second)
+	// HACK: This is a bit hack-y - but tests fail on the build occassionly as Kong hasn't setup the load balancer
+	// and health checks for the upstream/targets by the time we start trying to set their health status below
+	targets, err := client.Targets().GetTargetsWithHealthFromUpstreamName(createdUpstream.Name)
+	retry := 1
+	for *targets[0].Health == "HEALTHCHECKS_OFF" && retry < 10 {
+		t.Log("Health-checks still off on target. Sleep and try again until we have another status.")
+		assert.Len(t, targets, 1)
+
+		time.Sleep(2 * time.Second)
+		targets, err = client.Targets().GetTargetsWithHealthFromUpstreamName(createdUpstream.Name)
+		retry++
+	}
 
 	result := client.Targets().SetTargetFromUpstreamByHostPortAsUnhealthy(createdUpstream.Name, *createdTarget.Target)
 
 	assert.Nil(t, result)
 
-	targets, err := client.Targets().GetTargetsWithHealthFromUpstreamName(createdUpstream.Name)
+	targets, err = client.Targets().GetTargetsWithHealthFromUpstreamName(createdUpstream.Name)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, targets)
