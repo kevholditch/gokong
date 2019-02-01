@@ -20,8 +20,8 @@ func TestTargets_GetTargetsFromUpstreamId(t *testing.T) {
 	assert.NotNil(t, createdUpstream)
 
 	targetRequest := &TargetRequest{
-		Target:				"foo.com:443",
-		Weight:				200,
+		Target: "foo.com:443",
+		Weight: 200,
 	}
 	createdTarget, err := client.Targets().CreateFromUpstreamId(createdUpstream.Id, targetRequest)
 
@@ -52,8 +52,8 @@ func TestTargets_GetTargetsFromUpstreamName(t *testing.T) {
 	assert.NotNil(t, createdUpstream)
 
 	targetRequest := &TargetRequest{
-		Target:				"foo.com:443",
-		Weight:				200,
+		Target: "foo.com:443",
+		Weight: 200,
 	}
 	createdTarget, err := client.Targets().CreateFromUpstreamName(createdUpstream.Name, targetRequest)
 
@@ -91,8 +91,8 @@ func TestTargets_Create(t *testing.T) {
 	assert.NotNil(t, createdUpstream)
 
 	targetRequest := &TargetRequest{
-		Target:				"foo.com:443",
-		Weight:				200,
+		Target: "foo.com:443",
+		Weight: 200,
 	}
 	createdTarget, err := client.Targets().CreateFromUpstreamId(createdUpstream.Id, targetRequest)
 
@@ -119,8 +119,8 @@ func TestTargets_Delete(t *testing.T) {
 	assert.NotNil(t, createdUpstream)
 
 	targetRequest := &TargetRequest{
-		Target:				"foo.com:443",
-		Weight:				200,
+		Target: "foo.com:443",
+		Weight: 200,
 	}
 	createdTarget, err := client.Targets().CreateFromUpstreamId(createdUpstream.Id, targetRequest)
 
@@ -168,8 +168,8 @@ func TestTargets_SetTargetHealthFromUpstreamByHostPort(t *testing.T) {
 	assert.NotNil(t, createdUpstream)
 
 	targetRequest := &TargetRequest{
-		Target:				"foo.com:443",
-		Weight:				200,
+		Target: "foo.com:443",
+		Weight: 200,
 	}
 	createdTarget, err := client.Targets().CreateFromUpstreamName(createdUpstream.Name, targetRequest)
 

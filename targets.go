@@ -10,30 +10,30 @@ type TargetClient struct {
 }
 
 type TargetRequest struct {
-	Target        string         `json:"target"`
-	Weight        int            `json:"weight"`
+	Target string `json:"target"`
+	Weight int    `json:"weight"`
 }
 
 type Target struct {
-	Id            *string        `json:"id,omitempty"`
-  CreatedAt     *float32       `json:"created_at"`
-  Target        *string        `json:"target"`
-  Weight        *int           `json:"weight"`
-  Upstream      *Id            `json:"upstream"`
-	Health        *string        `json:"health"`
+	Id        *string  `json:"id,omitempty"`
+	CreatedAt *float32 `json:"created_at"`
+	Target    *string  `json:"target"`
+	Weight    *int     `json:"weight"`
+	Upstream  *Id      `json:"upstream"`
+	Health    *string  `json:"health"`
 }
 
 type Targets struct {
-  Data          []*Target      `json:"data"`
-  Total         int            `json:"total,omitempty"`
-	Next          string         `json:"next,omitempty"`
-	NodeId        string         `json:"node_id,omitempty"`
+	Data   []*Target `json:"data"`
+	Total  int       `json:"total,omitempty"`
+	Next   string    `json:"next,omitempty"`
+	NodeId string    `json:"node_id,omitempty"`
 }
 
 const TargetsPath = "/upstreams/%s/targets"
 
 func (targetClient *TargetClient) CreateFromUpstreamName(name string, targetRequest *TargetRequest) (*Target, error) {
-    return targetClient.CreateFromUpstreamId(name, targetRequest)
+	return targetClient.CreateFromUpstreamId(name, targetRequest)
 }
 
 func (targetClient *TargetClient) CreateFromUpstreamId(id string, targetRequest *TargetRequest) (*Target, error) {
