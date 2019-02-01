@@ -2,7 +2,7 @@ package gokong
 
 import (
 	"testing"
-	"time"
+	// "time"
 
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
