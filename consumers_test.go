@@ -434,6 +434,12 @@ func Test_ConsumersPluginConfig(t *testing.T) {
 	assert.NotEqual(t, "", createdPluginConfig.Id)
 	assert.Contains(t, createdPluginConfig.Body, "a36c3049b36249a3c9f8891cb127243c")
 
+	retrievedPluginConfigs, err := client.Consumers().ListPluginConfig(createdConsumer.Id, "jwt")
+
+	assert.Nil(t, err)
+	assert.Equal(t, 1, retrievedPluginConfigs.Total)
+	assert.Equal(t, createdPluginConfig, retrievedPluginConfigs.Results[0])
+
 	retrievedPluginConfig, err := client.Consumers().GetPluginConfig(createdConsumer.Id, "jwt", createdPluginConfig.Id)
 
 	assert.Nil(t, err)
