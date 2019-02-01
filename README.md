@@ -593,6 +593,45 @@ updateUpstreamRequest := &gokong.UpstreamRequest{
 updatedUpstream, err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().UpdateByName("test-upstream", updateUpstreamRequest)
 ```
 
+## Targets
+Create a target for an upstream ([for more information on the Target Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#upstream-objects)):
+```go
+targetRequest := &TargetRequest{
+  Target:				"foo.com:443",
+  Weight:				100,
+}
+createdTarget, err := gokong.NewClient(gokong.NewDefaultConfig()).Targets().CreateFromUpstreamId("upstreamId", targetRequest)
+```
+
+List all targets for an upstream
+```go
+targets, err := gokong.NewClient(gokong.NewDefaultConfig()).Targets().GetTargetsFromUpstreamId("upstreamId")
+```
+
+Delete a target from an upstream
+```go
+targets, err := gokong.NewClient(gokong.NewDefaultConfig()).Targets().DeleteFromUpstreamById("upstreamId")
+```
+
+Set target as healthy
+```go
+targets, err := gokong.NewClient(gokong.NewDefaultConfig()).Targets().SetTargetFromUpstreamByIdAsHealthy("upstreamId")
+```
+
+Set target as unhealthy
+```go
+targets, err := gokong.NewClient(gokong.NewDefaultConfig()).Targets().SetTargetFromUpstreamByIdAsUnhealthy("upstreamId")
+```
+
+List all targets for an upstream (including health status)
+```go
+targets, err := gokong.NewClient(gokong.NewDefaultConfig()).Targets().GetTargetsWithHealthFromUpstreamName(upstreamId)
+```
+
+**Notes**: Target methods listed above are overloaded in the same fashion as other objects exposed by this library. For parameters:
+ - upstream - either name of id can be used
+ - target - either id or target name (host:port) can be used
+
 # Contributing
 I would love to get contributions to the project so please feel free to submit a PR.  To setup your dev station you need go and docker installed.
 
