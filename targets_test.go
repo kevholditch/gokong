@@ -181,7 +181,7 @@ func TestTargets_SetTargetHealthFromUpstreamByHostPort(t *testing.T) {
 	// and health checks for the upstream/targets by the time we start trying to set their health status below
 	targets, err := client.Targets().GetTargetsWithHealthFromUpstreamName(createdUpstream.Name)
 	retry := 1
-	for *targets[0].Health == "HEALTHCHECKS_OFF" && retry < 10 {
+	for (*targets[0].Health == "HEALTHCHECKS_OFF" || *targets[0].Health == "DNS_ERROR") && retry < 10 {
 		t.Log("Health-checks still off on target. Sleep and try again until we have another status.")
 		assert.Len(t, targets, 1)
 
@@ -190,7 +190,7 @@ func TestTargets_SetTargetHealthFromUpstreamByHostPort(t *testing.T) {
 		retry++
 	}
 
-	result := client.Targets().SetTargetFromUpstreamByHostPortAsUnhealthy(createdUpstream.Name, *createdTarget.Target)
+	result := client.Targets().SetTargetFromUpstreamByIdAsUnhealthy(createdUpstream.Id, *createdTarget.Id)
 
 	assert.Nil(t, result)
 
@@ -202,7 +202,7 @@ func TestTargets_SetTargetHealthFromUpstreamByHostPort(t *testing.T) {
 	target := targets[0]
 	assert.Equal(t, "UNHEALTHY", *target.Health)
 
-	result = client.Targets().SetTargetFromUpstreamByHostPortAsHealthy(createdUpstream.Name, *createdTarget.Target)
+	result = client.Targets().SetTargetFromUpstreamByIdAsHealthy(createdUpstream.Id, *createdTarget.Id)
 
 	assert.Nil(t, result)
 
