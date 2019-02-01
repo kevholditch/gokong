@@ -20,7 +20,7 @@ func TestTargets_GetTargetsFromUpstreamId(t *testing.T) {
 	assert.NotNil(t, createdUpstream)
 
 	targetRequest := &TargetRequest{
-		Target: "foo.com:443",
+		Target: "www.example.com:80",
 		Weight: 200,
 	}
 	createdTarget, err := client.Targets().CreateFromUpstreamId(createdUpstream.Id, targetRequest)
@@ -52,7 +52,7 @@ func TestTargets_GetTargetsFromUpstreamName(t *testing.T) {
 	assert.NotNil(t, createdUpstream)
 
 	targetRequest := &TargetRequest{
-		Target: "foo.com:443",
+		Target: "www.example.com:80",
 		Weight: 200,
 	}
 	createdTarget, err := client.Targets().CreateFromUpstreamName(createdUpstream.Name, targetRequest)
@@ -91,7 +91,7 @@ func TestTargets_Create(t *testing.T) {
 	assert.NotNil(t, createdUpstream)
 
 	targetRequest := &TargetRequest{
-		Target: "foo.com:443",
+		Target: "www.example.com:80",
 		Weight: 200,
 	}
 	createdTarget, err := client.Targets().CreateFromUpstreamId(createdUpstream.Id, targetRequest)
@@ -119,7 +119,7 @@ func TestTargets_Delete(t *testing.T) {
 	assert.NotNil(t, createdUpstream)
 
 	targetRequest := &TargetRequest{
-		Target: "foo.com:443",
+		Target: "www.example.com:80",
 		Weight: 200,
 	}
 	createdTarget, err := client.Targets().CreateFromUpstreamId(createdUpstream.Id, targetRequest)
@@ -147,15 +147,15 @@ func TestTargets_SetTargetHealthFromUpstreamByHostPort(t *testing.T) {
 				Timeout:     1,
 				Healthy: &ActiveHealthy{
 					HttpStatuses: []int{200, 302},
-					Interval:     100,
-					Successes:    1,
+					Interval:     1000,
+					Successes:    10,
 				},
 				Unhealthy: &ActiveUnhealthy{
-					HttpFailures: 0,
+					HttpFailures: 10,
 					HttpStatuses: []int{429, 404, 500, 501, 502, 503, 504, 505},
-					Interval:     100,
-					TcpFailures:  1,
-					Timeouts:     1,
+					Interval:     1000,
+					TcpFailures:  10,
+					Timeouts:     10,
 				},
 			},
 		},
@@ -168,7 +168,7 @@ func TestTargets_SetTargetHealthFromUpstreamByHostPort(t *testing.T) {
 	assert.NotNil(t, createdUpstream)
 
 	targetRequest := &TargetRequest{
-		Target: "foo.com:443",
+		Target: "www.example.com:80",
 		Weight: 200,
 	}
 	createdTarget, err := client.Targets().CreateFromUpstreamName(createdUpstream.Name, targetRequest)
