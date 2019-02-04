@@ -337,7 +337,7 @@ client := gokong.NewClient(NewDefaultConfig())
 
 createdService, err := client.Services().AddService(serviceRequest)
 
-routeRequest := &RouteRequest{
+routeRequest := &gokong.RouteRequest{
   Protocols:    gokong.StringSlice([]string{"http"}),
   Methods:      gokong.StringSlice([]string{"GET"}),
   Hosts:        gokong.StringSlice([]string{"foo.com"}),
@@ -348,6 +348,19 @@ routeRequest := &RouteRequest{
 }
 
 createdRoute, err := client.Routes().Create(routeRequest)
+```
+
+To create a tcp route:
+```go
+routeRequest := &gokong.RouteRequest{
+		Protocols:    gokong.StringSlice([]string{"tcp"}),
+		StripPath:    gokong.Bool(true),
+		PreserveHost: gokong.Bool(true),
+		Snis:         gokong.StringSlice([]string{"example.com"}),
+		Sources:      gokong.IpPortSliceSlice([]gokong.IpPort{{Ip: gokong.String("192.168.1.1"), Port: gokong.Int(80)}, {Ip: gokong.String("192.168.1.2"), Port: gokong.Int(81)}}),
+		Destinations: gokong.IpPortSliceSlice([]gokong.IpPort{{Ip: gokong.String("172.10.1.1"), Port: gokong.Int(83)}, {Ip: gokong.String("172.10.1.2"), Port: nil}}),
+		Service:      gokong.ToId(*createdService.Id),
+	}
 ```
 
 Get a route by ID:
