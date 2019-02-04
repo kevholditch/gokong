@@ -51,6 +51,49 @@ func TestRoutes_GetById(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestRoutes_CreateWithSourcesAndDestinations(t *testing.T) {
+	serviceRequest := &ServiceRequest{
+		Name:     String("service-name" + uuid.NewV4().String()),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+	}
+
+	client := NewClient(NewDefaultConfig())
+
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	routeRequest := &RouteRequest{
+		Protocols:    StringSlice([]string{"tcp"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(true),
+		Snis:         StringSlice([]string{"example.com"}),
+		Sources:      IpPortSliceSlice([]IpPort{{Ip: String("192.168.1.1"), Port: Int(80)}, {Ip: String("192.168.1.2"), Port: Int(81)}}),
+		Destinations: IpPortSliceSlice([]IpPort{{Ip: String("172.10.1.1"), Port: Int(83)}, {Ip: String("172.10.1.2"), Port: nil}}),
+		Service:      ToId(*createdService.Id),
+	}
+
+	createdRoute, err := client.Routes().Create(routeRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdRoute)
+
+	result, err := client.Routes().GetById(*createdRoute.Id)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, createdRoute, result)
+
+	client.Routes().DeleteById(*createdRoute.Id)
+	client.Services().DeleteServiceById(*createdService.Id)
+
+	route, err := client.Routes().GetById(*createdRoute.Id)
+	assert.Nil(t, route)
+	assert.Nil(t, err)
+}
+
 func TestRoutes_List(t *testing.T) {
 	serviceRequest := &ServiceRequest{
 		Name:     String("service-name" + uuid.NewV4().String()),
