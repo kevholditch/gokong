@@ -73,9 +73,12 @@ func Test_UpstreamsCreate(t *testing.T) {
 		Slots: 10,
 		HealthChecks: &UpstreamHealthCheck{
 			Active: &UpstreamHealthCheckActive{
-				Concurrency: 10,
-				HttpPath:    "/",
-				Timeout:     1,
+				Type:                   "https",
+				Concurrency:            10,
+				HttpPath:               "/",
+				Timeout:                1,
+				HttpsVerifyCertificate: true,
+				HttpsSni:               String("dome.domain"),
 				Healthy: &ActiveHealthy{
 					HttpStatuses: []int{200, 302},
 					Interval:     0,
@@ -90,6 +93,7 @@ func Test_UpstreamsCreate(t *testing.T) {
 				},
 			},
 			Passive: &UpstreamHealthCheckPassive{
+				Type: "http",
 				Healthy: &PassiveHealthy{
 					HttpStatuses: []int{200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308},
 					Successes:    0,
@@ -205,9 +209,12 @@ func Test_UpstreamsUpdateById(t *testing.T) {
 		Slots: 10,
 		HealthChecks: &UpstreamHealthCheck{
 			Active: &UpstreamHealthCheckActive{
-				Concurrency: 10,
-				HttpPath:    "/",
-				Timeout:     1,
+				Type:                   "http",
+				Concurrency:            10,
+				HttpPath:               "/",
+				Timeout:                1,
+				HttpsVerifyCertificate: true,
+				HttpsSni:               nil,
 				Healthy: &ActiveHealthy{
 					HttpStatuses: []int{200, 302},
 					Interval:     0,
@@ -222,6 +229,7 @@ func Test_UpstreamsUpdateById(t *testing.T) {
 				},
 			},
 			Passive: &UpstreamHealthCheckPassive{
+				Type: "http",
 				Healthy: &PassiveHealthy{
 					HttpStatuses: []int{200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308},
 					Successes:    0,
@@ -263,9 +271,12 @@ func Test_UpstreamsUpdateByName(t *testing.T) {
 		Slots: 10,
 		HealthChecks: &UpstreamHealthCheck{
 			Active: &UpstreamHealthCheckActive{
-				Concurrency: 10,
-				HttpPath:    "/",
-				Timeout:     1,
+				Type:                   "http",
+				Concurrency:            10,
+				HttpPath:               "/",
+				Timeout:                1,
+				HttpsVerifyCertificate: true,
+				HttpsSni:               nil,
 				Healthy: &ActiveHealthy{
 					HttpStatuses: []int{200, 302},
 					Interval:     0,
@@ -280,6 +291,7 @@ func Test_UpstreamsUpdateByName(t *testing.T) {
 				},
 			},
 			Passive: &UpstreamHealthCheckPassive{
+				Type: "http",
 				Healthy: &PassiveHealthy{
 					HttpStatuses: []int{200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308},
 					Successes:    0,
