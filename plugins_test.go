@@ -63,6 +63,56 @@ func Test_PluginsCreateForAll(t *testing.T) {
 
 }
 
+func Test_PluginsCreateForAll_ExplicitEnabled(t *testing.T) {
+	pluginRequest := &PluginRequest{
+		Name: "request-size-limiting",
+		Config: map[string]interface{}{
+			"allowed_payload_size": 128,
+		},
+		Enabled: Bool(true),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+
+	assert.Equal(t, pluginRequest.Name, createdPlugin.Name)
+	assert.True(t, createdPlugin.Enabled)
+	assert.Nil(t, createdPlugin.ConsumerId)
+
+	err = client.Plugins().DeleteById(createdPlugin.Id)
+
+	assert.Nil(t, err)
+
+}
+
+func Test_PluginsCreateForAll_Disabled(t *testing.T) {
+	pluginRequest := &PluginRequest{
+		Name: "request-size-limiting",
+		Config: map[string]interface{}{
+			"allowed_payload_size": 128,
+		},
+		Enabled: Bool(false),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+
+	assert.Equal(t, pluginRequest.Name, createdPlugin.Name)
+	assert.False(t, createdPlugin.Enabled)
+	assert.Nil(t, createdPlugin.ConsumerId)
+
+	err = client.Plugins().DeleteById(createdPlugin.Id)
+
+	assert.Nil(t, err)
+
+}
+
 func Test_PluginsCreateForASpecificConsumer(t *testing.T) {
 
 	consumerRequest := &ConsumerRequest{
