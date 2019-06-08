@@ -10,7 +10,7 @@ type RouteClient struct {
 }
 
 type RouteRequest struct {
-	Name          *string   `json:"name"`
+	Name          *string   `json:"name,omitempty"`
 	Protocols     []*string `json:"protocols"`
 	Methods       []*string `json:"methods"`
 	Hosts         []*string `json:"hosts"`
@@ -18,9 +18,9 @@ type RouteRequest struct {
 	RegexPriority *int      `json:"regex_priority"`
 	StripPath     *bool     `json:"strip_path"`
 	PreserveHost  *bool     `json:"preserve_host"`
-	Snis          []*string `json:"snis"`
-	Sources       []*IpPort `json:"sources"`
-	Destinations  []*IpPort `json:"destinations"`
+	Snis          []*string `json:"snis,omitempty"`
+	Sources       []*IpPort `json:"sources,omitempty"`
+	Destinations  []*IpPort `json:"destinations,omitempty"`
 	Service       *Id       `json:"service"`
 }
 
