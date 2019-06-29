@@ -402,11 +402,11 @@ func Test_PluginsList(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdPlugin2)
 
-	results, err := client.Plugins().List()
+	plugins, err := client.Plugins().List(&PluginQueryString{})
 
 	assert.Nil(t, err)
-	assert.NotNil(t, results)
-	assert.True(t, len(results.Results) > 1)
+	assert.NotNil(t, plugins)
+	assert.True(t, len(plugins) > 1)
 
 	err = client.Plugins().DeleteById(createdPlugin.Id)
 	assert.Nil(t, err)

@@ -31,8 +31,14 @@ type Plugin struct {
 }
 
 type Plugins struct {
-	Results []*Plugin `json:"data,omitempty"`
-	Next    string    `json:"next,omitempty"`
+	Data   []*Plugin `json:"data"`
+	Next   *string   `json:"next"`
+	Offset string    `json:"offset,omitempty"`
+}
+
+type PluginQueryString struct {
+	Offset string `json:"offset,omitempty"`
+	Size   int    `json:"size"`
 }
 
 const PluginsPath = "/plugins/"
@@ -61,21 +67,40 @@ func (pluginClient *PluginClient) GetById(id string) (*Plugin, error) {
 	return plugin, nil
 }
 
-func (pluginClient *PluginClient) List() (*Plugins, error) {
+func (pluginClient *PluginClient) List(query *PluginQueryString) ([]*Plugin, error) {
+	plugins := make([]*Plugin, 0)
+	data := &Plugins{}
 
-	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+PluginsPath).End()
-	if errs != nil {
-		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
+	if query.Size < 100 {
+		query.Size = 100
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	if query.Size > 1000 {
+		query.Size = 1000
 	}
 
-	plugins := &Plugins{}
-	err := json.Unmarshal([]byte(body), plugins)
-	if err != nil {
-		return nil, fmt.Errorf("could not parse plugins list response, error: %v", err)
+	for {
+		r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+PluginsPath).Query(*query).End()
+		if errs != nil {
+			return nil, fmt.Errorf("could not get plugins, error: %v", errs)
+		}
+
+		if r.StatusCode == 401 || r.StatusCode == 403 {
+			return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+		}
+
+		err := json.Unmarshal([]byte(body), data)
+		if err != nil {
+			return nil, fmt.Errorf("could not parse plugins list response, error: %v", err)
+		}
+
+		plugins = append(plugins, data.Data...)
+
+		if data.Next == nil || *data.Next == "" {
+			break
+		}
+
+		query.Offset = data.Offset
 	}
 
 	return plugins, nil

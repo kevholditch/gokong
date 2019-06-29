@@ -247,7 +247,7 @@ plugin, err := gokong.NewClient(gokong.NewDefaultConfig()).Plugins().GetById("04
 
 List all plugins:
 ```go
-plugins, err := gokong.NewClient(gokong.NewDefaultConfig()).Plugins().List()
+plugins, err := gokong.NewClient(gokong.NewDefaultConfig()).Plugins().List(&PluginQueryString{})
 ```
 
 Delete a plugin by id:
