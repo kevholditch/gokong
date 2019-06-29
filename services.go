@@ -39,13 +39,14 @@ type Service struct {
 }
 
 type Services struct {
-	Data []*Service `json:"data"`
-	Next *string    `json:"next"`
+	Data   []*Service `json:"data"`
+	Next   *string    `json:"next"`
+	Offset string     `json:"offset,omitempty"`
 }
 
 type ServiceQueryString struct {
-	Offset int
-	Size   int
+	Offset string `json:"offset,omitempty"`
+	Size   int    `json:"size"`
 }
 
 const ServicesPath = "/services/"
@@ -130,7 +131,7 @@ func (serviceClient *ServiceClient) getService(endpoint string) (*Service, error
 }
 
 func (serviceClient *ServiceClient) GetServices(query *ServiceQueryString) ([]*Service, error) {
-	services := []*Service{}
+	services := make([]*Service, 0)
 	data := &Services{}
 
 	if query.Size == 0 || query.Size < 100 {
@@ -142,7 +143,7 @@ func (serviceClient *ServiceClient) GetServices(query *ServiceQueryString) ([]*S
 	}
 
 	for {
-		r, body, errs := newGet(serviceClient.config, serviceClient.config.HostAddress+ServicesPath).Query(query).End()
+		r, body, errs := newGet(serviceClient.config, serviceClient.config.HostAddress+ServicesPath).Query(*query).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get the service, error: %v", errs)
 		}
@@ -162,7 +163,7 @@ func (serviceClient *ServiceClient) GetServices(query *ServiceQueryString) ([]*S
 			break
 		}
 
-		query.Offset += query.Size
+		query.Offset = data.Offset
 	}
 
 	return services, nil
