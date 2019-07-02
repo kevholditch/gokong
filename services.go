@@ -132,7 +132,6 @@ func (serviceClient *ServiceClient) getService(endpoint string) (*Service, error
 
 func (serviceClient *ServiceClient) GetServices(query *ServiceQueryString) ([]*Service, error) {
 	services := make([]*Service, 0)
-	data := &Services{}
 
 	if query.Size == 0 || query.Size < 100 {
 		query.Size = 100
@@ -143,6 +142,8 @@ func (serviceClient *ServiceClient) GetServices(query *ServiceQueryString) ([]*S
 	}
 
 	for {
+		data := &Services{}
+
 		r, body, errs := newGet(serviceClient.config, serviceClient.config.HostAddress+ServicesPath).Query(*query).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get the service, error: %v", errs)

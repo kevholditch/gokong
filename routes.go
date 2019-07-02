@@ -112,7 +112,6 @@ func (routeClient *RouteClient) Create(routeRequest *RouteRequest) (*Route, erro
 
 func (routeClient *RouteClient) List(query *RouteQueryString) ([]*Route, error) {
 	routes := make([]*Route, 0)
-	data := &Routes{}
 
 	if query.Size < 100 {
 		query.Size = 100
@@ -123,6 +122,8 @@ func (routeClient *RouteClient) List(query *RouteQueryString) ([]*Route, error) 
 	}
 
 	for {
+		data := &Routes{}
+
 		r, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+RoutesPath).Query(*query).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get the route, error: %v", errs)
