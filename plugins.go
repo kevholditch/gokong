@@ -69,7 +69,6 @@ func (pluginClient *PluginClient) GetById(id string) (*Plugin, error) {
 
 func (pluginClient *PluginClient) List(query *PluginQueryString) ([]*Plugin, error) {
 	plugins := make([]*Plugin, 0)
-	data := &Plugins{}
 
 	if query.Size < 100 {
 		query.Size = 100
@@ -80,6 +79,8 @@ func (pluginClient *PluginClient) List(query *PluginQueryString) ([]*Plugin, err
 	}
 
 	for {
+		data := &Plugins{}
+
 		r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+PluginsPath).Query(*query).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get plugins, error: %v", errs)
