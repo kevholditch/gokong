@@ -22,6 +22,7 @@ type PluginRequest struct {
 type Plugin struct {
 	Id         string                 `json:"id"`
 	Name       string                 `json:"name"`
+	CreatedAt  *int                   `json:"created_at,omitempty"`
 	ConsumerId *Id                    `json:"consumer,omitempty"`
 	ServiceId  *Id                    `json:"service,omitempty"`
 	RouteId    *Id                    `json:"route,omitempty"`
