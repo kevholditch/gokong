@@ -10,29 +10,29 @@ type PluginClient struct {
 }
 
 type PluginRequest struct {
-	Name       string                 `json:"name"`
-	ConsumerId *Id                    `json:"consumer"`
-	ServiceId  *Id                    `json:"service"`
-	RouteId    *Id                    `json:"route"`
-	RunOn      string                 `json:"run_on,omitempty"`
-	Config     map[string]interface{} `json:"config,omitempty"`
-	Enabled    *bool                  `json:"enabled,omitempty"`
+	Name       string                 `json:"name" yaml:"name"`
+	ConsumerId *Id                    `json:"consumer" yaml:"consumer"`
+	ServiceId  *Id                    `json:"service" yaml:"service"`
+	RouteId    *Id                    `json:"route" yaml:"route"`
+	RunOn      string                 `json:"run_on,omitempty" yaml:"run_on,omitempty"`
+	Config     map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty`
+	Enabled    *bool                  `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 }
 
 type Plugin struct {
-	Id         string                 `json:"id"`
-	Name       string                 `json:"name"`
-	ConsumerId *Id                    `json:"consumer,omitempty"`
-	ServiceId  *Id                    `json:"service,omitempty"`
-	RouteId    *Id                    `json:"route,omitempty"`
-	RunOn      string                 `json:"run_on,omitempty"`
-	Config     map[string]interface{} `json:"config,omitempty"`
-	Enabled    bool                   `json:"enabled,omitempty"`
+	Id         string                 `json:"id" yaml:"id"`
+	Name       string                 `json:"name" yaml:"name"`
+	ConsumerId *Id                    `json:"consumer,omitempty" yaml:"consumer,omitempty"`
+	ServiceId  *Id                    `json:"service,omitempty" yaml:"service,omitempty"`
+	RouteId    *Id                    `json:"route,omitempty" yaml:"route,omitempty"`
+	RunOn      string                 `json:"run_on,omitempty" yaml:"run_on,omitempty"`
+	Config     map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty"`
+	Enabled    bool                   `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 }
 
 type Plugins struct {
-	Results []*Plugin `json:"data,omitempty"`
-	Next    string    `json:"next,omitempty"`
+	Results []*Plugin `json:"data,omitempty" yaml:"data,omitempty"`
+	Next    string    `json:"next,omitempty" yaml:"next,omitempty"`
 }
 
 const PluginsPath = "/plugins/"

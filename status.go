@@ -11,22 +11,22 @@ type StatusClient struct {
 }
 
 type Status struct {
-	Server   serverStatus   `json:"server"`
-	Database databaseStatus `json:"database"`
+	Server   serverStatus   `json:"server" yaml:"server"`
+	Database databaseStatus `json:"database" yaml:"database"`
 }
 
 type serverStatus struct {
-	TotalRequests       int `json:"total_requests"`
-	ConnectionsActive   int `json:"connections_active"`
-	ConnectionsAccepted int `json:"connections_accepted"`
-	ConnectionsHandled  int `json:"connections_handled"`
-	ConnectionsReading  int `json:"connections_reading"`
-	ConnectionsWriting  int `json:"connections_writing"`
-	ConnectionsWaiting  int `json:"connections_waiting"`
+	TotalRequests       int `json:"total_requests" yaml:"total_requests"`
+	ConnectionsActive   int `json:"connections_active" yaml:"connections_active"`
+	ConnectionsAccepted int `json:"connections_accepted" yaml:"connections_accepted"`
+	ConnectionsHandled  int `json:"connections_handled" yaml:"connections_handled"`
+	ConnectionsReading  int `json:"connections_reading" yaml:"connections_reading"`
+	ConnectionsWriting  int `json:"connections_writing" yaml:"connections_writing"`
+	ConnectionsWaiting  int `json:"connections_waiting" yaml:"connections_waiting"`
 }
 
 type databaseStatus struct {
-	Reachable bool `json:"reachable"`
+	Reachable bool `json:"reachable" yaml:"reachable"`
 }
 
 func (statusClient *StatusClient) Get() (*Status, error) {

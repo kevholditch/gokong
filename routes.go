@@ -10,47 +10,47 @@ type RouteClient struct {
 }
 
 type RouteRequest struct {
-	Name          *string   `json:"name"`
-	Protocols     []*string `json:"protocols"`
-	Methods       []*string `json:"methods"`
-	Hosts         []*string `json:"hosts"`
-	Paths         []*string `json:"paths"`
-	RegexPriority *int      `json:"regex_priority"`
-	StripPath     *bool     `json:"strip_path"`
-	PreserveHost  *bool     `json:"preserve_host"`
-	Snis          []*string `json:"snis"`
-	Sources       []*IpPort `json:"sources"`
-	Destinations  []*IpPort `json:"destinations"`
-	Service       *Id       `json:"service"`
+	Name          *string   `json:"name" yaml:"name"`
+	Protocols     []*string `json:"protocols" yaml:"protocols"`
+	Methods       []*string `json:"methods" yaml:"methods"`
+	Hosts         []*string `json:"hosts" yaml:"hosts"`
+	Paths         []*string `json:"paths" yaml:"paths"`
+	RegexPriority *int      `json:"regex_priority" yaml:"regex_priority"`
+	StripPath     *bool     `json:"strip_path" yaml:"strip_path"`
+	PreserveHost  *bool     `json:"preserve_host" yaml:"preserve_host"`
+	Snis          []*string `json:"snis" yaml:"snis"`
+	Sources       []*IpPort `json:"sources" yaml:"sources"`
+	Destinations  []*IpPort `json:"destinations" yaml:"destinations"`
+	Service       *Id       `json:"service" yaml:"service"`
 }
 
 type Route struct {
-	Id            *string   `json:"id"`
-	Name          *string   `json:"name"`
-	CreatedAt     *int      `json:"created_at"`
-	UpdatedAt     *int      `json:"updated_at"`
-	Protocols     []*string `json:"protocols"`
-	Methods       []*string `json:"methods"`
-	Hosts         []*string `json:"hosts"`
-	Paths         []*string `json:"paths"`
-	RegexPriority *int      `json:"regex_priority"`
-	StripPath     *bool     `json:"strip_path"`
-	PreserveHost  *bool     `json:"preserve_host"`
-	Snis          []*string `json:"snis"`
-	Sources       []*IpPort `json:"sources"`
-	Destinations  []*IpPort `json:"destinations"`
-	Service       *Id       `json:"service"`
+	Id            *string   `json:"id" yaml:"id"`
+	Name          *string   `json:"name" yaml:"name"`
+	CreatedAt     *int      `json:"created_at" yaml:"created_at"`
+	UpdatedAt     *int      `json:"updated_at" yaml:"updated_at"`
+	Protocols     []*string `json:"protocols" yaml:"protocols"`
+	Methods       []*string `json:"methods" yaml:"methods"`
+	Hosts         []*string `json:"hosts" yaml:"hosts"`
+	Paths         []*string `json:"paths" yaml:"paths"`
+	RegexPriority *int      `json:"regex_priority" yaml:"regex_priority"`
+	StripPath     *bool     `json:"strip_path" yaml:"strip_path"`
+	PreserveHost  *bool     `json:"preserve_host" yaml:"preserve_host"`
+	Snis          []*string `json:"snis" yaml:"snis"`
+	Sources       []*IpPort `json:"sources" yaml:"sources"`
+	Destinations  []*IpPort `json:"destinations" yaml:"destinations"`
+	Service       *Id       `json:"service" yaml:"service"`
 }
 
 type IpPort struct {
-	Ip   *string `json:"ip"`
-	Port *int    `json:"port"`
+	Ip   *string `json:"ip" yaml:"ip"`
+	Port *int    `json:"port" yaml:"port"`
 }
 
 type Routes struct {
-	Data  []*Route `json:"data"`
-	Total int      `json:"total"`
-	Next  string   `json:"next"`
+	Data  []*Route `json:"data" yaml:"data"`
+	Total int      `json:"total" yaml:"total"`
+	Next  string   `json:"next" yaml:"next"`
 }
 
 type RouteQueryString struct {
