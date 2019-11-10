@@ -192,7 +192,7 @@ serviceRequest := &ServiceRequest{
   Host:     String("example.com"),
 }
 
-createdService, err := client.Services().AddService(serviceRequest)
+createdService, err := client.Services().Create(serviceRequest)
 
 pluginRequest := &gokong.PluginRequest{
   Name: "response-ratelimiting",
@@ -215,7 +215,7 @@ serviceRequest := &ServiceRequest{
   Host:     String("example.com"),
 }
 
-createdService, err := client.Services().AddService(serviceRequest)
+createdService, err := client.Services().Create(serviceRequest)
 
 routeRequest := &RouteRequest{
   Protocols:    StringSlice([]string{"http"}),
@@ -335,7 +335,7 @@ serviceRequest := &gokong.ServiceRequest{
 
 client := gokong.NewClient(NewDefaultConfig())
 
-createdService, err := client.Services().AddService(serviceRequest)
+createdService, err := client.Services().Create(serviceRequest)
 
 routeRequest := &gokong.RouteRequest{
   Protocols:    gokong.StringSlice([]string{"http"}),
