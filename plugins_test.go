@@ -415,3 +415,37 @@ func Test_PluginsList(t *testing.T) {
 	assert.Nil(t, err)
 
 }
+
+func Test_PluginsGetByConsumerId(t *testing.T) {
+	consumerRequest := &ConsumerRequest{
+		Username: "username-" + uuid.NewV4().String(),
+		CustomId: "test-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdConsumer)
+
+	pluginRequest := &PluginRequest{
+		Name:       "request-size-limiting",
+		ConsumerId: ToId(createdConsumer.Id),
+		Config: map[string]interface{}{
+			"allowed_payload_size": 128,
+		},
+	}
+
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+
+	plugins, err := client.Plugins().GetByConsumerId(createdConsumer.Id)
+	assert.Nil(t, err)
+	assert.NotNil(t, plugins)
+	assert.Equal(t, plugins.Results[0].Name, createdPlugin.Name)
+	assert.Equal(t, plugins.Results[0].ServiceId, createdPlugin.ServiceId)
+
+	err = client.Plugins().DeleteById(createdPlugin.Id)
+	assert.Nil(t, err)
+}

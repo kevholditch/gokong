@@ -142,3 +142,22 @@ func (pluginClient *PluginClient) DeleteById(id string) error {
 
 	return nil
 }
+
+func (pluginClient *PluginClient) GetByConsumerId(id string) (*Plugins, error) {
+	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+"/consumers/"+id+"/plugins").End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	plugins := &Plugins{}
+	err := json.Unmarshal([]byte(body), plugins)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse plugins list response, error: %v", err)
+	}
+
+	return plugins, nil
+}
