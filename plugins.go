@@ -11,9 +11,9 @@ type PluginClient struct {
 
 type PluginRequest struct {
 	Name       string                 `json:"name"`
-	ConsumerId *Id                    `json:"consumer,omitempty"`
-	ServiceId  *Id                    `json:"service,omitempty"`
-	RouteId    *Id                    `json:"route,omitempty"`
+	ConsumerId *Id                    `json:"consumer"`
+	ServiceId  *Id                    `json:"service"`
+	RouteId    *Id                    `json:"route"`
 	RunOn      string                 `json:"run_on,omitempty"`
 	Config     map[string]interface{} `json:"config,omitempty"`
 	Enabled    *bool                  `json:"enabled,omitempty"`
