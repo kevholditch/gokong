@@ -217,28 +217,28 @@ func Test_UpstreamsUpdateById(t *testing.T) {
 				HttpsSni:               nil,
 				Healthy: &ActiveHealthy{
 					HttpStatuses: []int{200, 302},
-					Interval:     0,
-					Successes:    0,
+					Interval:     10,
+					Successes:    10,
 				},
 				Unhealthy: &ActiveUnhealthy{
-					HttpFailures: 0,
+					HttpFailures: 10,
 					HttpStatuses: []int{429, 404, 500, 501, 502, 503, 504, 505},
-					Interval:     0,
-					TcpFailures:  0,
-					Timeouts:     0,
+					Interval:     10,
+					TcpFailures:  10,
+					Timeouts:     10,
 				},
 			},
 			Passive: &UpstreamHealthCheckPassive{
 				Type: "http",
 				Healthy: &PassiveHealthy{
 					HttpStatuses: []int{200, 201, 202, 203, 204, 205, 206, 207, 208, 226, 300, 301, 302, 303, 304, 305, 306, 307, 308},
-					Successes:    0,
+					Successes:    10,
 				},
 				Unhealthy: &PassiveUnhealthy{
-					HttpFailures: 0,
+					HttpFailures: 10,
 					HttpStatuses: []int{429, 500, 503},
-					TcpFailures:  0,
-					Timeouts:     0,
+					TcpFailures:  10,
+					Timeouts:     10,
 				},
 			},
 		},
@@ -251,6 +251,19 @@ func Test_UpstreamsUpdateById(t *testing.T) {
 	assert.Equal(t, 10, createdUpstream.Slots)
 
 	upstreamRequest.Slots = 11
+	// Turn off health checks to ensure we can update from active to inactive state
+	// "healthy" checks
+	upstreamRequest.HealthChecks.Active.Healthy.Interval = 0
+	upstreamRequest.HealthChecks.Active.Healthy.Successes = 0
+	upstreamRequest.HealthChecks.Passive.Healthy.Successes = 0
+	// "unhealthy" checks
+	upstreamRequest.HealthChecks.Active.Unhealthy.Interval = 0
+	upstreamRequest.HealthChecks.Active.Unhealthy.HttpFailures = 0
+	upstreamRequest.HealthChecks.Active.Unhealthy.TcpFailures = 0
+	upstreamRequest.HealthChecks.Active.Unhealthy.Timeouts = 0
+	upstreamRequest.HealthChecks.Passive.Unhealthy.HttpFailures = 0
+	upstreamRequest.HealthChecks.Passive.Unhealthy.TcpFailures = 0
+	upstreamRequest.HealthChecks.Passive.Unhealthy.Timeouts = 0
 
 	result, err := client.Upstreams().UpdateById(createdUpstream.Id, upstreamRequest)
 

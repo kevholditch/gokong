@@ -39,16 +39,16 @@ type UpstreamHealthCheckActive struct {
 
 type ActiveHealthy struct {
 	HttpStatuses []int `json:"http_statuses,omitempty"`
-	Interval     int   `json:"interval,omitempty"`
-	Successes    int   `json:"successes,omitempty"`
+	Interval     int   `json:"interval"`
+	Successes    int   `json:"successes"`
 }
 
 type ActiveUnhealthy struct {
-	HttpFailures int   `json:"http_failures,omitempty"`
+	HttpFailures int   `json:"http_failures"`
 	HttpStatuses []int `json:"http_statuses,omitempty"`
-	Interval     int   `json:"interval,omitempty"`
-	TcpFailures  int   `json:"tcp_failures,omitempty"`
-	Timeouts     int   `json:"timeouts,omitempty"`
+	Interval     int   `json:"interval"`
+	TcpFailures  int   `json:"tcp_failures"`
+	Timeouts     int   `json:"timeouts"`
 }
 
 type UpstreamHealthCheckPassive struct {
@@ -59,14 +59,14 @@ type UpstreamHealthCheckPassive struct {
 
 type PassiveHealthy struct {
 	HttpStatuses []int `json:"http_statuses,omitempty"`
-	Successes    int   `json:"successes,omitempty"`
+	Successes    int   `json:"successes"`
 }
 
 type PassiveUnhealthy struct {
-	HttpFailures int   `json:"http_failures,omitempty"`
+	HttpFailures int   `json:"http_failures"`
 	HttpStatuses []int `json:"http_statuses,omitempty"`
-	TcpFailures  int   `json:"tcp_failures,omitempty"`
-	Timeouts     int   `json:"timeouts,omitempty"`
+	TcpFailures  int   `json:"tcp_failures"`
+	Timeouts     int   `json:"timeouts"`
 }
 
 type Upstream struct {
