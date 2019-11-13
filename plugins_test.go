@@ -510,3 +510,46 @@ func Test_PluginsGetByRouteId(t *testing.T) {
 
 	assert.Nil(t, err)
 }
+
+func Test_PluginsGetByServiceId(t *testing.T) {
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String(fmt.Sprintf("%s.example.com", uuid.NewV4().String())),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	pluginRequest := &PluginRequest{
+		Name:      "request-size-limiting",
+		ServiceId: ToId(*createdService.Id),
+		Config: map[string]interface{}{
+			"allowed_payload_size": 128,
+		},
+	}
+
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+
+	plugins, err := client.Plugins().GetByServiceId(*createdService.Id)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, plugins)
+	assert.Equal(t, plugins.Results[0].Name, createdPlugin.Name)
+	assert.Equal(t, plugins.Results[0].ServiceId, createdPlugin.ServiceId)
+
+	err = client.Plugins().DeleteById(createdPlugin.Id)
+
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+
+	assert.Nil(t, err)
+}
