@@ -10,18 +10,18 @@ type SnisClient struct {
 }
 
 type SnisRequest struct {
-	Name          string `json:"name,omitempty"`
-	CertificateId *Id    `json:"certificate,omitempty"`
+	Name          string `json:"name,omitempty" yaml:"name,omitempty"`
+	CertificateId *Id    `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 }
 
 type Sni struct {
-	Name          string `json:"name,omitempty"`
-	CertificateId *Id    `json:"certificate,omitempty"`
+	Name          string `json:"name,omitempty" yaml:"name,omitempty"`
+	CertificateId *Id    `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 }
 
 type Snis struct {
-	Results []*Sni `json:"data,omitempty"`
-	Total   int    `json:"total,omitempty"`
+	Results []*Sni `json:"data,omitempty" yaml:"data,omitempty"`
+	Total   int    `json:"total,omitempty" yaml:"total,omitempty"`
 }
 
 const SnisPath = "/snis/"
