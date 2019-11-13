@@ -449,3 +449,64 @@ func Test_PluginsGetByConsumerId(t *testing.T) {
 	err = client.Plugins().DeleteById(createdPlugin.Id)
 	assert.Nil(t, err)
 }
+
+func Test_PluginsGetByRouteId(t *testing.T) {
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String(fmt.Sprintf("%s.example.com", uuid.NewV4().String())),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	routeRequest := &RouteRequest{
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{fmt.Sprintf("%s.example.com", uuid.NewV4().String())}),
+		Paths:        StringSlice([]string{"/"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(false),
+		Service:      ToId(*createdService.Id),
+	}
+
+	createdRoute, err := client.Routes().Create(routeRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdRoute)
+
+	pluginRequest := &PluginRequest{
+		Name:    "request-size-limiting",
+		RouteId: ToId(*createdRoute.Id),
+		Config: map[string]interface{}{
+			"allowed_payload_size": 128,
+		},
+	}
+
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+
+	plugins, err := client.Plugins().GetByRouteId(*createdRoute.Id)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, plugins)
+	assert.Equal(t, plugins.Results[0].Name, createdPlugin.Name)
+	assert.Equal(t, plugins.Results[0].ServiceId, createdPlugin.ServiceId)
+	err = client.Plugins().DeleteById(createdPlugin.Id)
+
+	assert.Nil(t, err)
+
+	err = client.Routes().DeleteById(*createdRoute.Id)
+
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+
+	assert.Nil(t, err)
+}
