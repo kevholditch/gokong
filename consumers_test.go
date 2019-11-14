@@ -213,8 +213,8 @@ func Test_ConsumersUpdateByIdInvalid(t *testing.T) {
 
 	result, err := client.Consumers().UpdateById(createdConsumer.Id, consumerRequest)
 
-	assert.NotNil(t, err)
-	assert.Nil(t, result)
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
 }
 
 func Test_ConsumersUpdateByUsername(t *testing.T) {
@@ -261,8 +261,8 @@ func Test_ConsumersUpdateByUsernameInvalid(t *testing.T) {
 
 	result, err := client.Consumers().UpdateByUsername(createdConsumer.Username, consumerRequest)
 
-	assert.NotNil(t, err)
-	assert.Nil(t, result)
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
 }
 
 func Test_ConsumersPluginConfig(t *testing.T) {
