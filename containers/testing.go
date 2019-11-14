@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	dockertest "gopkg.in/ory-am/dockertest.v3"
+	"github.com/ory/dockertest"
 )
 
 type TestContext struct {

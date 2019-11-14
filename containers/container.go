@@ -3,7 +3,7 @@ package containers
 import (
 	"strings"
 
-	dockertest "gopkg.in/ory-am/dockertest.v3"
+	"github.com/ory/dockertest"
 )
 
 func getContainerName(container *dockertest.Resource) string {
