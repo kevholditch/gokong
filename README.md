@@ -26,11 +26,6 @@ To add gokong via `go get`:
 go get github.com/kevholditch/gokong
 ```
 
-To add gokong via `govendor`:
-```
-govendor fetch github.com/kevholditch/gokong
-```
-
 ## Usage
 
 Import gokong
