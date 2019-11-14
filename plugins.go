@@ -15,7 +15,7 @@ type PluginRequest struct {
 	ServiceId  *Id                    `json:"service" yaml:"service"`
 	RouteId    *Id                    `json:"route" yaml:"route"`
 	RunOn      string                 `json:"run_on,omitempty" yaml:"run_on,omitempty"`
-	Config     map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty`
+	Config     map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty"`
 	Enabled    *bool                  `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 }
 
@@ -31,8 +31,14 @@ type Plugin struct {
 }
 
 type Plugins struct {
-	Results []*Plugin `json:"data,omitempty" yaml:"data,omitempty"`
-	Next    string    `json:"next,omitempty" yaml:"next,omitempty"`
+	Data   []*Plugin `json:"data" yaml:"data,omitempty"`
+	Next   *string   `json:"next" yaml:"next,omitempty"`
+	Offset string    `json:"offset,omitempty" yaml:"offset,omitempty"`
+}
+
+type PluginQueryString struct {
+	Offset string `json:"offset,omitempty" yaml:"offset,omitempty"`
+	Size   int    `json:"size" yaml:"size,omitempty"`
 }
 
 const PluginsPath = "/plugins/"
@@ -61,21 +67,41 @@ func (pluginClient *PluginClient) GetById(id string) (*Plugin, error) {
 	return plugin, nil
 }
 
-func (pluginClient *PluginClient) List() (*Plugins, error) {
+func (pluginClient *PluginClient) List(query *PluginQueryString) ([]*Plugin, error) {
+	plugins := make([]*Plugin, 0)
 
-	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+PluginsPath).End()
-	if errs != nil {
-		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
+	if query.Size < 100 {
+		query.Size = 100
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	if query.Size > 1000 {
+		query.Size = 1000
 	}
 
-	plugins := &Plugins{}
-	err := json.Unmarshal([]byte(body), plugins)
-	if err != nil {
-		return nil, fmt.Errorf("could not parse plugins list response, error: %v", err)
+	for {
+		data := &Plugins{}
+
+		r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+PluginsPath).Query(*query).End()
+		if errs != nil {
+			return nil, fmt.Errorf("could not get plugins, error: %v", errs)
+		}
+
+		if r.StatusCode == 401 || r.StatusCode == 403 {
+			return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+		}
+
+		err := json.Unmarshal([]byte(body), data)
+		if err != nil {
+			return nil, fmt.Errorf("could not parse plugins list response, error: %v", err)
+		}
+
+		plugins = append(plugins, data.Data...)
+
+		if data.Next == nil || *data.Next == "" {
+			break
+		}
+
+		query.Offset = data.Offset
 	}
 
 	return plugins, nil
