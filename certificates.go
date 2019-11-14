@@ -10,19 +10,19 @@ type CertificateClient struct {
 }
 
 type CertificateRequest struct {
-	Cert *string `json:"cert,omitempty"`
-	Key  *string `json:"key,omitempty"`
+	Cert *string `json:"cert,omitempty" yaml:"cert,omitempty"`
+	Key  *string `json:"key,omitempty" yaml:"key,omitempty"`
 }
 
 type Certificate struct {
-	Id   *string `json:"id,omitempty"`
-	Cert *string `json:"cert,omitempty"`
-	Key  *string `json:"key,omitempty"`
+	Id   *string `json:"id,omitempty" yaml:"id,omitempty"`
+	Cert *string `json:"cert,omitempty" yaml:"cert,omitempty"`
+	Key  *string `json:"key,omitempty" yaml:"key,omitempty"`
 }
 
 type Certificates struct {
-	Results []*Certificate `json:"data,omitempty"`
-	Total   int            `json:"total,omitempty"`
+	Results []*Certificate `json:"data,omitempty" yaml:"data,omitempty"`
+	Total   int            `json:"total,omitempty" yaml:"total,omitempty"`
 }
 
 const CertificatesPath = "/certificates/"

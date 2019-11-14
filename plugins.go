@@ -10,35 +10,35 @@ type PluginClient struct {
 }
 
 type PluginRequest struct {
-	Name       string                 `json:"name"`
-	ConsumerId *Id                    `json:"consumer,omitempty"`
-	ServiceId  *Id                    `json:"service,omitempty"`
-	RouteId    *Id                    `json:"route,omitempty"`
-	RunOn      string                 `json:"run_on,omitempty"`
-	Config     map[string]interface{} `json:"config,omitempty"`
-	Enabled    *bool                  `json:"enabled,omitempty"`
+	Name       string                 `json:"name" yaml:"name"`
+	ConsumerId *Id                    `json:"consumer" yaml:"consumer"`
+	ServiceId  *Id                    `json:"service" yaml:"service"`
+	RouteId    *Id                    `json:"route" yaml:"route"`
+	RunOn      string                 `json:"run_on,omitempty" yaml:"run_on,omitempty"`
+	Config     map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty"`
+	Enabled    *bool                  `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 }
 
 type Plugin struct {
-	Id         string                 `json:"id"`
-	Name       string                 `json:"name"`
-	ConsumerId *Id                    `json:"consumer,omitempty"`
-	ServiceId  *Id                    `json:"service,omitempty"`
-	RouteId    *Id                    `json:"route,omitempty"`
-	RunOn      string                 `json:"run_on,omitempty"`
-	Config     map[string]interface{} `json:"config,omitempty"`
-	Enabled    bool                   `json:"enabled,omitempty"`
+	Id         string                 `json:"id" yaml:"id"`
+	Name       string                 `json:"name" yaml:"name"`
+	ConsumerId *Id                    `json:"consumer,omitempty" yaml:"consumer,omitempty"`
+	ServiceId  *Id                    `json:"service,omitempty" yaml:"service,omitempty"`
+	RouteId    *Id                    `json:"route,omitempty" yaml:"route,omitempty"`
+	RunOn      string                 `json:"run_on,omitempty" yaml:"run_on,omitempty"`
+	Config     map[string]interface{} `json:"config,omitempty" yaml:"config,omitempty"`
+	Enabled    bool                   `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 }
 
 type Plugins struct {
-	Data   []*Plugin `json:"data"`
-	Next   *string   `json:"next"`
-	Offset string    `json:"offset,omitempty"`
+	Data   []*Plugin `json:"data" yaml:"data,omitempty"`
+	Next   *string   `json:"next" yaml:"next,omitempty"`
+	Offset string    `json:"offset,omitempty" yaml:"offset,omitempty"`
 }
 
 type PluginQueryString struct {
-	Offset string `json:"offset,omitempty"`
-	Size   int    `json:"size"`
+	Offset string `json:"offset,omitempty" yaml:"offset,omitempty"`
+	Size   int    `json:"size" yaml:"size,omitempty"`
 }
 
 const PluginsPath = "/plugins/"
@@ -167,4 +167,61 @@ func (pluginClient *PluginClient) DeleteById(id string) error {
 	}
 
 	return nil
+}
+
+func (pluginClient *PluginClient) GetByConsumerId(id string) (*Plugins, error) {
+	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+"/consumers/"+id+"/plugins").End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	plugins := &Plugins{}
+	err := json.Unmarshal([]byte(body), plugins)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse plugins list response, error: %v", err)
+	}
+
+	return plugins, nil
+}
+
+func (pluginClient *PluginClient) GetByRouteId(id string) (*Plugins, error) {
+	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+"/routes/"+id+"/plugins").End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	plugins := &Plugins{}
+	err := json.Unmarshal([]byte(body), plugins)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse plugins list response, error: %v", err)
+	}
+
+	return plugins, nil
+}
+
+func (pluginClient *PluginClient) GetByServiceId(id string) (*Plugins, error) {
+	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+"/services/"+id+"/plugins").End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	plugins := &Plugins{}
+	err := json.Unmarshal([]byte(body), plugins)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse plugins list response, error: %v", err)
+	}
+
+	return plugins, nil
 }

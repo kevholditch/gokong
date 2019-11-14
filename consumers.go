@@ -10,23 +10,23 @@ type ConsumerClient struct {
 }
 
 type ConsumerRequest struct {
-	Username string `json:"username,omitempty"`
-	CustomId string `json:"custom_id,omitempty"`
+	Username string `json:"username,omitempty" yaml:"username,omitempty"`
+	CustomId string `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
 }
 
 type Consumer struct {
-	Id       string `json:"id,omitempty"`
-	CustomId string `json:"custom_id,omitempty"`
-	Username string `json:"username,omitempty"`
+	Id       string `json:"id,omitempty" yaml:"id,omitempty"`
+	CustomId string `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
+	Username string `json:"username,omitempty" yaml:"custom_id,omitempty"`
 }
 
 type Consumers struct {
-	Results []*Consumer `json:"data,omitempty"`
-	Next    string      `json:"next,omitempty"`
+	Results []*Consumer `json:"data,omitempty" yaml:"data,omitempty"`
+	Next    string      `json:"next,omitempty" yaml:"next,omitempty"`
 }
 
 type ConsumerPluginConfig struct {
-	Id   string `json:"id,omitempty"`
+	Id   string `json:"id,omitempty" yaml:"id,omitempty"`
 	Body string
 }
 

@@ -10,73 +10,73 @@ type UpstreamClient struct {
 }
 
 type UpstreamRequest struct {
-	Name               string               `json:"name"`
-	Slots              int                  `json:"slots,omitempty"`
-	HashOn             string               `json:"hash_on,omitempty"`
-	HashFallback       string               `json:"hash_fallback,omitempty"`
-	HashOnHeader       string               `json:"hash_on_header,omitempty"`
-	HashFallbackHeader string               `json:"hash_fallback_header,omitempty"`
-	HashOnCookie       string               `json:"hash_on_cookie,omitempty"`
-	HashOnCookiePath   string               `json:"hash_on_cookie_path,omitempty"`
-	HealthChecks       *UpstreamHealthCheck `json:"healthchecks,omitempty"`
+	Name               string               `json:"name" yaml:"name"`
+	Slots              int                  `json:"slots,omitempty" yaml:"slots,omitempty"`
+	HashOn             string               `json:"hash_on,omitempty" yaml:"hash_on,omitempty"`
+	HashFallback       string               `json:"hash_fallback,omitempty" yaml:"hash_fallback,omitempty"`
+	HashOnHeader       string               `json:"hash_on_header,omitempty" yaml:"hash_on_header,omitempty"`
+	HashFallbackHeader string               `json:"hash_fallback_header,omitempty" yaml:"hash_fallback_header,omitempty"`
+	HashOnCookie       string               `json:"hash_on_cookie,omitempty" yaml:"hash_on_cookie,omitempty"`
+	HashOnCookiePath   string               `json:"hash_on_cookie_path,omitempty" yaml:"hash_on_cookie_path,omitempty"`
+	HealthChecks       *UpstreamHealthCheck `json:"healthchecks,omitempty" yaml:"healthchecks,omitempty"`
 }
 
 type UpstreamHealthCheck struct {
-	Active  *UpstreamHealthCheckActive  `json:"active,omitempty"`
-	Passive *UpstreamHealthCheckPassive `json:"passive,omitempty"`
+	Active  *UpstreamHealthCheckActive  `json:"active,omitempty" yaml:"active,omitempty"`
+	Passive *UpstreamHealthCheckPassive `json:"passive,omitempty" yaml:"passive,omitempty"`
 }
 
 type UpstreamHealthCheckActive struct {
-	Type                   string           `json:"type,omitempty"`
-	Concurrency            int              `json:"concurrency,omitempty"`
-	Healthy                *ActiveHealthy   `json:"healthy,omitempty"`
-	HttpPath               string           `json:"http_path,omitempty"`
-	HttpsVerifyCertificate bool             `json:"https_verify_certificate"`
-	HttpsSni               *string          `json:"https_sni,omitempty"`
-	Timeout                int              `json:"timeout,omitempty"`
-	Unhealthy              *ActiveUnhealthy `json:"unhealthy,omitempty"`
+	Type                   string           `json:"type,omitempty" yaml:"type,omitempty"`
+	Concurrency            int              `json:"concurrency,omitempty" yaml:"concurrency,omitempty"`
+	Healthy                *ActiveHealthy   `json:"healthy,omitempty" yaml:"healthy,omitempty"`
+	HttpPath               string           `json:"http_path,omitempty" yaml:"http_path,omitempty"`
+	HttpsVerifyCertificate bool             `json:"https_verify_certificate" yaml:"https_verify_certificate"`
+	HttpsSni               *string          `json:"https_sni,omitempty" yaml:"https_sni,omitempty"`
+	Timeout                int              `json:"timeout,omitempty" yaml:"timeout,omitempty"`
+	Unhealthy              *ActiveUnhealthy `json:"unhealthy,omitempty" yaml:"unhealthy,omitempty"`
 }
 
 type ActiveHealthy struct {
-	HttpStatuses []int `json:"http_statuses,omitempty"`
-	Interval     int   `json:"interval,omitempty"`
-	Successes    int   `json:"successes,omitempty"`
+	HttpStatuses []int `json:"http_statuses,omitempty" yaml:"http_statuses,omitempty"`
+	Interval     int   `json:"interval" yaml:"interval"`
+	Successes    int   `json:"successes" yaml:"successes"`
 }
 
 type ActiveUnhealthy struct {
-	HttpFailures int   `json:"http_failures,omitempty"`
-	HttpStatuses []int `json:"http_statuses,omitempty"`
-	Interval     int   `json:"interval,omitempty"`
-	TcpFailures  int   `json:"tcp_failures,omitempty"`
-	Timeouts     int   `json:"timeouts,omitempty"`
+	HttpFailures int   `json:"http_failures" yaml:"http_failures"`
+	HttpStatuses []int `json:"http_statuses,omitempty" yaml:"http_statuses,omitempty"`
+	Interval     int   `json:"interval" yaml:"interval"`
+	TcpFailures  int   `json:"tcp_failures" yaml:"tcp_failures"`
+	Timeouts     int   `json:"timeouts" yaml:"timeouts"`
 }
 
 type UpstreamHealthCheckPassive struct {
-	Type      string            `json:"type,omitempty"`
-	Healthy   *PassiveHealthy   `json:"healthy,omitempty"`
-	Unhealthy *PassiveUnhealthy `json:"unhealthy,omitempty"`
+	Type      string            `json:"type,omitempty" yaml:"type,omitempty"`
+	Healthy   *PassiveHealthy   `json:"healthy,omitempty yaml:"healthy,omitempty"`
+	Unhealthy *PassiveUnhealthy `json:"unhealthy,omitempty yaml:"unhealthy,omitempty"`
 }
 
 type PassiveHealthy struct {
-	HttpStatuses []int `json:"http_statuses,omitempty"`
-	Successes    int   `json:"successes,omitempty"`
+	HttpStatuses []int `json:"http_statuses,omitempty" yaml:"http_statuses,omitempty"`
+	Successes    int   `json:"successes" yaml:"successes"`
 }
 
 type PassiveUnhealthy struct {
-	HttpFailures int   `json:"http_failures,omitempty"`
-	HttpStatuses []int `json:"http_statuses,omitempty"`
-	TcpFailures  int   `json:"tcp_failures,omitempty"`
-	Timeouts     int   `json:"timeouts,omitempty"`
+	HttpFailures int   `json:"http_failures" yaml:"http_failures"`
+	HttpStatuses []int `json:"http_statuses,omitempty" yaml:"http_statuses,omitempty"`
+	TcpFailures  int   `json:"tcp_failures" yaml:"tcp_failures"`
+	Timeouts     int   `json:"timeouts" yaml:"timeouts"`
 }
 
 type Upstream struct {
-	Id string `json:"id,omitempty"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	UpstreamRequest
 }
 
 type Upstreams struct {
-	Results []*Upstream `json:"data,omitempty"`
-	Next    string      `json:"next,omitempty"`
+	Results []*Upstream `json:"data,omitempty" yaml:"data,omitempty"`
+	Next    string      `json:"next,omitempty" yaml:"next,omitempty"`
 }
 
 const UpstreamsPath = "/upstreams/"

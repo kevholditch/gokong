@@ -186,13 +186,13 @@ Create a new Plugin for a single Service (only set `ServiceId`), Not all plugins
 ```go
 client := gokong.NewClient(gokong.NewDefaultConfig())
 
-serviceRequest := &ServiceRequest{
+serviceRequest := &gokong.ServiceRequest{
   Name:     String("service"),
   Protocol: String("http"),
   Host:     String("example.com"),
 }
 
-createdService, err := client.Services().AddService(serviceRequest)
+createdService, err := client.Services().Create(serviceRequest)
 
 pluginRequest := &gokong.PluginRequest{
   Name: "response-ratelimiting",
@@ -209,22 +209,22 @@ Create a new Plugin for a single Route (only set `RouteId`), Not all plugins can
 ```go
 client := gokong.NewClient(gokong.NewDefaultConfig())
 
-serviceRequest := &ServiceRequest{
+serviceRequest := &gokong.ServiceRequest{
   Name:     String("service"),
   Protocol: String("http"),
   Host:     String("example.com"),
 }
 
-createdService, err := client.Services().AddService(serviceRequest)
+createdService, err := client.Services().Create(serviceRequest)
 
-routeRequest := &RouteRequest{
+routeRequest := &gokong.RouteRequest{
   Protocols:    StringSlice([]string{"http"}),
   Methods:      StringSlice([]string{"GET"}),
   Hosts:        StringSlice([]string{"example.com"}),
   Paths:        StringSlice([]string{"/"}),
   StripPath:    Bool(true),
   PreserveHost: Bool(false),
-  Service:      &RouteServiceObject{Id: *createdService.Id},
+  Service:      &gokong.RouteServiceObject{Id: *createdService.Id},
 }
 
 createdRoute, err := client.Routes().Create(routeRequest)
@@ -335,7 +335,7 @@ serviceRequest := &gokong.ServiceRequest{
 
 client := gokong.NewClient(NewDefaultConfig())
 
-createdService, err := client.Services().AddService(serviceRequest)
+createdService, err := client.Services().Create(serviceRequest)
 
 routeRequest := &gokong.RouteRequest{
   Protocols:    gokong.StringSlice([]string{"http"}),
@@ -375,7 +375,7 @@ result, err := gokong.NewClient(gokong.NewDefaultConfig()).Routes().GetByName(cr
 
 List all routes:
 ```go
-result, err := gokong.NewClient(gokong.NewDefaultConfig()).Routes().List(&RouteQueryString{})
+result, err := gokong.NewClient(gokong.NewDefaultConfig()).Routes().List(&gokong.RouteQueryString{})
 ```
 
 Get routes from service ID or Name:
@@ -385,7 +385,7 @@ result, err := gokong.NewClient(gokong.NewDefaultConfig()).Routes().GetRoutesFro
 
 Update a route:
 ```go
-routeRequest := &RouteRequest{
+routeRequest := &gokong.RouteRequest{
   Protocols:    gokong.StringSlice([]string{"http"}),
   Methods:      gokong.StringSlice([]string{"GET"}),
   Hosts:        gokong.StringSlice([]string{"foo.com"}),
@@ -415,7 +415,7 @@ client.Routes().DeleteByName(createdRoute.Id)
 
 Create an Service ([for more information on the Service Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#service-object)):
 ```go
-serviceRequest := &ServiceRequest{
+serviceRequest := &gokong.ServiceRequest{
 		Name:     gokong.String("service-name-0"),
 		Protocol: gokong.String("http"),
 		Host:     gokong.String("foo.com"),
@@ -428,7 +428,7 @@ serviceRequest := &ServiceRequest{
 
 Get information about a service with the service ID or Name
 ```go
-serviceRequest := &ServiceRequest{
+serviceRequest := &gokong.ServiceRequest{
 		Name:     gokong.String("service-name-0"),
     Protocol: gokong.String("http"),
     Host:     gokong.String("foo.com")
@@ -450,7 +450,7 @@ result, err := gokong.NewClient(gokong.NewDefaultConfig()).Services().GetService
 
 Get many services information
 ```go
-result, err := gokong.NewClient(gokong.NewDefaultConfig()).Services().GetServices(&ServiceQueryString{
+result, err := gokong.NewClient(gokong.NewDefaultConfig()).Services().GetServices(&gokong.ServiceQueryString{
 	Size: 500
 	Offset: 300
 })
@@ -458,7 +458,7 @@ result, err := gokong.NewClient(gokong.NewDefaultConfig()).Services().GetService
 
 Update a service with the service ID or Name
 ```go
-serviceRequest := &ServiceRequest{
+serviceRequest := &gokong.ServiceRequest{
   Name:     gokong.String("service-name-0"),
   Protocol: gokong.String("http"),
   Host:     gokong.String("foo.com"),
@@ -475,7 +475,7 @@ result, err := client.Services().GetServiceById(createdService.Id)
 
 Update a service by the route ID
 ```go
-serviceRequest := &ServiceRequest{
+serviceRequest := &gokong.ServiceRequest{
   Name:     gokong.String("service-name-0"),
   Protocol: gokong.String("http"),
   Host:     gokong.String("foo.com"),
@@ -609,7 +609,7 @@ updatedUpstream, err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().
 ## Targets
 Create a target for an upstream ([for more information on the Target Fields see the Kong documentation](https://getkong.org/docs/0.13.x/admin-api/#upstream-objects)):
 ```go
-targetRequest := &TargetRequest{
+targetRequest := &gokong.TargetRequest{
   Target:				"foo.com:443",
   Weight:				100,
 }

@@ -66,7 +66,7 @@ func TestRoutes_CreateWithSourcesAndDestinations(t *testing.T) {
 	assert.NotNil(t, createdService)
 
 	routeRequest := &RouteRequest{
-		Protocols:    StringSlice([]string{"tcp"}),
+		Protocols:    StringSlice([]string{"tls"}),
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
 		Snis:         StringSlice([]string{"example.com"}),
