@@ -48,14 +48,14 @@ type IpPort struct {
 }
 
 type Routes struct {
-	Data  []*Route `json:"data" yaml:"data"`
-	Total int      `json:"total" yaml:"total"`
-	Next  string   `json:"next" yaml:"next"`
+	Data   []*Route `json:"data" yaml:"data"`
+	Next   *string  `json:"next" yaml:"next"`
+	Offset string   `json:"offset,omitempty" yaml:"offset,omitempty"`
 }
 
 type RouteQueryString struct {
-	Offset int
-	Size   int
+	Offset string `json:"offset,omitempty"`
+	Size   int    `json:"size"`
 }
 
 const RoutesPath = "/routes/"
@@ -111,8 +111,7 @@ func (routeClient *RouteClient) Create(routeRequest *RouteRequest) (*Route, erro
 }
 
 func (routeClient *RouteClient) List(query *RouteQueryString) ([]*Route, error) {
-	routes := []*Route{}
-	data := &Routes{}
+	routes := make([]*Route, 0)
 
 	if query.Size < 100 {
 		query.Size = 100
@@ -123,7 +122,9 @@ func (routeClient *RouteClient) List(query *RouteQueryString) ([]*Route, error) 
 	}
 
 	for {
-		r, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+RoutesPath).Query(query).End()
+		data := &Routes{}
+
+		r, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+RoutesPath).Query(*query).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get the route, error: %v", errs)
 		}
@@ -139,11 +140,11 @@ func (routeClient *RouteClient) List(query *RouteQueryString) ([]*Route, error) 
 
 		routes = append(routes, data.Data...)
 
-		if data.Next == "" {
+		if data.Next == nil || *data.Next == "" {
 			break
 		}
 
-		query.Offset += query.Size
+		query.Offset = data.Offset
 	}
 
 	return routes, nil
@@ -154,7 +155,7 @@ func (routeClient *RouteClient) GetRoutesFromServiceName(name string) ([]*Route,
 }
 
 func (routeClient *RouteClient) GetRoutesFromServiceId(id string) ([]*Route, error) {
-	routes := []*Route{}
+	routes := make([]*Route, 0)
 	data := &Routes{}
 
 	for {
@@ -174,7 +175,7 @@ func (routeClient *RouteClient) GetRoutesFromServiceId(id string) ([]*Route, err
 
 		routes = append(routes, data.Data...)
 
-		if data.Next == "" {
+		if data.Next == nil || *data.Next == "" {
 			break
 		}
 
