@@ -21,5 +21,6 @@ require (
 	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/net v0.0.0-20191112182307-2180aed22343 // indirect
+	gopkg.in/yaml.v2 v2.2.7
 	moul.io/http2curl v1.0.0 // indirect
 )
