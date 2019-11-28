@@ -97,6 +97,10 @@ func (routeClient *RouteClient) Create(routeRequest *RouteRequest) (*Route, erro
 		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
 	}
 
+	if r.StatusCode == 400 {
+		return nil, fmt.Errorf("bad request, message from kong: %s", body)
+	}
+
 	createdRoute := &Route{}
 	err := json.Unmarshal([]byte(body), createdRoute)
 	if err != nil {

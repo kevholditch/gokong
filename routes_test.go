@@ -94,6 +94,38 @@ func TestRoutes_CreateWithSourcesAndDestinations(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestRoutes_CreateWithBadRequest(t *testing.T) {
+	serviceRequest := &ServiceRequest{
+		Name:     String("service-name" + uuid.NewV4().String()),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	routeRequest := &RouteRequest{
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{"foo.com"}),
+		Paths:        StringSlice([]string{"/foo"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(true),
+	}
+
+	createdRoute, err := client.Routes().Create(routeRequest)
+
+	assert.Nil(t, createdRoute)
+	errorMessage := `bad request, message from kong: {"message":"schema violation (service: required field missing)","name":"schema violation","fields":{"service":"required field missing"},"code":2}`
+	assert.Equal(t, err.Error(), errorMessage)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
+}
+
 func TestRoutes_List(t *testing.T) {
 	serviceRequest := &ServiceRequest{
 		Name:     String("service-name" + uuid.NewV4().String()),
