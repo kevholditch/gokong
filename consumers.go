@@ -17,7 +17,7 @@ type ConsumerRequest struct {
 type Consumer struct {
 	Id       string `json:"id,omitempty" yaml:"id,omitempty"`
 	CustomId string `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
-	Username string `json:"username,omitempty" yaml:"custom_id,omitempty"`
+	Username string `json:"username,omitempty" yaml:"username,omitempty"`
 }
 
 type Consumers struct {
