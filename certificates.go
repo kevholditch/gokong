@@ -5,7 +5,15 @@ import (
 	"fmt"
 )
 
-type CertificateClient struct {
+type CertificateClient interface {
+	GetById(id string) (*Certificate, error)
+	Create(certificateRequest *CertificateRequest) (*Certificate, error)
+	DeleteById(id string) error
+	List() (*Certificates, error)
+	UpdateById(id string, certificateRequest *CertificateRequest) (*Certificate, error)
+}
+
+type certificateClient struct {
 	config *Config
 }
 
@@ -27,7 +35,7 @@ type Certificates struct {
 
 const CertificatesPath = "/certificates/"
 
-func (certificateClient *CertificateClient) GetById(id string) (*Certificate, error) {
+func (certificateClient *certificateClient) GetById(id string) (*Certificate, error) {
 
 	r, body, errs := newGet(certificateClient.config, certificateClient.config.HostAddress+CertificatesPath+id).End()
 	if errs != nil {
@@ -51,7 +59,7 @@ func (certificateClient *CertificateClient) GetById(id string) (*Certificate, er
 	return certificate, nil
 }
 
-func (certificateClient *CertificateClient) Create(certificateRequest *CertificateRequest) (*Certificate, error) {
+func (certificateClient *certificateClient) Create(certificateRequest *CertificateRequest) (*Certificate, error) {
 
 	r, body, errs := newPost(certificateClient.config, certificateClient.config.HostAddress+CertificatesPath).Send(certificateRequest).End()
 	if errs != nil {
@@ -75,7 +83,7 @@ func (certificateClient *CertificateClient) Create(certificateRequest *Certifica
 	return createdCertificate, nil
 }
 
-func (certificateClient *CertificateClient) DeleteById(id string) error {
+func (certificateClient *certificateClient) DeleteById(id string) error {
 
 	r, body, errs := newDelete(certificateClient.config, certificateClient.config.HostAddress+CertificatesPath+id).End()
 	if errs != nil {
@@ -89,7 +97,7 @@ func (certificateClient *CertificateClient) DeleteById(id string) error {
 	return nil
 }
 
-func (certificateClient *CertificateClient) List() (*Certificates, error) {
+func (certificateClient *certificateClient) List() (*Certificates, error) {
 
 	r, body, errs := newGet(certificateClient.config, certificateClient.config.HostAddress+CertificatesPath).End()
 	if errs != nil {
@@ -109,7 +117,7 @@ func (certificateClient *CertificateClient) List() (*Certificates, error) {
 	return certificates, nil
 }
 
-func (certificateClient *CertificateClient) UpdateById(id string, certificateRequest *CertificateRequest) (*Certificate, error) {
+func (certificateClient *certificateClient) UpdateById(id string, certificateRequest *CertificateRequest) (*Certificate, error) {
 
 	r, body, errs := newPatch(certificateClient.config, certificateClient.config.HostAddress+CertificatesPath+id).Send(certificateRequest).End()
 	if errs != nil {

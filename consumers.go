@@ -5,7 +5,21 @@ import (
 	"fmt"
 )
 
-type ConsumerClient struct {
+type ConsumerClient interface {
+	GetByUsername(username string) (*Consumer, error)
+	GetById(id string) (*Consumer, error)
+	Create(consumerRequest *ConsumerRequest) (*Consumer, error)
+	List() (*Consumers, error)
+	DeleteByUsername(username string) error
+	DeleteById(id string) error
+	UpdateByUsername(username string, consumerRequest *ConsumerRequest) (*Consumer, error)
+	UpdateById(id string, consumerRequest *ConsumerRequest) (*Consumer, error)
+	CreatePluginConfig(consumerId string, pluginName string, pluginConfig string) (*ConsumerPluginConfig, error)
+	GetPluginConfig(consumerId string, pluginName string, id string) (*ConsumerPluginConfig, error)
+	DeletePluginConfig(consumerId string, pluginName string, id string) error
+}
+
+type consumerClient struct {
 	config *Config
 }
 
@@ -32,11 +46,11 @@ type ConsumerPluginConfig struct {
 
 const ConsumersPath = "/consumers/"
 
-func (consumerClient *ConsumerClient) GetByUsername(username string) (*Consumer, error) {
+func (consumerClient *consumerClient) GetByUsername(username string) (*Consumer, error) {
 	return consumerClient.GetById(username)
 }
 
-func (consumerClient *ConsumerClient) GetById(id string) (*Consumer, error) {
+func (consumerClient *consumerClient) GetById(id string) (*Consumer, error) {
 
 	r, body, errs := newGet(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+id).End()
 	if errs != nil {
@@ -60,7 +74,7 @@ func (consumerClient *ConsumerClient) GetById(id string) (*Consumer, error) {
 	return consumer, nil
 }
 
-func (consumerClient *ConsumerClient) Create(consumerRequest *ConsumerRequest) (*Consumer, error) {
+func (consumerClient *consumerClient) Create(consumerRequest *ConsumerRequest) (*Consumer, error) {
 
 	r, body, errs := newPost(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath).Send(consumerRequest).End()
 	if errs != nil {
@@ -84,7 +98,7 @@ func (consumerClient *ConsumerClient) Create(consumerRequest *ConsumerRequest) (
 	return createdConsumer, nil
 }
 
-func (consumerClient *ConsumerClient) List() (*Consumers, error) {
+func (consumerClient *consumerClient) List() (*Consumers, error) {
 
 	r, body, errs := newGet(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath).End()
 	if errs != nil {
@@ -104,11 +118,11 @@ func (consumerClient *ConsumerClient) List() (*Consumers, error) {
 	return consumers, nil
 }
 
-func (consumerClient *ConsumerClient) DeleteByUsername(username string) error {
+func (consumerClient *consumerClient) DeleteByUsername(username string) error {
 	return consumerClient.DeleteById(username)
 }
 
-func (consumerClient *ConsumerClient) DeleteById(id string) error {
+func (consumerClient *consumerClient) DeleteById(id string) error {
 
 	r, body, errs := newDelete(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+id).End()
 	if errs != nil {
@@ -122,11 +136,11 @@ func (consumerClient *ConsumerClient) DeleteById(id string) error {
 	return nil
 }
 
-func (consumerClient *ConsumerClient) UpdateByUsername(username string, consumerRequest *ConsumerRequest) (*Consumer, error) {
+func (consumerClient *consumerClient) UpdateByUsername(username string, consumerRequest *ConsumerRequest) (*Consumer, error) {
 	return consumerClient.UpdateById(username, consumerRequest)
 }
 
-func (consumerClient *ConsumerClient) UpdateById(id string, consumerRequest *ConsumerRequest) (*Consumer, error) {
+func (consumerClient *consumerClient) UpdateById(id string, consumerRequest *ConsumerRequest) (*Consumer, error) {
 
 	r, body, errs := newPatch(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+id).Send(consumerRequest).End()
 	if errs != nil {
@@ -150,7 +164,7 @@ func (consumerClient *ConsumerClient) UpdateById(id string, consumerRequest *Con
 	return updatedConsumer, nil
 }
 
-func (consumerClient *ConsumerClient) CreatePluginConfig(consumerId string, pluginName string, pluginConfig string) (*ConsumerPluginConfig, error) {
+func (consumerClient *consumerClient) CreatePluginConfig(consumerId string, pluginName string, pluginConfig string) (*ConsumerPluginConfig, error) {
 
 	r, body, errs := newPost(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+consumerId+"/"+pluginName).Send(pluginConfig).End()
 	if errs != nil {
@@ -176,7 +190,7 @@ func (consumerClient *ConsumerClient) CreatePluginConfig(consumerId string, plug
 	return createdConsumerPluginConfig, nil
 }
 
-func (consumerClient *ConsumerClient) GetPluginConfig(consumerId string, pluginName string, id string) (*ConsumerPluginConfig, error) {
+func (consumerClient *consumerClient) GetPluginConfig(consumerId string, pluginName string, id string) (*ConsumerPluginConfig, error) {
 
 	r, body, errs := newGet(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+consumerId+"/"+pluginName+"/"+id).End()
 	if errs != nil {
@@ -202,7 +216,7 @@ func (consumerClient *ConsumerClient) GetPluginConfig(consumerId string, pluginN
 	return consumerPluginConfig, nil
 }
 
-func (consumerClient *ConsumerClient) DeletePluginConfig(consumerId string, pluginName string, id string) error {
+func (consumerClient *consumerClient) DeletePluginConfig(consumerId string, pluginName string, id string) error {
 
 	r, body, errs := newDelete(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+consumerId+"/"+pluginName+"/"+id).End()
 	if errs != nil {

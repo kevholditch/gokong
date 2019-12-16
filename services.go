@@ -5,7 +5,20 @@ import (
 	"fmt"
 )
 
-type ServiceClient struct {
+type ServiceClient interface {
+	Create(serviceRequest *ServiceRequest) (*Service, error)
+	GetServiceByName(name string) (*Service, error)
+	GetServiceById(id string) (*Service, error)
+	GetServiceFromRouteId(id string) (*Service, error)
+	GetServices(query *ServiceQueryString) ([]*Service, error)
+	UpdateServiceByName(name string, serviceRequest *ServiceRequest) (*Service, error)
+	UpdateServiceById(id string, serviceRequest *ServiceRequest) (*Service, error)
+	UpdateServicebyRouteId(id string, serviceRequest *ServiceRequest) (*Service, error)
+	DeleteServiceByName(name string) error
+	DeleteServiceById(id string) error
+}
+
+type serviceClient struct {
 	config *Config
 }
 
@@ -51,7 +64,7 @@ type ServiceQueryString struct {
 
 const ServicesPath = "/services/"
 
-func (serviceClient *ServiceClient) Create(serviceRequest *ServiceRequest) (*Service, error) {
+func (serviceClient *serviceClient) Create(serviceRequest *ServiceRequest) (*Service, error) {
 
 	if serviceRequest.Port == nil {
 		serviceRequest.Port = Int(80)
@@ -95,19 +108,19 @@ func (serviceClient *ServiceClient) Create(serviceRequest *ServiceRequest) (*Ser
 	return createdService, nil
 }
 
-func (serviceClient *ServiceClient) GetServiceByName(name string) (*Service, error) {
+func (serviceClient *serviceClient) GetServiceByName(name string) (*Service, error) {
 	return serviceClient.GetServiceById(name)
 }
 
-func (serviceClient *ServiceClient) GetServiceById(id string) (*Service, error) {
+func (serviceClient *serviceClient) GetServiceById(id string) (*Service, error) {
 	return serviceClient.getService(serviceClient.config.HostAddress + ServicesPath + id)
 }
 
-func (serviceClient *ServiceClient) GetServiceFromRouteId(id string) (*Service, error) {
+func (serviceClient *serviceClient) GetServiceFromRouteId(id string) (*Service, error) {
 	return serviceClient.getService(serviceClient.config.HostAddress + "/routes/" + id + "/service")
 }
 
-func (serviceClient *ServiceClient) getService(endpoint string) (*Service, error) {
+func (serviceClient *serviceClient) getService(endpoint string) (*Service, error) {
 	r, body, errs := newGet(serviceClient.config, endpoint).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get the service, error: %v", errs)
@@ -130,7 +143,7 @@ func (serviceClient *ServiceClient) getService(endpoint string) (*Service, error
 	return service, nil
 }
 
-func (serviceClient *ServiceClient) GetServices(query *ServiceQueryString) ([]*Service, error) {
+func (serviceClient *serviceClient) GetServices(query *ServiceQueryString) ([]*Service, error) {
 	services := make([]*Service, 0)
 
 	if query.Size == 0 || query.Size < 100 {
@@ -170,19 +183,19 @@ func (serviceClient *ServiceClient) GetServices(query *ServiceQueryString) ([]*S
 	return services, nil
 }
 
-func (serviceClient *ServiceClient) UpdateServiceByName(name string, serviceRequest *ServiceRequest) (*Service, error) {
+func (serviceClient *serviceClient) UpdateServiceByName(name string, serviceRequest *ServiceRequest) (*Service, error) {
 	return serviceClient.UpdateServiceById(name, serviceRequest)
 }
 
-func (serviceClient *ServiceClient) UpdateServiceById(id string, serviceRequest *ServiceRequest) (*Service, error) {
+func (serviceClient *serviceClient) UpdateServiceById(id string, serviceRequest *ServiceRequest) (*Service, error) {
 	return serviceClient.updateService(serviceClient.config.HostAddress+ServicesPath+id, serviceRequest)
 }
 
-func (serviceClient *ServiceClient) UpdateServicebyRouteId(id string, serviceRequest *ServiceRequest) (*Service, error) {
+func (serviceClient *serviceClient) UpdateServicebyRouteId(id string, serviceRequest *ServiceRequest) (*Service, error) {
 	return serviceClient.updateService(serviceClient.config.HostAddress+"/routes/"+id+"/service", serviceRequest)
 }
 
-func (serviceClient *ServiceClient) updateService(endpoint string, serviceRequest *ServiceRequest) (*Service, error) {
+func (serviceClient *serviceClient) updateService(endpoint string, serviceRequest *ServiceRequest) (*Service, error) {
 	r, body, errs := newPatch(serviceClient.config, endpoint).Send(serviceRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update service, error: %v", errs)
@@ -205,11 +218,11 @@ func (serviceClient *ServiceClient) updateService(endpoint string, serviceReques
 	return updatedService, nil
 }
 
-func (serviceClient *ServiceClient) DeleteServiceByName(name string) error {
+func (serviceClient *serviceClient) DeleteServiceByName(name string) error {
 	return serviceClient.DeleteServiceById(name)
 }
 
-func (serviceClient *ServiceClient) DeleteServiceById(id string) error {
+func (serviceClient *serviceClient) DeleteServiceById(id string) error {
 	r, body, errs := newDelete(serviceClient.config, serviceClient.config.HostAddress+ServicesPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete the service, result: %v error: %v", r, errs)
