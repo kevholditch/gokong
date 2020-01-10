@@ -186,3 +186,44 @@ func Test_AllServiceEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing
 	assert.NotNil(t, err)
 
 }
+
+func Test_CreateShouldRerturnErrorWhenBadRequest(t *testing.T) {
+	serviceRequest := &ServiceRequest{
+		Name:     String("service-name" + uuid.NewV4().String()),
+		Protocol: String("http"),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdService, err := client.Services().Create(serviceRequest)
+
+	errorMessage := `bad request, message from kong: {"message":"schema violation (host: required field missing)","name":"schema violation","fields":{"host":"required field missing"},"code":2}`
+
+	assert.Nil(t, createdService)
+	assert.Equal(t, err.Error(), errorMessage)
+}
+
+func Test_UpdateShouldRerturnErrorWhenBadRequest(t *testing.T) {
+	serviceRequest := &ServiceRequest{
+		Name:     String("service-name" + uuid.NewV4().String()),
+		Host:     String("foo.com"),
+		Protocol: String("http"),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+
+	serviceRequestUpdate := &ServiceRequest{
+		Name:     createdService.Name,
+		Host:     createdService.Host,
+		Protocol: String("foo"),
+	}
+
+	errorMessage := `bad request, message from kong: {"message":"schema violation (protocol: expected one of: http, https, tcp, tls)","name":"schema violation","fields":{"protocol":"expected one of: http, https, tcp, tls"},"code":2}`
+
+	updatedService, err := client.Services().UpdateServiceById(*createdService.Id, serviceRequestUpdate)
+
+	assert.Nil(t, updatedService)
+	assert.Equal(t, err.Error(), errorMessage)
+}

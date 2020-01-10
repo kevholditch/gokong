@@ -82,6 +82,10 @@ func (serviceClient *ServiceClient) Create(serviceRequest *ServiceRequest) (*Ser
 		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
 	}
 
+	if r.StatusCode == 400 {
+		return nil, fmt.Errorf("bad request, message from kong: %s", body)
+	}
+
 	createdService := &Service{}
 	err := json.Unmarshal([]byte(body), createdService)
 	if err != nil {
@@ -190,6 +194,10 @@ func (serviceClient *ServiceClient) updateService(endpoint string, serviceReques
 
 	if r.StatusCode == 401 || r.StatusCode == 403 {
 		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	if r.StatusCode == 400 {
+		return nil, fmt.Errorf("bad request, message from kong: %s", body)
 	}
 
 	updatedService := &Service{}
