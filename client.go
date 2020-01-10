@@ -16,6 +16,7 @@ const EnvKongAdminPassword = "KONG_ADMIN_PASSWORD"
 const EnvKongTLSSkipVerify = "TLS_SKIP_VERIFY"
 const EnvKongApiKey = "KONG_API_KEY"
 const EnvKongAdminToken = "KONG_ADMIN_TOKEN"
+const EnvKongWorkspace = "KONG_ADMIN_WORKSPACE"
 
 type KongAdminClient struct {
 	config *Config
@@ -28,6 +29,7 @@ type Config struct {
 	InsecureSkipVerify bool
 	ApiKey             string
 	AdminToken         string
+	Workspace          string
 }
 
 func addQueryString(currentUrl string, filter interface{}) (string, error) {
@@ -56,6 +58,7 @@ func NewDefaultConfig() *Config {
 		Username:           "",
 		Password:           "",
 		InsecureSkipVerify: false,
+		Workspace:          "",
 	}
 
 	if os.Getenv(EnvKongAdminHostAddress) != "" {
@@ -79,6 +82,9 @@ func NewDefaultConfig() *Config {
 	if os.Getenv(EnvKongAdminToken) != "" {
 		config.AdminToken = os.Getenv(EnvKongAdminToken)
 	}
+	if os.Getenv(EnvKongWorkspace) != "" {
+		config.Workspace = os.Getenv(EnvKongWorkspace)
+	}
 
 	return config
 }
@@ -93,7 +99,6 @@ func (kongAdminClient *KongAdminClient) Status() *StatusClient {
 	return &StatusClient{
 		config: kongAdminClient.config,
 	}
-
 }
 
 func (kongAdminClient *KongAdminClient) Consumers() *ConsumerClient {
@@ -140,6 +145,12 @@ func (kongAdminClient *KongAdminClient) Services() *ServiceClient {
 
 func (kongAdminClient *KongAdminClient) Targets() *TargetClient {
 	return &TargetClient{
+		config: kongAdminClient.config,
+	}
+}
+
+func (kongAdminClient *KongAdminClient) Workspaces() *WorkspaceClient {
+	return &WorkspaceClient{
 		config: kongAdminClient.config,
 	}
 }

@@ -127,9 +127,9 @@ func Test_ConsumersList(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
 
-	results, err := client.Consumers().List()
+	results, err := client.Consumers().List(&ConsumerQueryString{})
 
-	assert.True(t, len(results.Results) > 0)
+	assert.True(t, len(results) > 0)
 
 }
 
@@ -275,7 +275,6 @@ func Test_ConsumersPluginConfig(t *testing.T) {
 
 	client := NewClient(NewDefaultConfig())
 	createdConsumer, err := client.Consumers().Create(consumerRequest)
-
 	assert.Nil(t, err)
 	assert.NotNil(t, createdConsumer)
 
@@ -291,24 +290,75 @@ func Test_ConsumersPluginConfig(t *testing.T) {
 	assert.NotNil(t, plugin)
 
 	createdPluginConfig, err := client.Consumers().CreatePluginConfig(createdConsumer.Id, "jwt", "{\"key\": \"a36c3049b36249a3c9f8891cb127243c\"}")
-
 	assert.Nil(t, err)
 	assert.NotNil(t, createdPluginConfig)
 	assert.NotEqual(t, "", createdPluginConfig.Id)
 	assert.Contains(t, createdPluginConfig.Body, "a36c3049b36249a3c9f8891cb127243c")
 
 	retrievedPluginConfig, err := client.Consumers().GetPluginConfig(createdConsumer.Id, "jwt", createdPluginConfig.Id)
-
 	assert.Nil(t, err)
 
 	err = client.Consumers().DeletePluginConfig(createdConsumer.Id, "jwt", createdPluginConfig.Id)
 	assert.Nil(t, err)
 
 	retrievedPluginConfig, err = client.Consumers().GetPluginConfig(createdConsumer.Id, "jwt", createdPluginConfig.Id)
-
 	assert.Nil(t, retrievedPluginConfig)
 	assert.Nil(t, err)
 
+	err = client.Plugins().DeleteById(plugin.Id)
+	assert.Nil(t, err)
+}
+
+func Test_ConsumersPluginConfigs(t *testing.T) {
+	consumerRequest := &ConsumerRequest{
+		Username: "username-" + uuid.NewV4().String(),
+		CustomId: "test-" + uuid.NewV4().String(),
+	}
+	client := NewClient(NewDefaultConfig())
+	createdConsumer, err := client.Consumers().Create(consumerRequest)
+	assert.Nil(t, err)
+	assert.NotNil(t, createdConsumer)
+
+	pluginRequest := &PluginRequest{
+		Name: "jwt",
+		Config: map[string]interface{}{
+			"claims_to_verify": []string{"exp"},
+		},
+	}
+	plugin, err := client.Plugins().Create(pluginRequest)
+	assert.Nil(t, err)
+	assert.NotNil(t, plugin)
+
+	pluginConfigs := []*ConsumerPluginConfig{}
+	createdPluginConfig, err := client.Consumers().CreatePluginConfig(createdConsumer.Id, "jwt", "{\"key\": \"a36c3049b36249a3c9f8891cb127243c\"}")
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPluginConfig)
+	assert.NotEqual(t, "", createdPluginConfig.Id)
+	assert.Contains(t, createdPluginConfig.Body, "a36c3049b36249a3c9f8891cb127243c")
+	pluginConfigs = append(pluginConfigs, createdPluginConfig)
+
+	createdPluginConfig, err = client.Consumers().CreatePluginConfig(createdConsumer.Id, "jwt", "{\"key\": \"b32598eb4009be949dd42daa35beb6ddee8d83e9\"}")
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPluginConfig)
+	assert.NotEqual(t, "", createdPluginConfig.Id)
+	assert.Contains(t, createdPluginConfig.Body, "b32598eb4009be949dd42daa35beb6ddee8d83e9")
+	pluginConfigs = append(pluginConfigs, createdPluginConfig)
+
+	retrievedPluginConfig, err := client.Consumers().GetPluginConfigs(createdConsumer.Id, "jwt")
+	assert.Nil(t, err)
+	assert.Len(t, retrievedPluginConfig, 2)
+
+	for _, pluginConfig := range pluginConfigs {
+		err = client.Consumers().DeletePluginConfig(createdConsumer.Id, "jwt", pluginConfig.Id)
+		assert.Nil(t, err)
+	}
+
+	retrievedPluginConfig, err = client.Consumers().GetPluginConfigs(createdConsumer.Id, "jwt")
+	assert.Nil(t, retrievedPluginConfig)
+	assert.Nil(t, err)
+
+	err = client.Plugins().DeleteById(plugin.Id)
+	assert.Nil(t, err)
 }
 
 func Test_AllConsumerEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T) {
@@ -323,7 +373,7 @@ func Test_AllConsumerEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testin
 	assert.NotNil(t, err)
 	assert.Nil(t, consumer)
 
-	results, err := unauthorisedClient.Consumers().List()
+	results, err := unauthorisedClient.Consumers().List(&ConsumerQueryString{})
 	assert.NotNil(t, err)
 	assert.Nil(t, results)
 

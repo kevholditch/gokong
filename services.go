@@ -52,7 +52,6 @@ type ServiceQueryString struct {
 const ServicesPath = "/services/"
 
 func (serviceClient *ServiceClient) Create(serviceRequest *ServiceRequest) (*Service, error) {
-
 	if serviceRequest.Port == nil {
 		serviceRequest.Port = Int(80)
 	}
@@ -73,7 +72,7 @@ func (serviceClient *ServiceClient) Create(serviceRequest *ServiceRequest) (*Ser
 		serviceRequest.Retries = Int(60000)
 	}
 
-	r, body, errs := newPost(serviceClient.config, serviceClient.config.HostAddress+ServicesPath).Send(serviceRequest).End()
+	r, body, errs := newPost(serviceClient.config, ServicesPath).Send(serviceRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not register the service, error: %v", errs)
 	}
@@ -100,11 +99,11 @@ func (serviceClient *ServiceClient) GetServiceByName(name string) (*Service, err
 }
 
 func (serviceClient *ServiceClient) GetServiceById(id string) (*Service, error) {
-	return serviceClient.getService(serviceClient.config.HostAddress + ServicesPath + id)
+	return serviceClient.getService(ServicesPath + id)
 }
 
 func (serviceClient *ServiceClient) GetServiceFromRouteId(id string) (*Service, error) {
-	return serviceClient.getService(serviceClient.config.HostAddress + "/routes/" + id + "/service")
+	return serviceClient.getService("/routes/" + id + "/service")
 }
 
 func (serviceClient *ServiceClient) getService(endpoint string) (*Service, error) {
@@ -144,7 +143,7 @@ func (serviceClient *ServiceClient) GetServices(query *ServiceQueryString) ([]*S
 	for {
 		data := &Services{}
 
-		r, body, errs := newGet(serviceClient.config, serviceClient.config.HostAddress+ServicesPath).Query(*query).End()
+		r, body, errs := newGet(serviceClient.config, ServicesPath).Query(*query).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get the service, error: %v", errs)
 		}
@@ -175,15 +174,32 @@ func (serviceClient *ServiceClient) UpdateServiceByName(name string, serviceRequ
 }
 
 func (serviceClient *ServiceClient) UpdateServiceById(id string, serviceRequest *ServiceRequest) (*Service, error) {
-	return serviceClient.updateService(serviceClient.config.HostAddress+ServicesPath+id, serviceRequest)
+	return serviceClient.updateService(ServicesPath+id, serviceRequest)
 }
 
 func (serviceClient *ServiceClient) UpdateServicebyRouteId(id string, serviceRequest *ServiceRequest) (*Service, error) {
-	return serviceClient.updateService(serviceClient.config.HostAddress+"/routes/"+id+"/service", serviceRequest)
+	return serviceClient.updateService("/routes/"+id+"/service", serviceRequest)
 }
 
-func (serviceClient *ServiceClient) updateService(endpoint string, serviceRequest *ServiceRequest) (*Service, error) {
-	r, body, errs := newPatch(serviceClient.config, endpoint).Send(serviceRequest).End()
+func (serviceClient *ServiceClient) DeleteServiceByName(name string) error {
+	return serviceClient.DeleteServiceById(name)
+}
+
+func (serviceClient *ServiceClient) DeleteServiceById(id string) error {
+	r, body, errs := newDelete(serviceClient.config, ServicesPath+id).End()
+	if errs != nil {
+		return fmt.Errorf("could not delete the service, result: %v error: %v", r, errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	return nil
+}
+
+func (serviceClient *ServiceClient) updateService(requestPath string, serviceRequest *ServiceRequest) (*Service, error) {
+	r, body, errs := newPatch(serviceClient.config, requestPath).Send(serviceRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update service, error: %v", errs)
 	}
@@ -203,21 +219,4 @@ func (serviceClient *ServiceClient) updateService(endpoint string, serviceReques
 	}
 
 	return updatedService, nil
-}
-
-func (serviceClient *ServiceClient) DeleteServiceByName(name string) error {
-	return serviceClient.DeleteServiceById(name)
-}
-
-func (serviceClient *ServiceClient) DeleteServiceById(id string) error {
-	r, body, errs := newDelete(serviceClient.config, serviceClient.config.HostAddress+ServicesPath+id).End()
-	if errs != nil {
-		return fmt.Errorf("could not delete the service, result: %v error: %v", r, errs)
-	}
-
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return fmt.Errorf("not authorised, message from kong: %s", body)
-	}
-
-	return nil
 }
