@@ -226,4 +226,7 @@ func Test_UpdateShouldRerturnErrorWhenBadRequest(t *testing.T) {
 
 	assert.Nil(t, updatedService)
 	assert.Equal(t, err.Error(), errorMessage)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
 }

@@ -118,6 +118,10 @@ func (pluginClient *PluginClient) Create(pluginRequest *PluginRequest) (*Plugin,
 		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
 	}
 
+	if r.StatusCode == 400 {
+		return nil, fmt.Errorf("bad request, message from kong: %s", body)
+	}
+
 	createdPlugin := &Plugin{}
 	err := json.Unmarshal([]byte(body), createdPlugin)
 	if err != nil {
@@ -140,6 +144,10 @@ func (pluginClient *PluginClient) UpdateById(id string, pluginRequest *PluginReq
 
 	if r.StatusCode == 401 || r.StatusCode == 403 {
 		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	if r.StatusCode == 400 {
+		return nil, fmt.Errorf("bad request, message from kong: %s", body)
 	}
 
 	updatedPlugin := &Plugin{}
