@@ -1,6 +1,6 @@
 language: go
 go:
-  - 1.12.x
+  - 1.13.x
 install:
 - go get golang.org/x/tools/cmd/goimports
 services:
@@ -9,4 +9,6 @@ env:
   global:
     - GO111MODULE=on
   matrix:
-    - KONG_VERSION=1.0.2
+    - KONG_VERSION=1.2
+    - KONG_VERSION=1.3
+    - KONG_VERSION=1.4
