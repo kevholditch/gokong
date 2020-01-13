@@ -106,6 +106,7 @@ func Test_UpstreamsCreate(t *testing.T) {
 				},
 			},
 		},
+		Tags: []*string{String("my-tag")},
 	}
 
 	result, err := NewClient(NewDefaultConfig()).Upstreams().Create(upstreamRequest)
@@ -116,6 +117,7 @@ func Test_UpstreamsCreate(t *testing.T) {
 	assert.Equal(t, upstreamRequest.Name, result.Name)
 	assert.Equal(t, upstreamRequest.Slots, result.Slots)
 	assert.Equal(t, upstreamRequest.HealthChecks, result.HealthChecks)
+	assert.Equal(t, upstreamRequest.Tags, result.Tags)
 
 }
 

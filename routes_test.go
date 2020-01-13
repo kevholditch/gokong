@@ -30,6 +30,7 @@ func TestRoutes_GetById(t *testing.T) {
 		StripPath:    Bool(true),
 		PreserveHost: Bool(true),
 		Service:      ToId(*createdService.Id),
+		Tags:         []*string{String("my-tag")},
 	}
 
 	createdRoute, err := client.Routes().Create(routeRequest)

@@ -10,17 +10,19 @@ type TargetClient struct {
 }
 
 type TargetRequest struct {
-	Target string `json:"target" yaml:"target"`
-	Weight int    `json:"weight" yaml:"weight"`
+	Target string    `json:"target" yaml:"target"`
+	Weight int       `json:"weight" yaml:"weight"`
+	Tags   []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 type Target struct {
-	Id        *string  `json:"id,omitempty" yaml:"id,omitempty"`
-	CreatedAt *float32 `json:"created_at" yaml:"created_at"`
-	Target    *string  `json:"target" yaml:"target"`
-	Weight    *int     `json:"weight" yaml:"weight"`
-	Upstream  *Id      `json:"upstream" yaml:"upstream"`
-	Health    *string  `json:"health" yaml:"health"`
+	Id        *string   `json:"id,omitempty" yaml:"id,omitempty"`
+	CreatedAt *float32  `json:"created_at" yaml:"created_at"`
+	Target    *string   `json:"target" yaml:"target"`
+	Weight    *int      `json:"weight" yaml:"weight"`
+	Upstream  *Id       `json:"upstream" yaml:"upstream"`
+	Health    *string   `json:"health" yaml:"health"`
+	Tags      []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 type Targets struct {

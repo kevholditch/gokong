@@ -10,13 +10,15 @@ type SnisClient struct {
 }
 
 type SnisRequest struct {
-	Name          string `json:"name,omitempty" yaml:"name,omitempty"`
-	CertificateId *Id    `json:"certificate,omitempty" yaml:"certificate,omitempty"`
+	Name          string    `json:"name,omitempty" yaml:"name,omitempty"`
+	CertificateId *Id       `json:"certificate,omitempty" yaml:"certificate,omitempty"`
+	Tags          []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 type Sni struct {
-	Name          string `json:"name,omitempty" yaml:"name,omitempty"`
-	CertificateId *Id    `json:"certificate,omitempty" yaml:"certificate,omitempty"`
+	Name          string    `json:"name,omitempty" yaml:"name,omitempty"`
+	CertificateId *Id       `json:"certificate,omitempty" yaml:"certificate,omitempty"`
+	Tags          []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 type Snis struct {

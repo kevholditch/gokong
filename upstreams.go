@@ -19,6 +19,7 @@ type UpstreamRequest struct {
 	HashOnCookie       string               `json:"hash_on_cookie,omitempty" yaml:"hash_on_cookie,omitempty"`
 	HashOnCookiePath   string               `json:"hash_on_cookie_path,omitempty" yaml:"hash_on_cookie_path,omitempty"`
 	HealthChecks       *UpstreamHealthCheck `json:"healthchecks,omitempty" yaml:"healthchecks,omitempty"`
+	Tags               []*string            `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 type UpstreamHealthCheck struct {
@@ -72,6 +73,7 @@ type PassiveUnhealthy struct {
 type Upstream struct {
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	UpstreamRequest
+	Tags []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 type Upstreams struct {

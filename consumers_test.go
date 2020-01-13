@@ -63,6 +63,7 @@ func Test_ConsumersCreate(t *testing.T) {
 	consumerRequest := &ConsumerRequest{
 		Username: "username-" + uuid.NewV4().String(),
 		CustomId: "test-" + uuid.NewV4().String(),
+		Tags:     []*string{String("my-tag")},
 	}
 
 	result, err := NewClient(NewDefaultConfig()).Consumers().Create(consumerRequest)
@@ -71,6 +72,7 @@ func Test_ConsumersCreate(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Equal(t, consumerRequest.Username, result.Username)
 	assert.Equal(t, consumerRequest.CustomId, result.CustomId)
+	assert.Equal(t, consumerRequest.Tags, result.Tags)
 
 }
 
