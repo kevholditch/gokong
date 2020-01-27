@@ -651,12 +651,14 @@ gofmt needs running on the following files:
 ```
 Then all you need to do is run `make goimports` this will reformat all of the code (I know awesome)!!
 
-# Testing Enterprise
+# Testing against Kong Enterprise Edition
 
-To test enterprise we'll need to set some environment variables:
+To test enterprise you will need to set some environment variables:
 
 KONG_REPOSITORY=<enterprise image repo>
 KONG_VERSION=<enterprise image tag>
 KONG_LICENSE=<enterprise license info>
+
+This instructs the test suite to use Kong EE images that you must provide in an accessible repository. Enterprise feature tests will only run if the `KONG_LICENSE` environment variable is set.
 
 `$ make test`
