@@ -16,18 +16,19 @@ type kongContainer struct {
 	HostAddress string
 }
 
-func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer, kongVersion string) *kongContainer {
+func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer, kongRepository string, kongVersion string, kongLicense string) *kongContainer {
 
 	envVars := []string{
 		"KONG_DATABASE=postgres",
 		"KONG_ADMIN_LISTEN=0.0.0.0:8001",
+		fmt.Sprintf("KONG_LICENSE_DATA=%s", kongLicense),
 		fmt.Sprintf("KONG_PG_HOST=%s", postgres.Name),
 		fmt.Sprintf("KONG_PG_USER=%s", postgres.DatabaseUser),
 		fmt.Sprintf("KONG_PG_PASSWORD=%s", postgres.Password),
 	}
 
 	options := &dockertest.RunOptions{
-		Repository: "kong",
+		Repository: kongRepository,
 		Tag:        kongVersion,
 		Env:        envVars,
 		Links:      []string{postgres.Name},
@@ -57,7 +58,7 @@ func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer, kongVe
 	}
 
 	options = &dockertest.RunOptions{
-		Repository: "kong",
+		Repository: kongRepository,
 		Tag:        kongVersion,
 		Env:        envVars,
 		Links:      []string{fmt.Sprintf("%s:postgres", postgres.Name)},

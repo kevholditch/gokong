@@ -143,3 +143,9 @@ func (kongAdminClient *KongAdminClient) Targets() *TargetClient {
 		config: kongAdminClient.config,
 	}
 }
+
+func (kongAdminClient *KongAdminClient) Workspaces() *WorkspaceClient {
+	return &WorkspaceClient{
+		config: kongAdminClient.config,
+	}
+}
