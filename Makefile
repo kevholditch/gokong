@@ -2,6 +2,9 @@
 
 TEST?=$$(go list ./... |grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
+KONG_LICENSE := ${KONG_LICENSE}
+KONG_REPOSITORY := ${KONG_REPOSITORY}
+KONG_VERSION := ${KONG_VERSION}
 
 default: build test
 

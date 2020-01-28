@@ -12,7 +12,7 @@ type TestContext struct {
 	KongHostAddress string
 }
 
-func StartKong(kongVersion string) *TestContext {
+func StartKong(kongRepository string, kongVersion string, kongLicense string) *TestContext {
 	log.SetOutput(os.Stdout)
 
 	var err error
@@ -22,7 +22,7 @@ func StartKong(kongVersion string) *TestContext {
 	}
 
 	postgres := NewPostgresContainer(pool)
-	kong := NewKongContainer(pool, postgres, kongVersion)
+	kong := NewKongContainer(pool, postgres, kongRepository, kongVersion, kongLicense)
 
 	return &TestContext{containers: []container{postgres, kong}, KongHostAddress: kong.HostAddress}
 }

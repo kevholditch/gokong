@@ -53,8 +53,8 @@ type ActiveUnhealthy struct {
 
 type UpstreamHealthCheckPassive struct {
 	Type      string            `json:"type,omitempty" yaml:"type,omitempty"`
-	Healthy   *PassiveHealthy   `json:"healthy,omitempty yaml:"healthy,omitempty"`
-	Unhealthy *PassiveUnhealthy `json:"unhealthy,omitempty yaml:"unhealthy,omitempty"`
+	Healthy   *PassiveHealthy   `json:"healthy,omitempty" yaml:"healthy,omitempty"`
+	Unhealthy *PassiveUnhealthy `json:"unhealthy,omitempty" yaml:"unhealthy,omitempty"`
 }
 
 type PassiveHealthy struct {

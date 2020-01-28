@@ -15,6 +15,8 @@ import (
 )
 
 const defaultKongVersion = "1.0.2"
+const defaultKongRepository = "kong"
+const defaultKongLicense = ""
 const kong401Server = "KONG_401_SERVER"
 
 func Test_Newclient(t *testing.T) {
@@ -28,7 +30,7 @@ func Test_Newclient(t *testing.T) {
 
 func TestMain(m *testing.M) {
 
-	testContext := containers.StartKong(GetEnvVarOrDefault("KONG_VERSION", defaultKongVersion))
+	testContext := containers.StartKong(GetEnvVarOrDefault("KONG_REPOSITORY", defaultKongRepository), GetEnvVarOrDefault("KONG_VERSION", defaultKongVersion), GetEnvVarOrDefault("KONG_LICENSE", defaultKongLicense))
 
 	err := os.Setenv(EnvKongAdminHostAddress, testContext.KongHostAddress)
 	if err != nil {
