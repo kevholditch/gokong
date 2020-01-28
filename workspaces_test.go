@@ -1,6 +1,7 @@
 package gokong
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -423,5 +424,360 @@ func Test_AllWorkspaceEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testi
 	})
 	assert.Nil(t, updatedWorkspace)
 	assert.NotNil(t, err)
+
+}
+
+func TestWorkspaceAddEntitiesById(t *testing.T) {
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdWorkspace)
+
+	result, err := client.Workspaces().GetById(createdWorkspace.Id)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+		Port:     Int(8080),
+	}
+
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	entityRequest := &EntityRequest{
+		Entities: createdService.Id,
+	}
+
+	updatedEntities, err := client.Workspaces().AddEntitiesByWorkspaceId(result.Id, entityRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, updatedEntities)
+}
+func TestWorkspaceAddEntitiesByName(t *testing.T) {
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdWorkspace)
+
+	result, err := client.Workspaces().GetByName(createdWorkspace.Name)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+		Port:     Int(8080),
+	}
+
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	entityRequest := &EntityRequest{
+		Entities: createdService.Id,
+	}
+
+	updatedEntities, err := client.Workspaces().AddEntitiesByWorkspaceName(result.Name, entityRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, updatedEntities)
+}
+
+func TestWorkspaceListEntitiesById(t *testing.T) {
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdWorkspace)
+
+	result, err := client.Workspaces().GetByName(createdWorkspace.Name)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+		Port:     Int(8080),
+	}
+
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	entityRequest := &EntityRequest{
+		Entities: createdService.Id,
+	}
+
+	updatedEntities, err := client.Workspaces().AddEntitiesByWorkspaceName(result.Name, entityRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, updatedEntities)
+
+	entities, err := client.Workspaces().ListEntitiesById(createdWorkspace.Id)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, entities)
+	assert.True(t, len(entities.Data) > 0)
+
+}
+
+func TestWorkspaceListEntitiesByName(t *testing.T) {
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdWorkspace)
+
+	result, err := client.Workspaces().GetByName(createdWorkspace.Name)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+		Port:     Int(8080),
+	}
+
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	entityRequest := &EntityRequest{
+		Entities: createdService.Id,
+	}
+
+	updatedEntities, err := client.Workspaces().AddEntitiesByWorkspaceName(result.Name, entityRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, updatedEntities)
+
+	entities, err := client.Workspaces().ListEntitiesByName(createdWorkspace.Id)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, entities)
+	assert.True(t, len(entities.Data) > 0)
+
+}
+
+func TestWorkspaceGetEntityById(t *testing.T) {
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdWorkspace)
+
+	result, err := client.Workspaces().GetByName(createdWorkspace.Name)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+		Port:     Int(8080),
+	}
+
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	entityRequest := &EntityRequest{
+		Entities: createdService.Id,
+	}
+
+	updatedEntities, err := client.Workspaces().AddEntitiesByWorkspaceName(result.Name, entityRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, updatedEntities)
+
+	entity, err := client.Workspaces().GetEntityById(createdWorkspace.Id, updatedEntities.Entities[0]["id"].(string))
+
+	assert.Nil(t, err)
+	assert.NotNil(t, entity)
+
+}
+
+func TestWorkspaceGetEntityByName(t *testing.T) {
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdWorkspace)
+
+	result, err := client.Workspaces().GetByName(createdWorkspace.Name)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+		Port:     Int(8080),
+	}
+
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	entityRequest := &EntityRequest{
+		Entities: createdService.Id,
+	}
+
+	updatedEntities, err := client.Workspaces().AddEntitiesByWorkspaceName(result.Name, entityRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, updatedEntities)
+
+	entity, err := client.Workspaces().GetEntityByName(createdWorkspace.Id, updatedEntities.Entities[0]["id"].(string))
+
+	assert.Nil(t, err)
+	assert.NotNil(t, entity)
+
+}
+
+func TestWorkspaceDeleteEntityById(t *testing.T) {
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdWorkspace)
+
+	result, err := client.Workspaces().GetByName(createdWorkspace.Name)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+		Port:     Int(8080),
+	}
+
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	entityRequest := &EntityRequest{
+		Entities: createdService.Id,
+	}
+
+	updatedEntities, err := client.Workspaces().AddEntitiesByWorkspaceName(result.Name, entityRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, updatedEntities)
+
+	err = client.Workspaces().DeleteEntityById(createdWorkspace.Id, updatedEntities.Entities[0]["id"].(string))
+
+	assert.Nil(t, err)
+
+}
+
+func TestWorkspaceDeleteEntityByName(t *testing.T) {
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdWorkspace)
+
+	result, err := client.Workspaces().GetByName(createdWorkspace.Name)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+		Port:     Int(8080),
+	}
+
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	entityRequest := &EntityRequest{
+		Entities: createdService.Id,
+	}
+
+	updatedEntities, err := client.Workspaces().AddEntitiesByWorkspaceName(result.Name, entityRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, updatedEntities)
+
+	err = client.Workspaces().DeleteEntityByName(createdWorkspace.Id, updatedEntities.Entities[0]["id"].(string))
+
+	assert.Nil(t, err)
 
 }
