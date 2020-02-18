@@ -149,3 +149,9 @@ func (kongAdminClient *KongAdminClient) Workspaces() *WorkspaceClient {
 		config: kongAdminClient.config,
 	}
 }
+
+func (kongAdminClient *KongAdminClient) Users() *UserClient {
+	return &UserClient{
+		config: kongAdminClient.config,
+	}
+}
