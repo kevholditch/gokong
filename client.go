@@ -155,3 +155,8 @@ func (kongAdminClient *KongAdminClient) Users() *UserClient {
 		config: kongAdminClient.config,
 	}
 }
+func (kongAdminClient *KongAdminClient) Roles() *RoleClient {
+	return &RoleClient{
+		config: kongAdminClient.config,
+	}
+}
