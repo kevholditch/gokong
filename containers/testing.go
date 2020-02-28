@@ -28,7 +28,6 @@ func StartKong(kongRepository string, kongVersion string, kongLicense string) *T
 }
 
 func StopKong(testContext *TestContext) {
-
 	for _, container := range testContext.containers {
 		err := container.Stop()
 		if err != nil {

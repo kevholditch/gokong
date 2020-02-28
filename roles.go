@@ -23,47 +23,56 @@ type Role struct {
 	RoleRequest
 }
 
+type UserRoleRequest struct {
+	Roles string `json:"roles" yaml:"roles"`
+}
+
+type UserRoles struct {
+	Roles *[]Role `json:"roles" yaml:"roles"`
+	User  *User   `json:"user" yaml:"user"`
+}
+
 type Roles struct {
 	Data []*Role `json:"data" yaml:"data"`
 	Next string  `json:"next,omitempty" yaml:"next,omitempty"`
 }
 
-type PermissionRequest struct {
-	Endpoint string `json:"endpoint" yaml:"endpoint"` // Path of the associated endpoint. Can be exact matches, or contain wildcards represented by *
+// EntityPermissionRequest provides a struct used to make requests to the admin API to update Entity Permissions
+// EntityId must be the ID of an entity in Kong; if the ID of a workspace is given,
+// the permission will apply to all entities in that workspace. Future entities belonging
+// to that workspace will get the same permissions. A wildcard * will be interpreted
+// as all entities in the system.
+type EntityPermissionRequest struct {
+	EntityId string `json:"entity_id,omitempty" yaml:"entity_id,omitempty"`
 	Negative bool   `json:"negative" yaml:"negative"`
 	Actions  string `json:"actions" yaml:"actions"` // Comma separated string (read,create,update,delete)
 	Comment  string `json:"comment,omitempty" yaml:"comment,omitempty"`
 }
 
-type EntityPermissionRequest struct {
-	EntityId   string `json:"entity_id" yaml:"entity_id"`
-	EntityType string `json:"entity_type" yaml:"entity_type"`
-	PermissionRequest
-}
-
 type EndpointPermissionRequest struct {
 	WorkspaceId string `json:"workspace" yaml:"workspace"`
-	PermissionRequest
+	Endpoint    string `json:"endpoint" yaml:"endpoint"` // Path of the associated endpoint. Can be exact matches, or contain wildcards represented by *
+	Negative    bool   `json:"negative" yaml:"negative"`
+	Actions     string `json:"actions" yaml:"actions"` // Comma separated string (read,create,update,delete)
+	Comment     string `json:"comment,omitempty" yaml:"comment,omitempty"`
 }
 
 type EntityPermission struct {
-	EntityId   string `json:"entity_id" yaml:"entity_id"`
-	EntityType string `json:"entity_type" yaml:"entity_type"`
-	Permission
+	EntityId   string                 `json:"entity_id" yaml:"entity_id"`
+	EntityType string                 `json:"entity_type" yaml:"entity_type"`
+	Actions    []string               `json:"actions" yaml:"actions"`
+	CreatedAt  *int                   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Negative   bool                   `json:"negative" yaml:"negative"`
+	Role       EndpointPermissionRole `json:"role,omitempty" yaml:"role,omitempty"`
 }
 
 type EndpointPermission struct {
-	WorkspaceId string `json:"workspace" yaml:"workspace"`
-	Permission
-}
-
-type Permission struct {
-	Actions   []string               `json:"actions" yaml:"actions"`
-	CreatedAt *int                   `json:"created_at" yaml:"created_at"`
-	Endpoint  string                 `json:"endpoint" yaml:"endpoint"`
-	Negative  bool                   `json:"negative" yaml:"negative"`
-	Role      EndpointPermissionRole `json:"role" yaml:"role"`
-	Workspace string                 `json:"workspace" yaml:"workspace"`
+	WorkspaceId string                 `json:"workspace" yaml:"workspace"`
+	Actions     []string               `json:"actions" yaml:"actions"`
+	CreatedAt   *int                   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
+	Endpoint    string                 `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+	Negative    bool                   `json:"negative" yaml:"negative"`
+	Role        EndpointPermissionRole `json:"role,omitempty" yaml:"role,omitempty"`
 }
 
 type EndpointPermissions struct {
@@ -78,9 +87,12 @@ type EndpointPermissionRole struct {
 }
 
 // TODO:
-// RoleEntityPermission
-// EntityPermission
 // User/Role CRUD
+// * List Role Permissions
+// * Add a User to a Role
+// * List a User’s Roles
+// * Delete a Role from a User
+// * List a User’s Permissions
 
 const RolesPath = "/rbac/roles/"
 
@@ -202,8 +214,28 @@ func (roleClient *RoleClient) UpdateById(id string, roleRequest *RoleRequest) (*
 	return updatedRole, nil
 }
 
+func (roleClient *RoleClient) AddUserToRole(id string, userRoleRequest *UserRoleRequest) (*UserRoles, error) {
+	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+UsersPath+id+"/roles").Send(userRoleRequest).End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not add user to role, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %v", errs)
+	}
+
+	userRoles := &UserRoles{}
+
+	err := json.Unmarshal([]byte(body), &userRoles)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse the add user roles response, error: %v", err)
+	}
+
+	return userRoles, nil
+}
+
 // Role Endpoint Permission
-func (roleClient *RoleClient) AddPermissionByRoleId(id string, roleEndpointPermissionRequest *EndpointPermissionRequest) (*EndpointPermission, error) {
+func (roleClient *RoleClient) AddEndpointPermissionByRole(id string, roleEndpointPermissionRequest *EndpointPermissionRequest) (*EndpointPermission, error) {
 	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+RolesPath+id+"/endpoints").Send(roleEndpointPermissionRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update role entities, error: %v", errs)
@@ -223,29 +255,9 @@ func (roleClient *RoleClient) AddPermissionByRoleId(id string, roleEndpointPermi
 	return roleEndpointPermission, nil
 }
 
-func (roleClient *RoleClient) AddPermissionByRoleName(name string, roleEndpointPermissionRequest *EndpointPermissionRequest) (*EndpointPermission, error) {
-	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+RolesPath+name+"/endpoints").Send(roleEndpointPermissionRequest).End()
-	if errs != nil {
-		return nil, fmt.Errorf("could not update role entities, error: %v", errs)
-	}
+func (roleClient *RoleClient) GetEndpointPermission(roleId string, workspaceId string, endpoint string) (*EndpointPermission, error) {
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
-	}
-
-	roleEndpointPermission := &EndpointPermission{}
-
-	err := json.Unmarshal([]byte(body), &roleEndpointPermission)
-	if err != nil {
-		return nil, fmt.Errorf("could not parse the entity update response, error: %v", err)
-	}
-
-	return roleEndpointPermission, nil
-}
-
-func (roleClient *RoleClient) GetPermission(roleId string, workspaceId string, endpoint string) (*EndpointPermission, error) {
-
-	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/endpoints"+workspaceId+"/"+endpoint).End()
+	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/endpoints/"+workspaceId+"/"+endpoint).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get role endpoint permission, error: %v", errs)
 	}
@@ -263,7 +275,7 @@ func (roleClient *RoleClient) GetPermission(roleId string, workspaceId string, e
 	return roleEndpointPermission, nil
 }
 
-func (roleClient *RoleClient) ListPermissions(roleId string) (*EndpointPermissions, error) {
+func (roleClient *RoleClient) ListEndpointPermissions(roleId string) (*EndpointPermissions, error) {
 
 	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/endpoints").End()
 	if errs != nil {
@@ -283,9 +295,9 @@ func (roleClient *RoleClient) ListPermissions(roleId string) (*EndpointPermissio
 	return roleEndpointPermissions, nil
 }
 
-func (roleClient *RoleClient) UpdatePermissions(roleId string, workspaceId string, endpoint string, roleEpRequest *EndpointPermissionRequest) (*EndpointPermission, error) {
+func (roleClient *RoleClient) UpdateEndpointPermissions(roleId string, workspaceId string, endpoint string, roleEpRequest *EndpointPermissionRequest) (*EndpointPermission, error) {
 
-	r, body, errs := newPatch(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/endpoints"+workspaceId+"/"+endpoint).Send(roleEpRequest).End()
+	r, body, errs := newPatch(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/endpoints/"+workspaceId+"/"+endpoint).Send(roleEpRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update role endpoint permission, error: %v", errs)
 	}
@@ -300,14 +312,120 @@ func (roleClient *RoleClient) UpdatePermissions(roleId string, workspaceId strin
 		return nil, fmt.Errorf("could not parse role endpoint permission update response, error: %v", err)
 	}
 
+	if updatedPermission.Actions == nil {
+		return nil, nil
+	}
+
 	return updatedPermission, nil
 }
 
-func (roleClient *RoleClient) DeleteRoleEndpointPermssion(roleId string, workspaceId string, endpoint string) error {
+func (roleClient *RoleClient) DeleteRoleEndpointPermission(roleId string, workspaceId string, endpoint string) error {
 
-	r, body, errs := newDelete(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/endpoints"+workspaceId+"/"+endpoint).End()
+	r, body, errs := newDelete(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/endpoints/"+workspaceId+"/"+endpoint).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete role endpoint permission, result: %v error: %v", r, errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	return nil
+}
+
+// Role Entity Permission
+func (roleClient *RoleClient) AddEntityPermissionByRole(id string, roleEntityPermissionRequest *EntityPermissionRequest) (*EntityPermission, error) {
+	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+RolesPath+id+"/entities").Send(roleEntityPermissionRequest).End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not update role entities, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	roleEntityPermission := &EntityPermission{}
+
+	err := json.Unmarshal([]byte(body), &roleEntityPermission)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse the entity update response, error: %v", err)
+	}
+	if roleEntityPermission.EntityId == "" {
+		return nil, nil
+	}
+
+	return roleEntityPermission, nil
+}
+
+func (roleClient *RoleClient) GetEntityPermission(roleId string, entityId string) (*EntityPermission, error) {
+
+	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/entities/"+entityId).End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not get role entity permission, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	roleEntityPermission := &EntityPermission{}
+	err := json.Unmarshal([]byte(body), roleEntityPermission)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse role entity permission get response, error: %v", err)
+	}
+
+	return roleEntityPermission, nil
+}
+
+func (roleClient *RoleClient) ListEntityPermissions(roleId string) (*EntityPermissions, error) {
+
+	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/entities").End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not get role entity permission, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	roleEntityPermissions := &EntityPermissions{}
+	err := json.Unmarshal([]byte(body), roleEntityPermissions)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse role entity permission list response, error: %v", err)
+	}
+
+	return roleEntityPermissions, nil
+}
+
+func (roleClient *RoleClient) UpdateEntityPermissions(roleId string, entityId string, roleEpRequest *EntityPermissionRequest) (*EntityPermission, error) {
+
+	r, body, errs := newPatch(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/entities/"+entityId).Send(roleEpRequest).End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not update role entity permission, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	}
+
+	updatedPermission := &EntityPermission{}
+	err := json.Unmarshal([]byte(body), updatedPermission)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse role entity permission update response, error: %v", err)
+	}
+
+	if updatedPermission.Actions == nil {
+		return nil, nil
+	}
+
+	return updatedPermission, nil
+}
+
+func (roleClient *RoleClient) DeleteRoleEntityPermission(roleId string, entityId string) error {
+
+	r, body, errs := newDelete(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/entities/"+entityId).End()
+	if errs != nil {
+		return fmt.Errorf("could not delete role entity permission, result: %v error: %v", r, errs)
 	}
 
 	if r.StatusCode == 401 || r.StatusCode == 403 {
