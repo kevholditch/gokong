@@ -23,15 +23,6 @@ type Role struct {
 	RoleRequest
 }
 
-type UserRoleRequest struct {
-	Roles string `json:"roles" yaml:"roles"`
-}
-
-type UserRoles struct {
-	Roles *[]Role `json:"roles" yaml:"roles"`
-	User  *User   `json:"user" yaml:"user"`
-}
-
 type Roles struct {
 	Data []*Role `json:"data" yaml:"data"`
 	Next string  `json:"next,omitempty" yaml:"next,omitempty"`
@@ -85,14 +76,6 @@ type EntityPermissions struct {
 type EndpointPermissionRole struct {
 	Id string `json:"id" yaml:"id"`
 }
-
-// TODO:
-// User/Role CRUD
-// * List Role Permissions
-// * Add a User to a Role
-// * List a User’s Roles
-// * Delete a Role from a User
-// * List a User’s Permissions
 
 const RolesPath = "/rbac/roles/"
 
@@ -214,26 +197,6 @@ func (roleClient *RoleClient) UpdateById(id string, roleRequest *RoleRequest) (*
 	return updatedRole, nil
 }
 
-func (roleClient *RoleClient) AddUserToRole(id string, userRoleRequest *UserRoleRequest) (*UserRoles, error) {
-	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+UsersPath+id+"/roles").Send(userRoleRequest).End()
-	if errs != nil {
-		return nil, fmt.Errorf("could not add user to role, error: %v", errs)
-	}
-
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %v", errs)
-	}
-
-	userRoles := &UserRoles{}
-
-	err := json.Unmarshal([]byte(body), &userRoles)
-	if err != nil {
-		return nil, fmt.Errorf("could not parse the add user roles response, error: %v", err)
-	}
-
-	return userRoles, nil
-}
-
 // Role Endpoint Permission
 func (roleClient *RoleClient) AddEndpointPermissionByRole(id string, roleEndpointPermissionRequest *EndpointPermissionRequest) (*EndpointPermission, error) {
 	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+RolesPath+id+"/endpoints").Send(roleEndpointPermissionRequest).End()
@@ -247,7 +210,7 @@ func (roleClient *RoleClient) AddEndpointPermissionByRole(id string, roleEndpoin
 
 	roleEndpointPermission := &EndpointPermission{}
 
-	err := json.Unmarshal([]byte(body), &roleEndpointPermission)
+	err := json.Unmarshal([]byte(body), roleEndpointPermission)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse the entity update response, error: %v", err)
 	}
@@ -346,7 +309,7 @@ func (roleClient *RoleClient) AddEntityPermissionByRole(id string, roleEntityPer
 
 	roleEntityPermission := &EntityPermission{}
 
-	err := json.Unmarshal([]byte(body), &roleEntityPermission)
+	err := json.Unmarshal([]byte(body), roleEntityPermission)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse the entity update response, error: %v", err)
 	}

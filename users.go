@@ -30,6 +30,20 @@ type Users struct {
 	Next string  `json:"next,omitempty" yaml:"next,omitempty"`
 }
 
+type UserRoleRequest struct {
+	Roles string `json:"roles" yaml:"roles"`
+}
+
+type UserRoles struct {
+	Roles *[]Role `json:"roles" yaml:"roles"`
+	User  *User   `json:"user" yaml:"user"`
+}
+
+type UserPermissions struct {
+	Endpoints map[string]interface{} `json:"endpoints" yaml:"endpoints"`
+	Entities  map[string]interface{} `json:"entitites" yaml:"entities"`
+}
+
 const UsersPath = "/rbac/users/"
 
 func (userClient *UserClient) GetByName(name string) (*User, error) {
@@ -147,4 +161,77 @@ func (userClient *UserClient) UpdateById(id string, userRequest *UserRequest) (*
 	}
 
 	return updatedUser, nil
+}
+
+func (userClient *UserClient) AddUserToRole(userId string, userRoleRequest *UserRoleRequest) (*UserRoles, error) {
+	r, body, errs := newPost(userClient.config, userClient.config.HostAddress+UsersPath+userId+"/roles").Send(userRoleRequest).End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not add user to role, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %v", body)
+	}
+
+	userRoles := &UserRoles{}
+
+	err := json.Unmarshal([]byte(body), userRoles)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse the add user roles response, error: %v", err)
+	}
+
+	return userRoles, nil
+}
+
+func (userClient *UserClient) ListUserRoles(userId string) (*UserRoles, error) {
+	r, body, errs := newGet(userClient.config, userClient.config.HostAddress+UsersPath+userId+"/roles").End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not list user roles, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %v", body)
+	}
+
+	userRoles := &UserRoles{}
+
+	err := json.Unmarshal([]byte(body), userRoles)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse the list user roles response, error: %v", err)
+	}
+
+	return userRoles, nil
+}
+
+func (userClient *UserClient) DeleteRoleFromUser(userId string, userRoleRequest *UserRoleRequest) error {
+	r, body, errs := newDelete(userClient.config, userClient.config.HostAddress+UsersPath+userId+"/roles").Send(userRoleRequest).End()
+	if errs != nil {
+		return fmt.Errorf("could not list user roles, error: %v", body)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return fmt.Errorf("not authorised, message from kong: %v", body)
+	}
+
+	return nil
+}
+
+func (userClient *UserClient) ListUserPermissions(userId string) (*UserPermissions, error) {
+	r, body, errs := newGet(userClient.config, userClient.config.HostAddress+UsersPath+userId+"/permissions").End()
+	if errs != nil {
+		return nil, fmt.Errorf("could not list user permissions, error: %v", errs)
+	}
+
+	if r.StatusCode == 401 || r.StatusCode == 403 {
+		return nil, fmt.Errorf("not authorised, message from kong: %v", body)
+	}
+
+	userPermissions := &UserPermissions{}
+
+	err := json.Unmarshal([]byte(body), userPermissions)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse the list user permissions response, error: %v", err)
+	}
+
+	return userPermissions, nil
 }

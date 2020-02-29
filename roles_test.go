@@ -324,6 +324,7 @@ func Test_ListEndpointPermissions(t *testing.T) {
 }
 
 func Test_UpdateEndpointPermissions(t *testing.T) {
+
 	skipEnterprise(t)
 
 	roleRequest := &RoleRequest{
@@ -364,6 +365,7 @@ func Test_UpdateEndpointPermissions(t *testing.T) {
 }
 
 func Test_DeleteEndpointPermissions(t *testing.T) {
+
 	skipEnterprise(t)
 
 	roleRequest := &RoleRequest{
@@ -536,6 +538,7 @@ func Test_ListEntityPermissions(t *testing.T) {
 }
 
 func Test_UpdateEntityPermissions(t *testing.T) {
+
 	skipEnterprise(t)
 
 	client := NewClient(NewDefaultConfig())
@@ -590,6 +593,7 @@ func Test_UpdateEntityPermissions(t *testing.T) {
 }
 
 func Test_DeleteEntityPermissions(t *testing.T) {
+
 	skipEnterprise(t)
 
 	client := NewClient(NewDefaultConfig())

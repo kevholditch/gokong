@@ -228,3 +228,170 @@ func Test_UsersDeleteByName(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Nil(t, result)
 }
+
+func Test_AddRoleToUser(t *testing.T) {
+
+	skipEnterprise(t)
+
+	client := NewClient(NewDefaultConfig())
+
+	userRequest := &UserRequest{
+		Name:      "user-" + uuid.NewV4().String(),
+		Comment:   "testing",
+		UserToken: uuid.NewV4().String(),
+	}
+
+	createdUser, err := client.Users().Create(userRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdUser)
+
+	roleRequest := &RoleRequest{
+		Name: "role-useradd-" + uuid.NewV4().String(),
+	}
+
+	createdRole, err := client.Roles().Create(roleRequest)
+
+	assert.Nil(t, err)
+
+	userRoleRequest := &UserRoleRequest{
+		Roles: createdRole.Name,
+	}
+
+	userRoles, err := client.Users().AddUserToRole(createdUser.Id, userRoleRequest)
+
+	assert.Nil(t, err)
+	assert.True(t, len(*userRoles.Roles) > 0)
+
+}
+
+func Test_ListUserRoles(t *testing.T) {
+
+	skipEnterprise(t)
+
+	client := NewClient(NewDefaultConfig())
+
+	userRequest := &UserRequest{
+		Name:      "user-" + uuid.NewV4().String(),
+		Comment:   "testing",
+		UserToken: uuid.NewV4().String(),
+	}
+
+	createdUser, err := client.Users().Create(userRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdUser)
+
+	roleRequest := &RoleRequest{
+		Name: "role-useradd-" + uuid.NewV4().String(),
+	}
+
+	createdRole, err := client.Roles().Create(roleRequest)
+
+	assert.Nil(t, err)
+
+	userRoleRequest := &UserRoleRequest{
+		Roles: createdRole.Name,
+	}
+
+	_, err = client.Users().AddUserToRole(createdUser.Id, userRoleRequest)
+
+	assert.Nil(t, err)
+
+	userRoles, err := client.Users().ListUserRoles(createdUser.Id)
+
+	assert.Nil(t, err)
+	assert.True(t, len(*userRoles.Roles) > 0)
+}
+
+func Test_DeleteRoleFromUser(t *testing.T) {
+
+	skipEnterprise(t)
+
+	client := NewClient(NewDefaultConfig())
+
+	userRequest := &UserRequest{
+		Name:      "user-" + uuid.NewV4().String(),
+		Comment:   "testing",
+		UserToken: uuid.NewV4().String(),
+	}
+
+	createdUser, err := client.Users().Create(userRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdUser)
+
+	roleRequest := &RoleRequest{
+		Name: "role-useradd-" + uuid.NewV4().String(),
+	}
+
+	createdRole, err := client.Roles().Create(roleRequest)
+
+	assert.Nil(t, err)
+
+	userRoleRequest := &UserRoleRequest{
+		Roles: createdRole.Name,
+	}
+
+	_, err = client.Users().AddUserToRole(createdUser.Id, userRoleRequest)
+
+	assert.Nil(t, err)
+
+	deleteRoleRequest := &UserRoleRequest{
+		Roles: createdRole.Name,
+	}
+
+	err = client.Users().DeleteRoleFromUser(createdRole.Id, deleteRoleRequest)
+
+	assert.Nil(t, err)
+}
+
+func Test_ListUserPermissions(t *testing.T) {
+
+	skipEnterprise(t)
+
+	client := NewClient(NewDefaultConfig())
+
+	userRequest := &UserRequest{
+		Name:      "user-" + uuid.NewV4().String(),
+		Comment:   "testing",
+		UserToken: uuid.NewV4().String(),
+	}
+
+	createdUser, err := client.Users().Create(userRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdUser)
+
+	roleRequest := &RoleRequest{
+		Name: "role-useradd-" + uuid.NewV4().String(),
+	}
+
+	createdRole, err := client.Roles().Create(roleRequest)
+
+	assert.Nil(t, err)
+
+	userRoleRequest := &UserRoleRequest{
+		Roles: createdRole.Name,
+	}
+
+	endpointPermissionReq := &EndpointPermissionRequest{
+		WorkspaceId: "*",
+		Endpoint:    "/foo",
+		Negative:    false,
+		Actions:     "read,create,update,delete",
+		Comment:     "a comment",
+	}
+	_, err = client.Roles().AddEndpointPermissionByRole(createdRole.Id, endpointPermissionReq)
+
+	assert.Nil(t, err)
+
+	_, err = client.Users().AddUserToRole(createdUser.Id, userRoleRequest)
+
+	assert.Nil(t, err)
+
+	listUserPermissions, err := client.Users().ListUserPermissions(createdUser.Id)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, listUserPermissions.Endpoints)
+}
