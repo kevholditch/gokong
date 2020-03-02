@@ -640,6 +640,260 @@ targets, err := gokong.NewClient(gokong.NewDefaultConfig()).Targets().GetTargets
  - upstream - either name of id can be used
  - target - either id or target name (host:port) can be used
 
+## Workspaces and Workspace Entities
+Create a workspace ([Enterprise-only feature see the Kong documentation for more informations](https://docs.konghq.com/enterprise/1.3-x/admin-api/workspaces/reference/)):
+```go
+workspaceRequest := &gokong.&WorkspaceRequest{
+		Name:    "workspace-dev",
+		Comment: "My workspace",
+		Meta: map[string]interface{}{
+			"color":     nil,
+			"thumbnail": nil,
+		},
+		Config: map[string]interface{}{
+			"meta":                         nil,
+			"portal":                       false,
+			"portal_access_request_email":  nil,
+			"portal_approved_email":        nil,
+			"portal_auth":                  nil,
+			"portal_auth_conf":             nil,
+			"portal_auto_approve":          nil,
+			"portal_cors_origins":          nil,
+			"portal_developer_meta_fields": "[{\"label\":\"Full Name\",\"title\":\"full_name\",\"validator\":{\"required\":true,\"type\":\"string\"}}]",
+			"portal_emails_from":           nil,
+			"portal_emails_reply_to":       nil,
+			"portal_invite_email":          nil,
+			"portal_reset_email":           nil,
+			"portal_reset_success_email":   nil,
+			"portal_token_exp":             nil,
+		},
+	}
+createdWorkspace, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().Create(workspaceRequest)
+```
+
+Get a workspace
+```go
+workspace, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().GetById("workspace-id")
+```
+or 
+```go
+workspace, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().GetByName("workspace-name")
+```
+
+List all workspaces
+```go
+workspaces, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().List()
+```
+
+Update a workspace
+```go
+workspaceRequest := &gokong.WorkspaceRequest{
+		Name:    "workspace-" + uuid.NewV4().String(),
+		Comment: "testing",
+		Meta: map[string]interface{}{
+			"color":     nil,
+			"thumbnail": nil,
+		},
+		Config: map[string]interface{}{
+			"meta":                         nil,
+			"portal":                       false,
+			"portal_access_request_email":  nil,
+			"portal_approved_email":        nil,
+			"portal_auth":                  nil,
+			"portal_auth_conf":             nil,
+			"portal_auto_approve":          nil,
+			"portal_cors_origins":          nil,
+			"portal_developer_meta_fields": "[{\"label\":\"Full Name\",\"title\":\"full_name\",\"validator\":{\"required\":true,\"type\":\"string\"}}]",
+			"portal_emails_from":           nil,
+			"portal_emails_reply_to":       nil,
+			"portal_invite_email":          nil,
+			"portal_reset_email":           nil,
+			"portal_reset_success_email":   nil,
+			"portal_token_exp":             nil,
+		},
+	}
+workspace, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().Create(workspaceRequest)
+workspaceRequest.Comment = "New Comment"
+result, err := gokong.NewClient(gokon.NewDefaultConfig()).Workspaces.UpdateById(workspace.Id, workspaceRequest)
+
+```
+
+Delete a workspace
+```go
+workspaces, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().DeleteById("workspace-id")
+```
+or
+```go
+workspaces, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().DeleteByName("workspace-name")
+```
+
+Add entity to workspace
+
+```go
+entityRequest := &gokong.EntityRequest{
+  Entities: "<service-id>",
+}
+updatedEntities, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().AddEntitiesByWorkspaceName("workspace-name", entityRequest)
+```
+or
+```go
+entityRequest := &gokong.EntityRequest{
+  Entities: "<service-id>",
+}
+updatedEntities, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().AddEntitiesByWorkspaceId("workspace-id", entityRequest)
+```
+
+List workspace entities
+```go
+entities, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().ListEntitiesById("workspace_id")
+```
+or 
+```go
+entities, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().ListEntitiesByName("workspace_name")
+```
+
+Get entity by Id
+```go
+entity, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().GetEntityById("workspace_id", "entity_id")
+```
+
+Delete entity by Id
+```go
+entity, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().DeleteEntityById("workspace_id", "entity_id")
+
+```
+
+## Roles
+
+Create a role
+```go
+roleRequest := &gokong.RoleRequest{
+    Name:    "new-role",
+		Comment: "My new Kong role",
+}
+role, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().Create(roleRequest)
+```
+
+Get a role
+```go
+role, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().GetByName("new-role")
+```
+or 
+```go
+role, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().GetById("role-id")
+```
+
+List roles
+```go
+roles := gokong.NewClient(gokong.NewDefaultConfig()).Roles().List()
+```
+
+Delete a role
+```go
+err = gokong.NewClient(gokong.NewDefaultConfig()).Roles().DeleteByName("role-name")
+```
+or
+```go
+err = gokong.NewClient(gokong.NewDefaultConfig()).Roles().DeleteById("role-id")
+```
+
+## Permissions
+
+### Endpoint Permissions
+
+Add endpoint permission by role
+```go
+endpointPermissionReq := &EndpointPermissionRequest{
+		WorkspaceId: "my-workspace",
+		Endpoint:    "*",
+		Negative:    false,
+		Actions:     "read,create,update,delete",
+		Comment:     "a comment",
+}
+endpoint, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().AddEndpointPermissionByRole("role-id-or-name", endpointPermissionReq)
+```
+
+Get endpoint permission by role and endpoint
+```go
+result, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().GetEndpointPermission("role-id-or-name", "workspace-id", "/my-endpoint")
+```
+
+List endpoint permissions
+```go
+result, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().ListEndpointPermissions("role-id-or-name")
+```
+
+Update endpoint permissions
+```go
+updatePermissionReq := &gokong.EndpointPermissionRequest{
+  WorkspaceId: "*",
+  Endpoint:    "/foo",
+  Negative:    false,
+  Actions:     "read,create,update",
+}
+result, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().UpdateEndpointPermissions(
+  "role-id-or-name",
+  "workspace-id-or-name",
+  "/foo",
+  updatePermissionReq
+)
+```
+
+Delete endpoint permissions
+```go
+result, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().DeleteRoleEndpointPermission(
+  "role-id-or-name",
+  "workspace-id-or-name",
+  "/foo"
+)
+```
+
+### Entity Permissions
+
+Add entity permission by role
+```go
+entityPermissionReq := &EntityPermissionRequest{
+		EntityId:    "entity-id",
+		Negative:    false,
+		Actions:     "read,create,update,delete",
+		Comment:     "a comment",
+}
+entity, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().AddEntityPermissionByRole("role-id-or-name", entityPermissionReq)
+```
+
+Get entity permission by role and entity
+```go
+result, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().GetEntityPermission("role-id-or-name", "entity-id")
+```
+
+List entity permissions
+```go
+result, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().ListEntityPermissions("role-id-or-name")
+```
+
+Update entity permissions
+```go
+updatePermissionReq := &gokong.EntityPermissionRequest{
+  EntityId:    "entity-id",
+  Negative:    false,
+  Actions:     "read,create,update",
+  Comment:     "a comment",
+}
+result, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().UpdateEntityPermissions(
+  "role-id-or-name",
+  "entity-id",
+  updatePermissionReq
+)
+```
+
+Delete entity permissions
+```go
+result, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().DeleteRoleEntityPermission(
+  "role-id-or-name",
+  "entity-id"
+)
+```
+
 # Contributing
 I would love to get contributions to the project so please feel free to submit a PR.  To setup your dev station you need go and docker installed.
 
