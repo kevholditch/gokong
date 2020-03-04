@@ -79,6 +79,13 @@ type EndpointPermissionRole struct {
 
 const RolesPath = "/rbac/roles/"
 
+func (roleClient *RoleClient) getWorkspacePath() string {
+	if roleClient.config.Workspace != "" {
+		return "/" + roleClient.config.Workspace
+	}
+	return ""
+}
+
 // Role
 func (roleClient *RoleClient) GetByName(name string) (*Role, error) {
 	return roleClient.GetById(name)
@@ -86,7 +93,7 @@ func (roleClient *RoleClient) GetByName(name string) (*Role, error) {
 
 func (roleClient *RoleClient) GetById(id string) (*Role, error) {
 
-	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+RolesPath+id).End()
+	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+id).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get role, error: %v", errs)
 	}
@@ -109,7 +116,7 @@ func (roleClient *RoleClient) GetById(id string) (*Role, error) {
 }
 
 func (roleClient *RoleClient) Create(roleRequest *RoleRequest) (*Role, error) {
-	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+RolesPath).Send(roleRequest).End()
+	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath).Send(roleRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not create new role, error: %v", errs)
 	}
@@ -137,7 +144,7 @@ func (roleClient *RoleClient) DeleteByName(name string) error {
 
 func (roleClient *RoleClient) DeleteById(id string) error {
 
-	r, body, errs := newDelete(roleClient.config, roleClient.config.HostAddress+RolesPath+id).End()
+	r, body, errs := newDelete(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete role, result: %v error: %v", r, errs)
 	}
@@ -151,7 +158,7 @@ func (roleClient *RoleClient) DeleteById(id string) error {
 
 func (roleClient *RoleClient) List() (*Roles, error) {
 
-	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+RolesPath).End()
+	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get roles, error: %v", errs)
 	}
@@ -175,7 +182,7 @@ func (roleClient *RoleClient) UpdateByName(name string, roleRequest *RoleRequest
 
 func (roleClient *RoleClient) UpdateById(id string, roleRequest *RoleRequest) (*Role, error) {
 
-	r, body, errs := newPatch(roleClient.config, roleClient.config.HostAddress+RolesPath+id).Send(roleRequest).End()
+	r, body, errs := newPatch(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+id).Send(roleRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update role, error: %v", errs)
 	}
@@ -199,7 +206,7 @@ func (roleClient *RoleClient) UpdateById(id string, roleRequest *RoleRequest) (*
 
 // Role Endpoint Permission
 func (roleClient *RoleClient) AddEndpointPermissionByRole(id string, roleEndpointPermissionRequest *EndpointPermissionRequest) (*EndpointPermission, error) {
-	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+RolesPath+id+"/endpoints").Send(roleEndpointPermissionRequest).End()
+	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+id+"/endpoints").Send(roleEndpointPermissionRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update role entities, error: %v", errs)
 	}
@@ -220,7 +227,7 @@ func (roleClient *RoleClient) AddEndpointPermissionByRole(id string, roleEndpoin
 
 func (roleClient *RoleClient) GetEndpointPermission(roleId string, workspaceId string, endpoint string) (*EndpointPermission, error) {
 
-	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/endpoints/"+workspaceId+"/"+endpoint).End()
+	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+roleId+"/endpoints/"+workspaceId+"/"+endpoint).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get role endpoint permission, error: %v", errs)
 	}
@@ -240,7 +247,7 @@ func (roleClient *RoleClient) GetEndpointPermission(roleId string, workspaceId s
 
 func (roleClient *RoleClient) ListEndpointPermissions(roleId string) (*EndpointPermissions, error) {
 
-	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/endpoints").End()
+	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+roleId+"/endpoints").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get role endpoint permission, error: %v", errs)
 	}
@@ -260,7 +267,7 @@ func (roleClient *RoleClient) ListEndpointPermissions(roleId string) (*EndpointP
 
 func (roleClient *RoleClient) UpdateEndpointPermissions(roleId string, workspaceId string, endpoint string, roleEpRequest *EndpointPermissionRequest) (*EndpointPermission, error) {
 
-	r, body, errs := newPatch(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/endpoints/"+workspaceId+"/"+endpoint).Send(roleEpRequest).End()
+	r, body, errs := newPatch(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+roleId+"/endpoints/"+workspaceId+"/"+endpoint).Send(roleEpRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update role endpoint permission, error: %v", errs)
 	}
@@ -284,7 +291,7 @@ func (roleClient *RoleClient) UpdateEndpointPermissions(roleId string, workspace
 
 func (roleClient *RoleClient) DeleteRoleEndpointPermission(roleId string, workspaceId string, endpoint string) error {
 
-	r, body, errs := newDelete(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/endpoints/"+workspaceId+"/"+endpoint).End()
+	r, body, errs := newDelete(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+roleId+"/endpoints/"+workspaceId+"/"+endpoint).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete role endpoint permission, result: %v error: %v", r, errs)
 	}
@@ -298,7 +305,7 @@ func (roleClient *RoleClient) DeleteRoleEndpointPermission(roleId string, worksp
 
 // Role Entity Permission
 func (roleClient *RoleClient) AddEntityPermissionByRole(id string, roleEntityPermissionRequest *EntityPermissionRequest) (*EntityPermission, error) {
-	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+RolesPath+id+"/entities").Send(roleEntityPermissionRequest).End()
+	r, body, errs := newPost(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+id+"/entities").Send(roleEntityPermissionRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update role entities, error: %v", errs)
 	}
@@ -322,7 +329,7 @@ func (roleClient *RoleClient) AddEntityPermissionByRole(id string, roleEntityPer
 
 func (roleClient *RoleClient) GetEntityPermission(roleId string, entityId string) (*EntityPermission, error) {
 
-	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/entities/"+entityId).End()
+	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+roleId+"/entities/"+entityId).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get role entity permission, error: %v", errs)
 	}
@@ -342,7 +349,7 @@ func (roleClient *RoleClient) GetEntityPermission(roleId string, entityId string
 
 func (roleClient *RoleClient) ListEntityPermissions(roleId string) (*EntityPermissions, error) {
 
-	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/entities").End()
+	r, body, errs := newGet(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+roleId+"/entities").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get role entity permission, error: %v", errs)
 	}
@@ -362,7 +369,7 @@ func (roleClient *RoleClient) ListEntityPermissions(roleId string) (*EntityPermi
 
 func (roleClient *RoleClient) UpdateEntityPermissions(roleId string, entityId string, roleEpRequest *EntityPermissionRequest) (*EntityPermission, error) {
 
-	r, body, errs := newPatch(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/entities/"+entityId).Send(roleEpRequest).End()
+	r, body, errs := newPatch(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+roleId+"/entities/"+entityId).Send(roleEpRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update role entity permission, error: %v", errs)
 	}
@@ -386,7 +393,7 @@ func (roleClient *RoleClient) UpdateEntityPermissions(roleId string, entityId st
 
 func (roleClient *RoleClient) DeleteRoleEntityPermission(roleId string, entityId string) error {
 
-	r, body, errs := newDelete(roleClient.config, roleClient.config.HostAddress+RolesPath+roleId+"/entities/"+entityId).End()
+	r, body, errs := newDelete(roleClient.config, roleClient.config.HostAddress+roleClient.getWorkspacePath()+RolesPath+roleId+"/entities/"+entityId).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete role entity permission, result: %v error: %v", r, errs)
 	}

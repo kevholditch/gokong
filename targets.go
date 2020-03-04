@@ -32,12 +32,19 @@ type Targets struct {
 
 const TargetsPath = "/upstreams/%s/targets"
 
+func (targetClient *TargetClient) getWorkspacePath() string {
+	if targetClient.config.Workspace != "" {
+		return "/" + targetClient.config.Workspace
+	}
+	return ""
+}
+
 func (targetClient *TargetClient) CreateFromUpstreamName(name string, targetRequest *TargetRequest) (*Target, error) {
 	return targetClient.CreateFromUpstreamId(name, targetRequest)
 }
 
 func (targetClient *TargetClient) CreateFromUpstreamId(id string, targetRequest *TargetRequest) (*Target, error) {
-	r, body, errs := newPost(targetClient.config, targetClient.config.HostAddress+fmt.Sprintf(TargetsPath, id)).Send(targetRequest).End()
+	r, body, errs := newPost(targetClient.config, targetClient.config.HostAddress+targetClient.getWorkspacePath()+fmt.Sprintf(TargetsPath, id)).Send(targetRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not register the target, error: %v", errs)
 	}
@@ -68,7 +75,7 @@ func (targetClient *TargetClient) GetTargetsFromUpstreamId(id string) ([]*Target
 	data := &Targets{}
 
 	for {
-		r, body, errs := newGet(targetClient.config, targetClient.config.HostAddress+fmt.Sprintf(TargetsPath, id)).End()
+		r, body, errs := newGet(targetClient.config, targetClient.config.HostAddress+targetClient.getWorkspacePath()+fmt.Sprintf(TargetsPath, id)).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get targets, error: %v", errs)
 		}
@@ -100,7 +107,7 @@ func (targetClient *TargetClient) DeleteFromUpstreamByHostPort(upstreamNameOrId 
 }
 
 func (targetClient *TargetClient) DeleteFromUpstreamById(upstreamNameOrId string, id string) error {
-	r, body, errs := newDelete(targetClient.config, targetClient.config.HostAddress+fmt.Sprintf(TargetsPath, upstreamNameOrId)+fmt.Sprintf("/%s", id)).End()
+	r, body, errs := newDelete(targetClient.config, targetClient.config.HostAddress+targetClient.getWorkspacePath()+fmt.Sprintf(TargetsPath, upstreamNameOrId)+fmt.Sprintf("/%s", id)).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete the target, result: %v error: %v", r, errs)
 	}
@@ -121,7 +128,7 @@ func (targetClient *TargetClient) SetTargetFromUpstreamByHostPortAsHealthy(upstr
 }
 
 func (targetClient *TargetClient) SetTargetFromUpstreamByIdAsHealthy(upstreamNameOrId string, id string) error {
-	r, body, errs := newPost(targetClient.config, targetClient.config.HostAddress+fmt.Sprintf(TargetsPath, upstreamNameOrId)+fmt.Sprintf("/%s/healthy", id)).Send("").End()
+	r, body, errs := newPost(targetClient.config, targetClient.config.HostAddress+targetClient.getWorkspacePath()+fmt.Sprintf(TargetsPath, upstreamNameOrId)+fmt.Sprintf("/%s/healthy", id)).Send("").End()
 	if errs != nil {
 		return fmt.Errorf("could not set the target as healthy, result: %v error: %v", r, errs)
 	}
@@ -142,7 +149,7 @@ func (targetClient *TargetClient) SetTargetFromUpstreamByHostPortAsUnhealthy(ups
 }
 
 func (targetClient *TargetClient) SetTargetFromUpstreamByIdAsUnhealthy(upstreamNameOrId string, id string) error {
-	r, body, errs := newPost(targetClient.config, targetClient.config.HostAddress+fmt.Sprintf(TargetsPath, upstreamNameOrId)+fmt.Sprintf("/%s/unhealthy", id)).Send("").End()
+	r, body, errs := newPost(targetClient.config, targetClient.config.HostAddress+targetClient.getWorkspacePath()+fmt.Sprintf(TargetsPath, upstreamNameOrId)+fmt.Sprintf("/%s/unhealthy", id)).Send("").End()
 	if errs != nil {
 		return fmt.Errorf("could not set the target as unhealthy, result: %v error: %v", r, errs)
 	}
@@ -167,7 +174,7 @@ func (targetClient *TargetClient) GetTargetsWithHealthFromUpstreamId(id string) 
 	data := &Targets{}
 
 	for {
-		r, body, errs := newGet(targetClient.config, targetClient.config.HostAddress+fmt.Sprintf("/upstreams/%s/health", id)).End()
+		r, body, errs := newGet(targetClient.config, targetClient.config.HostAddress+targetClient.getWorkspacePath()+fmt.Sprintf("/upstreams/%s/health", id)).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get targets, error: %v", errs)
 		}

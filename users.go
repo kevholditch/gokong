@@ -46,13 +46,20 @@ type UserPermissions struct {
 
 const UsersPath = "/rbac/users/"
 
+func (userClient *UserClient) getWorkspacePath() string {
+	if userClient.config.Workspace != "" {
+		return "/" + userClient.config.Workspace
+	}
+	return ""
+}
+
 func (userClient *UserClient) GetByName(name string) (*User, error) {
 	return userClient.GetById(name)
 }
 
 func (userClient *UserClient) GetById(id string) (*User, error) {
 
-	r, body, errs := newGet(userClient.config, userClient.config.HostAddress+UsersPath+id).End()
+	r, body, errs := newGet(userClient.config, userClient.config.HostAddress+userClient.getWorkspacePath()+UsersPath+id).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get user, error: %v", errs)
 	}
@@ -75,7 +82,7 @@ func (userClient *UserClient) GetById(id string) (*User, error) {
 }
 
 func (userClient *UserClient) Create(userRequest *UserRequest) (*User, error) {
-	r, body, errs := newPost(userClient.config, userClient.config.HostAddress+UsersPath).Send(userRequest).End()
+	r, body, errs := newPost(userClient.config, userClient.config.HostAddress+userClient.getWorkspacePath()+UsersPath).Send(userRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not create new user, error: %v", errs)
 	}
@@ -103,7 +110,7 @@ func (userClient *UserClient) DeleteByName(name string) error {
 
 func (userClient *UserClient) DeleteById(id string) error {
 
-	r, body, errs := newDelete(userClient.config, userClient.config.HostAddress+UsersPath+id).End()
+	r, body, errs := newDelete(userClient.config, userClient.config.HostAddress+userClient.getWorkspacePath()+UsersPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete user, result: %v error: %v", r, errs)
 	}
@@ -117,7 +124,7 @@ func (userClient *UserClient) DeleteById(id string) error {
 
 func (userClient *UserClient) List() (*Users, error) {
 
-	r, body, errs := newGet(userClient.config, userClient.config.HostAddress+UsersPath).End()
+	r, body, errs := newGet(userClient.config, userClient.config.HostAddress+userClient.getWorkspacePath()+UsersPath).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get users, error: %v", errs)
 	}
@@ -141,7 +148,7 @@ func (userClient *UserClient) UpdateByName(name string, userRequest *UserRequest
 
 func (userClient *UserClient) UpdateById(id string, userRequest *UserRequest) (*User, error) {
 
-	r, body, errs := newPatch(userClient.config, userClient.config.HostAddress+UsersPath+id).Send(userRequest).End()
+	r, body, errs := newPatch(userClient.config, userClient.config.HostAddress+userClient.getWorkspacePath()+UsersPath+id).Send(userRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update user, error: %v", errs)
 	}
@@ -164,7 +171,7 @@ func (userClient *UserClient) UpdateById(id string, userRequest *UserRequest) (*
 }
 
 func (userClient *UserClient) AddUserToRole(userId string, userRoleRequest *UserRoleRequest) (*UserRoles, error) {
-	r, body, errs := newPost(userClient.config, userClient.config.HostAddress+UsersPath+userId+"/roles").Send(userRoleRequest).End()
+	r, body, errs := newPost(userClient.config, userClient.config.HostAddress+userClient.getWorkspacePath()+UsersPath+userId+"/roles").Send(userRoleRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not add user to role, error: %v", errs)
 	}
@@ -184,7 +191,7 @@ func (userClient *UserClient) AddUserToRole(userId string, userRoleRequest *User
 }
 
 func (userClient *UserClient) ListUserRoles(userId string) (*UserRoles, error) {
-	r, body, errs := newGet(userClient.config, userClient.config.HostAddress+UsersPath+userId+"/roles").End()
+	r, body, errs := newGet(userClient.config, userClient.config.HostAddress+userClient.getWorkspacePath()+UsersPath+userId+"/roles").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not list user roles, error: %v", errs)
 	}
@@ -204,7 +211,7 @@ func (userClient *UserClient) ListUserRoles(userId string) (*UserRoles, error) {
 }
 
 func (userClient *UserClient) DeleteRoleFromUser(userId string, userRoleRequest *UserRoleRequest) error {
-	r, body, errs := newDelete(userClient.config, userClient.config.HostAddress+UsersPath+userId+"/roles").Send(userRoleRequest).End()
+	r, body, errs := newDelete(userClient.config, userClient.config.HostAddress+userClient.getWorkspacePath()+UsersPath+userId+"/roles").Send(userRoleRequest).End()
 	if errs != nil {
 		return fmt.Errorf("could not list user roles, error: %v", body)
 	}
@@ -217,7 +224,7 @@ func (userClient *UserClient) DeleteRoleFromUser(userId string, userRoleRequest 
 }
 
 func (userClient *UserClient) ListUserPermissions(userId string) (*UserPermissions, error) {
-	r, body, errs := newGet(userClient.config, userClient.config.HostAddress+UsersPath+userId+"/permissions").End()
+	r, body, errs := newGet(userClient.config, userClient.config.HostAddress+userClient.getWorkspacePath()+UsersPath+userId+"/permissions").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not list user permissions, error: %v", errs)
 	}

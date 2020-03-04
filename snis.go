@@ -26,9 +26,16 @@ type Snis struct {
 
 const SnisPath = "/snis/"
 
+func (snisClient *SnisClient) getWorkspacePath() string {
+	if snisClient.config.Workspace != "" {
+		return "/" + snisClient.config.Workspace
+	}
+	return ""
+}
+
 func (snisClient *SnisClient) Create(snisRequest *SnisRequest) (*Sni, error) {
 
-	r, body, errs := newPost(snisClient.config, snisClient.config.HostAddress+SnisPath).Send(snisRequest).End()
+	r, body, errs := newPost(snisClient.config, snisClient.config.HostAddress+snisClient.getWorkspacePath()+SnisPath).Send(snisRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not create new sni, error: %v", errs)
 	}
@@ -52,7 +59,7 @@ func (snisClient *SnisClient) Create(snisRequest *SnisRequest) (*Sni, error) {
 
 func (snisClient *SnisClient) GetByName(name string) (*Sni, error) {
 
-	r, body, errs := newGet(snisClient.config, snisClient.config.HostAddress+SnisPath+name).End()
+	r, body, errs := newGet(snisClient.config, snisClient.config.HostAddress+snisClient.getWorkspacePath()+SnisPath+name).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get sni, error: %v", errs)
 	}
@@ -76,7 +83,7 @@ func (snisClient *SnisClient) GetByName(name string) (*Sni, error) {
 
 func (snisClient *SnisClient) List() (*Snis, error) {
 
-	r, body, errs := newGet(snisClient.config, snisClient.config.HostAddress+SnisPath).End()
+	r, body, errs := newGet(snisClient.config, snisClient.config.HostAddress+snisClient.getWorkspacePath()+SnisPath).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get snis, error: %v", errs)
 	}
@@ -96,7 +103,7 @@ func (snisClient *SnisClient) List() (*Snis, error) {
 
 func (snisClient *SnisClient) DeleteByName(name string) error {
 
-	r, body, errs := newDelete(snisClient.config, snisClient.config.HostAddress+SnisPath+name).End()
+	r, body, errs := newDelete(snisClient.config, snisClient.config.HostAddress+snisClient.getWorkspacePath()+SnisPath+name).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete sni, result: %v error: %v", r, errs)
 	}
@@ -110,7 +117,7 @@ func (snisClient *SnisClient) DeleteByName(name string) error {
 
 func (snisClient *SnisClient) UpdateByName(name string, snisRequest *SnisRequest) (*Sni, error) {
 
-	r, body, errs := newPatch(snisClient.config, snisClient.config.HostAddress+SnisPath+name).Send(snisRequest).End()
+	r, body, errs := newPatch(snisClient.config, snisClient.config.HostAddress+snisClient.getWorkspacePath()+SnisPath+name).Send(snisRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update sni, error: %v", errs)
 	}
