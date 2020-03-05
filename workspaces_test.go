@@ -118,6 +118,44 @@ func Test_WorkspaceCreate(t *testing.T) {
 	assert.Equal(t, workspaceRequest.Name, createdWorkspace.Name)
 	assert.Equal(t, workspaceRequest.Comment, createdWorkspace.Comment)
 }
+func Test_WorkspaceCreateWithPortal(t *testing.T) {
+
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name:    "workspace-withportal" + uuid.NewV4().String(),
+		Comment: "testing",
+		Meta: map[string]interface{}{
+			"color":     nil,
+			"thumbnail": nil,
+		},
+		Config: map[string]interface{}{
+			"meta":                         nil,
+			"portal":                       true,
+			"portal_access_request_email":  nil,
+			"portal_approved_email":        nil,
+			"portal_auth":                  nil,
+			"portal_auth_conf":             nil,
+			"portal_auto_approve":          nil,
+			"portal_cors_origins":          nil,
+			"portal_developer_meta_fields": "[{\"label\":\"Full Name\",\"title\":\"full_name\",\"validator\":{\"required\":true,\"type\":\"string\"}}]",
+			"portal_emails_from":           nil,
+			"portal_emails_reply_to":       nil,
+			"portal_invite_email":          nil,
+			"portal_reset_email":           nil,
+			"portal_reset_success_email":   nil,
+			"portal_token_exp":             nil,
+		},
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdWorkspace)
+	assert.Equal(t, workspaceRequest.Name, createdWorkspace.Name)
+	assert.Equal(t, workspaceRequest.Comment, createdWorkspace.Comment)
+}
 
 func Test_WorkspaceList(t *testing.T) {
 

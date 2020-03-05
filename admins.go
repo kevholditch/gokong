@@ -82,9 +82,16 @@ type AdminRoleRequest struct {
 
 const AdminsPath = "/admins/"
 
+func (adminClient *AdminClient) getWorkspacePath() string {
+	if adminClient.config.Workspace != "" {
+		return "/" + adminClient.config.Workspace
+	}
+	return ""
+}
+
 func (adminClient *AdminClient) List() (*Admins, error) {
 
-	r, body, errs := newGet(adminClient.config, adminClient.config.HostAddress+AdminsPath).End()
+	r, body, errs := newGet(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get admins, error: %v", errs)
 	}
@@ -103,7 +110,7 @@ func (adminClient *AdminClient) List() (*Admins, error) {
 }
 
 func (adminClient *AdminClient) Invite(inviteAdminRequest *InviteAdminRequest) (*InviteAdminResponse, error) {
-	r, body, errs := newPost(adminClient.config, adminClient.config.HostAddress+AdminsPath).Send(inviteAdminRequest).End()
+	r, body, errs := newPost(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath).Send(inviteAdminRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not invite new admin, error: %v", errs)
 	}
@@ -126,7 +133,7 @@ func (adminClient *AdminClient) Invite(inviteAdminRequest *InviteAdminRequest) (
 }
 
 func (adminClient *AdminClient) RegisterAdminCredentials(registerAdminCreds *RegisterAdminCredentialsRequest) error {
-	r, body, errs := newPost(adminClient.config, adminClient.config.HostAddress+AdminsPath+"register").Send(registerAdminCreds).End()
+	r, body, errs := newPost(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath+"register").Send(registerAdminCreds).End()
 	if errs != nil {
 		return fmt.Errorf("could not register admin credentials, error: %v", errs)
 	}
@@ -139,7 +146,7 @@ func (adminClient *AdminClient) RegisterAdminCredentials(registerAdminCreds *Reg
 }
 
 func (adminClient *AdminClient) SendAdminPasswordResetEmail(sendResetRequest *SendPasswordResetRequest) error {
-	r, body, errs := newPost(adminClient.config, adminClient.config.HostAddress+AdminsPath+"password_resets").Send(sendResetRequest).End()
+	r, body, errs := newPost(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath+"password_resets").Send(sendResetRequest).End()
 	if errs != nil {
 		return fmt.Errorf("could not send password-reset email, error: %v", errs)
 	}
@@ -153,7 +160,7 @@ func (adminClient *AdminClient) SendAdminPasswordResetEmail(sendResetRequest *Se
 
 func (adminClient *AdminClient) ResetAdminPassword(resetPasswordRequest *PasswordResetRequest) error {
 
-	r, body, errs := newPatch(adminClient.config, adminClient.config.HostAddress+AdminsPath+"password_resets").Send(resetPasswordRequest).End()
+	r, body, errs := newPatch(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath+"password_resets").Send(resetPasswordRequest).End()
 	if errs != nil {
 		return fmt.Errorf("could not reset admin password, error: %v", errs)
 	}
@@ -167,7 +174,7 @@ func (adminClient *AdminClient) ResetAdminPassword(resetPasswordRequest *Passwor
 
 // Get will retrieve details about an Admin when provided the name or id of an Admin entity
 func (adminClient *AdminClient) Get(id string) (*AdminResponse, error) {
-	r, body, errs := newGet(adminClient.config, adminClient.config.HostAddress+AdminsPath+id).End()
+	r, body, errs := newGet(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath+id).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get admin, error: %v", errs)
 	}
@@ -191,7 +198,7 @@ func (adminClient *AdminClient) Get(id string) (*AdminResponse, error) {
 
 func (adminClient *AdminClient) Update(id string, adminRequest *AdminRequest) (*AdminResponse, error) {
 
-	r, body, errs := newPatch(adminClient.config, adminClient.config.HostAddress+AdminsPath+id).Send(adminRequest).End()
+	r, body, errs := newPatch(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath+id).Send(adminRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get admin, error: %v", errs)
 	}
@@ -215,7 +222,7 @@ func (adminClient *AdminClient) Update(id string, adminRequest *AdminRequest) (*
 
 func (adminClient *AdminClient) Delete(id string) error {
 
-	r, body, errs := newDelete(adminClient.config, adminClient.config.HostAddress+AdminsPath+id).End()
+	r, body, errs := newDelete(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete admin, result: %v error: %v", r, errs)
 	}
@@ -229,7 +236,7 @@ func (adminClient *AdminClient) Delete(id string) error {
 
 func (adminClient *AdminClient) ListRoles(id string) (*AdminRoles, error) {
 
-	r, body, errs := newGet(adminClient.config, adminClient.config.HostAddress+AdminsPath+id+"/roles").End()
+	r, body, errs := newGet(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath+id+"/roles").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not list admin roles, error: %v", errs)
 	}
@@ -250,7 +257,7 @@ func (adminClient *AdminClient) ListRoles(id string) (*AdminRoles, error) {
 
 func (adminClient *AdminClient) AddOrUpdateRoles(id string, adminRoleRequest *AdminRoleRequest) (*AdminRoles, error) {
 
-	r, body, errs := newPost(adminClient.config, adminClient.config.HostAddress+AdminsPath+id+"/roles").Send(adminRoleRequest).End()
+	r, body, errs := newPost(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath+id+"/roles").Send(adminRoleRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not add or update admin roles, error: %v", body)
 	}
@@ -271,7 +278,7 @@ func (adminClient *AdminClient) AddOrUpdateRoles(id string, adminRoleRequest *Ad
 
 func (adminClient *AdminClient) DeleteRoles(id string, adminRoleRequest *AdminRoleRequest) error {
 
-	r, body, errs := newDelete(adminClient.config, adminClient.config.HostAddress+AdminsPath+id+"/roles").Send(adminRoleRequest).End()
+	r, body, errs := newDelete(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath+id+"/roles").Send(adminRoleRequest).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete admin roles, error: %v", body)
 	}
@@ -284,7 +291,7 @@ func (adminClient *AdminClient) DeleteRoles(id string, adminRoleRequest *AdminRo
 }
 
 func (adminClient *AdminClient) ListWorkspaces(adminId string) ([]*WorkspaceRequest, error) {
-	r, body, errs := newGet(adminClient.config, adminClient.config.HostAddress+AdminsPath+adminId+"/workspaces").End()
+	r, body, errs := newGet(adminClient.config, adminClient.config.HostAddress+adminClient.getWorkspacePath()+AdminsPath+adminId+"/workspaces").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not list admin workspaces, error: %v", errs)
 	}

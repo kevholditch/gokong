@@ -7,6 +7,37 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_UserGetByIdWorkspace(t *testing.T) {
+
+	skipEnterprise(t)
+
+	userRequest := &UserRequest{
+		Name:      "user-" + uuid.NewV4().String(),
+		UserToken: "testToken" + uuid.NewV4().String(),
+	}
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-useradd-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	client = NewClient(NewWorkspaceConfig(createdWorkspace.Name))
+
+	createdUser, err := client.Users().Create(userRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdUser)
+
+	result, err := client.Users().GetById(createdUser.Id)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, createdUser, result)
+
+}
 func Test_UserGetById(t *testing.T) {
 
 	skipEnterprise(t)

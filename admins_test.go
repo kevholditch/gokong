@@ -1,7 +1,6 @@
 package gokong
 
 import (
-	"log"
 	"testing"
 
 	uuid "github.com/satori/go.uuid"
@@ -358,11 +357,21 @@ func Test_ListAdminWorkspaces(t *testing.T) {
 	skipEnterprise(t)
 
 	client := NewClient(NewDefaultConfig())
-
 	rnd := uuid.NewV4().String()
+	workspaceRequest := &WorkspaceRequest{
+		Name: "test-workspace" + rnd,
+	}
+
+	result, err := client.Workspaces().Create(workspaceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+
+	client = NewClient(NewWorkspaceConfig("test-workspace" + rnd))
+
 	inviteAdminRequest := &InviteAdminRequest{
-		Email:            "admin-" + rnd + "@example.com",
-		Username:         "admin-" + rnd + "@example.com",
+		Email:            "workspace-admin-" + rnd + "@example.com",
+		Username:         "workspace-admin-" + rnd + "@example.com",
 		CustomId:         rnd,
 		RBACTokenEnabled: true,
 	}
@@ -371,24 +380,7 @@ func Test_ListAdminWorkspaces(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, createdAdmin)
 
-	workspaceRequest := &WorkspaceRequest{
-		Name: "test-workspace" + rnd,
-	}
-
-	result, err := client.Workspaces().Create(workspaceRequest)
-	assert.Nil(t, err)
-	log.Println(result)
-	addEntity := &EntityRequest{
-		Entities: &createdAdmin.Admin.Id,
-	}
-	log.Println(addEntity)
-	log.Println(String(*addEntity.Entities))
-	_, err = client.Workspaces().AddEntitiesByWorkspaceId(result.Id, addEntity)
-
-	assert.Nil(t, err)
-
 	adminWorkspaces, err := client.Admins().ListWorkspaces(createdAdmin.Admin.Id)
 	assert.Nil(t, err)
-
-	log.Println(adminWorkspaces)
+	assert.True(t, len(adminWorkspaces) > 0)
 }

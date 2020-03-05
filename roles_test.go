@@ -8,6 +8,36 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_RoleGetByIdWorkspace(t *testing.T) {
+
+	skipEnterprise(t)
+
+	roleRequest := &RoleRequest{
+		Name: "role-" + uuid.NewV4().String(),
+	}
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-roleadd-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	client = NewClient(NewWorkspaceConfig(createdWorkspace.Name))
+
+	createdRole, err := client.Roles().Create(roleRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdRole)
+
+	result, err := client.Roles().GetById(createdRole.Id)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, createdRole, result)
+
+}
 func Test_RoleGetById(t *testing.T) {
 
 	skipEnterprise(t)
