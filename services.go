@@ -51,6 +51,13 @@ type ServiceQueryString struct {
 
 const ServicesPath = "/services/"
 
+func (serviceClient *ServiceClient) getWorkspacePath() string {
+	if serviceClient.config.Workspace != "" {
+		return "/" + serviceClient.config.Workspace
+	}
+	return ""
+}
+
 func (serviceClient *ServiceClient) Create(serviceRequest *ServiceRequest) (*Service, error) {
 
 	if serviceRequest.Port == nil {
@@ -73,7 +80,7 @@ func (serviceClient *ServiceClient) Create(serviceRequest *ServiceRequest) (*Ser
 		serviceRequest.Retries = Int(60000)
 	}
 
-	r, body, errs := newPost(serviceClient.config, serviceClient.config.HostAddress+ServicesPath).Send(serviceRequest).End()
+	r, body, errs := newPost(serviceClient.config, serviceClient.config.HostAddress+serviceClient.getWorkspacePath()+ServicesPath).Send(serviceRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not register the service, error: %v", errs)
 	}
@@ -100,7 +107,7 @@ func (serviceClient *ServiceClient) GetServiceByName(name string) (*Service, err
 }
 
 func (serviceClient *ServiceClient) GetServiceById(id string) (*Service, error) {
-	return serviceClient.getService(serviceClient.config.HostAddress + ServicesPath + id)
+	return serviceClient.getService(serviceClient.config.HostAddress + serviceClient.getWorkspacePath() + ServicesPath + id)
 }
 
 func (serviceClient *ServiceClient) GetServiceFromRouteId(id string) (*Service, error) {
@@ -175,11 +182,11 @@ func (serviceClient *ServiceClient) UpdateServiceByName(name string, serviceRequ
 }
 
 func (serviceClient *ServiceClient) UpdateServiceById(id string, serviceRequest *ServiceRequest) (*Service, error) {
-	return serviceClient.updateService(serviceClient.config.HostAddress+ServicesPath+id, serviceRequest)
+	return serviceClient.updateService(serviceClient.config.HostAddress+serviceClient.getWorkspacePath()+ServicesPath+id, serviceRequest)
 }
 
 func (serviceClient *ServiceClient) UpdateServicebyRouteId(id string, serviceRequest *ServiceRequest) (*Service, error) {
-	return serviceClient.updateService(serviceClient.config.HostAddress+"/routes/"+id+"/service", serviceRequest)
+	return serviceClient.updateService(serviceClient.config.HostAddress+serviceClient.getWorkspacePath()+"/routes/"+id+"/service", serviceRequest)
 }
 
 func (serviceClient *ServiceClient) updateService(endpoint string, serviceRequest *ServiceRequest) (*Service, error) {
@@ -210,7 +217,7 @@ func (serviceClient *ServiceClient) DeleteServiceByName(name string) error {
 }
 
 func (serviceClient *ServiceClient) DeleteServiceById(id string) error {
-	r, body, errs := newDelete(serviceClient.config, serviceClient.config.HostAddress+ServicesPath+id).End()
+	r, body, errs := newDelete(serviceClient.config, serviceClient.config.HostAddress+serviceClient.getWorkspacePath()+ServicesPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete the service, result: %v error: %v", r, errs)
 	}

@@ -32,13 +32,20 @@ type ConsumerPluginConfig struct {
 
 const ConsumersPath = "/consumers/"
 
+func (consumerClient *ConsumerClient) getWorkspacePath() string {
+	if consumerClient.config.Workspace != "" {
+		return "/" + consumerClient.config.Workspace
+	}
+	return ""
+}
+
 func (consumerClient *ConsumerClient) GetByUsername(username string) (*Consumer, error) {
 	return consumerClient.GetById(username)
 }
 
 func (consumerClient *ConsumerClient) GetById(id string) (*Consumer, error) {
 
-	r, body, errs := newGet(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+id).End()
+	r, body, errs := newGet(consumerClient.config, consumerClient.config.HostAddress+consumerClient.getWorkspacePath()+ConsumersPath+id).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get consumer, error: %v", errs)
 	}
@@ -62,7 +69,7 @@ func (consumerClient *ConsumerClient) GetById(id string) (*Consumer, error) {
 
 func (consumerClient *ConsumerClient) Create(consumerRequest *ConsumerRequest) (*Consumer, error) {
 
-	r, body, errs := newPost(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath).Send(consumerRequest).End()
+	r, body, errs := newPost(consumerClient.config, consumerClient.config.HostAddress+consumerClient.getWorkspacePath()+ConsumersPath).Send(consumerRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not create new consumer, error: %v", errs)
 	}
@@ -86,7 +93,7 @@ func (consumerClient *ConsumerClient) Create(consumerRequest *ConsumerRequest) (
 
 func (consumerClient *ConsumerClient) List() (*Consumers, error) {
 
-	r, body, errs := newGet(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath).End()
+	r, body, errs := newGet(consumerClient.config, consumerClient.config.HostAddress+consumerClient.getWorkspacePath()+ConsumersPath).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get consumers, error: %v", errs)
 	}
@@ -110,7 +117,7 @@ func (consumerClient *ConsumerClient) DeleteByUsername(username string) error {
 
 func (consumerClient *ConsumerClient) DeleteById(id string) error {
 
-	r, body, errs := newDelete(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+id).End()
+	r, body, errs := newDelete(consumerClient.config, consumerClient.config.HostAddress+consumerClient.getWorkspacePath()+ConsumersPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete consumer, result: %v error: %v", r, errs)
 	}
@@ -128,7 +135,7 @@ func (consumerClient *ConsumerClient) UpdateByUsername(username string, consumer
 
 func (consumerClient *ConsumerClient) UpdateById(id string, consumerRequest *ConsumerRequest) (*Consumer, error) {
 
-	r, body, errs := newPatch(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+id).Send(consumerRequest).End()
+	r, body, errs := newPatch(consumerClient.config, consumerClient.config.HostAddress+consumerClient.getWorkspacePath()+ConsumersPath+id).Send(consumerRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update consumer, error: %v", errs)
 	}
@@ -152,7 +159,7 @@ func (consumerClient *ConsumerClient) UpdateById(id string, consumerRequest *Con
 
 func (consumerClient *ConsumerClient) CreatePluginConfig(consumerId string, pluginName string, pluginConfig string) (*ConsumerPluginConfig, error) {
 
-	r, body, errs := newPost(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+consumerId+"/"+pluginName).Send(pluginConfig).End()
+	r, body, errs := newPost(consumerClient.config, consumerClient.config.HostAddress+consumerClient.getWorkspacePath()+ConsumersPath+consumerId+"/"+pluginName).Send(pluginConfig).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not configure plugin for consumer, error: %v", errs)
 	}
@@ -178,7 +185,7 @@ func (consumerClient *ConsumerClient) CreatePluginConfig(consumerId string, plug
 
 func (consumerClient *ConsumerClient) GetPluginConfig(consumerId string, pluginName string, id string) (*ConsumerPluginConfig, error) {
 
-	r, body, errs := newGet(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+consumerId+"/"+pluginName+"/"+id).End()
+	r, body, errs := newGet(consumerClient.config, consumerClient.config.HostAddress+consumerClient.getWorkspacePath()+ConsumersPath+consumerId+"/"+pluginName+"/"+id).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get plugin config for consumer, error: %v", errs)
 	}
@@ -204,7 +211,7 @@ func (consumerClient *ConsumerClient) GetPluginConfig(consumerId string, pluginN
 
 func (consumerClient *ConsumerClient) DeletePluginConfig(consumerId string, pluginName string, id string) error {
 
-	r, body, errs := newDelete(consumerClient.config, consumerClient.config.HostAddress+ConsumersPath+consumerId+"/"+pluginName+"/"+id).End()
+	r, body, errs := newDelete(consumerClient.config, consumerClient.config.HostAddress+consumerClient.getWorkspacePath()+ConsumersPath+consumerId+"/"+pluginName+"/"+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete plugin config for consumer, error: %v", errs)
 	}

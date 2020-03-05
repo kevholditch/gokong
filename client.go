@@ -28,6 +28,7 @@ type Config struct {
 	InsecureSkipVerify bool
 	ApiKey             string
 	AdminToken         string
+	Workspace          string
 }
 
 func addQueryString(currentUrl string, filter interface{}) (string, error) {
@@ -56,6 +57,40 @@ func NewDefaultConfig() *Config {
 		Username:           "",
 		Password:           "",
 		InsecureSkipVerify: false,
+		Workspace:          "",
+	}
+
+	if os.Getenv(EnvKongAdminHostAddress) != "" {
+		config.HostAddress = strings.TrimRight(os.Getenv(EnvKongAdminHostAddress), "/")
+	}
+	if os.Getenv(EnvKongAdminHostAddress) != "" {
+		config.Username = os.Getenv(EnvKongAdminUsername)
+	}
+	if os.Getenv(EnvKongAdminPassword) != "" {
+		config.Password = os.Getenv(EnvKongAdminPassword)
+	}
+	if os.Getenv(EnvKongTLSSkipVerify) != "" {
+		skip, err := strconv.ParseBool(os.Getenv(EnvKongTLSSkipVerify))
+		if err == nil {
+			config.InsecureSkipVerify = skip
+		}
+	}
+	if os.Getenv(EnvKongApiKey) != "" {
+		config.ApiKey = os.Getenv(EnvKongApiKey)
+	}
+	if os.Getenv(EnvKongAdminToken) != "" {
+		config.AdminToken = os.Getenv(EnvKongAdminToken)
+	}
+
+	return config
+}
+func NewWorkspaceConfig(workspace string) *Config {
+	config := &Config{
+		HostAddress:        "http://localhost:8001",
+		Username:           "",
+		Password:           "",
+		InsecureSkipVerify: false,
+		Workspace:          workspace,
 	}
 
 	if os.Getenv(EnvKongAdminHostAddress) != "" {
@@ -87,6 +122,10 @@ func NewClient(config *Config) *KongAdminClient {
 	return &KongAdminClient{
 		config: config,
 	}
+}
+
+func (kongAdminClient *KongAdminClient) UpdateWorkspaceContext(workspace string) {
+	kongAdminClient.config.Workspace = workspace
 }
 
 func (kongAdminClient *KongAdminClient) Status() *StatusClient {
@@ -146,6 +185,22 @@ func (kongAdminClient *KongAdminClient) Targets() *TargetClient {
 
 func (kongAdminClient *KongAdminClient) Workspaces() *WorkspaceClient {
 	return &WorkspaceClient{
+		config: kongAdminClient.config,
+	}
+}
+
+func (kongAdminClient *KongAdminClient) Users() *UserClient {
+	return &UserClient{
+		config: kongAdminClient.config,
+	}
+}
+func (kongAdminClient *KongAdminClient) Roles() *RoleClient {
+	return &RoleClient{
+		config: kongAdminClient.config,
+	}
+}
+func (kongAdminClient *KongAdminClient) Admins() *AdminClient {
+	return &AdminClient{
 		config: kongAdminClient.config,
 	}
 }

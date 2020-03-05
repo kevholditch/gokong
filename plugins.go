@@ -43,9 +43,16 @@ type PluginQueryString struct {
 
 const PluginsPath = "/plugins/"
 
+func (pluginClient *PluginClient) getWorkspacePath() string {
+	if pluginClient.config.Workspace != "" {
+		return "/" + pluginClient.config.Workspace
+	}
+	return ""
+}
+
 func (pluginClient *PluginClient) GetById(id string) (*Plugin, error) {
 
-	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+PluginsPath+id).End()
+	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+pluginClient.getWorkspacePath()+PluginsPath+id).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get plugin, error: %v", errs)
 	}
@@ -81,7 +88,7 @@ func (pluginClient *PluginClient) List(query *PluginQueryString) ([]*Plugin, err
 	for {
 		data := &Plugins{}
 
-		r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+PluginsPath).Query(*query).End()
+		r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+pluginClient.getWorkspacePath()+PluginsPath).Query(*query).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get plugins, error: %v", errs)
 		}
@@ -109,7 +116,7 @@ func (pluginClient *PluginClient) List(query *PluginQueryString) ([]*Plugin, err
 
 func (pluginClient *PluginClient) Create(pluginRequest *PluginRequest) (*Plugin, error) {
 
-	r, body, errs := newPost(pluginClient.config, pluginClient.config.HostAddress+PluginsPath).Send(pluginRequest).End()
+	r, body, errs := newPost(pluginClient.config, pluginClient.config.HostAddress+pluginClient.getWorkspacePath()+PluginsPath).Send(pluginRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not create new plugin, error: %v", errs)
 	}
@@ -133,7 +140,7 @@ func (pluginClient *PluginClient) Create(pluginRequest *PluginRequest) (*Plugin,
 
 func (pluginClient *PluginClient) UpdateById(id string, pluginRequest *PluginRequest) (*Plugin, error) {
 
-	r, body, errs := newPatch(pluginClient.config, pluginClient.config.HostAddress+PluginsPath+id).Send(pluginRequest).End()
+	r, body, errs := newPatch(pluginClient.config, pluginClient.config.HostAddress+pluginClient.getWorkspacePath()+PluginsPath+id).Send(pluginRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update plugin, error: %v", errs)
 	}
@@ -157,7 +164,7 @@ func (pluginClient *PluginClient) UpdateById(id string, pluginRequest *PluginReq
 
 func (pluginClient *PluginClient) DeleteById(id string) error {
 
-	r, body, errs := newDelete(pluginClient.config, pluginClient.config.HostAddress+PluginsPath+id).End()
+	r, body, errs := newDelete(pluginClient.config, pluginClient.config.HostAddress+pluginClient.getWorkspacePath()+PluginsPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete plugin, result: %v error: %v", r, errs)
 	}
@@ -170,7 +177,7 @@ func (pluginClient *PluginClient) DeleteById(id string) error {
 }
 
 func (pluginClient *PluginClient) GetByConsumerId(id string) (*Plugins, error) {
-	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+"/consumers/"+id+"/plugins").End()
+	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+pluginClient.getWorkspacePath()+"/consumers/"+id+"/plugins").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
 	}
@@ -189,7 +196,7 @@ func (pluginClient *PluginClient) GetByConsumerId(id string) (*Plugins, error) {
 }
 
 func (pluginClient *PluginClient) GetByRouteId(id string) (*Plugins, error) {
-	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+"/routes/"+id+"/plugins").End()
+	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+pluginClient.getWorkspacePath()+"/routes/"+id+"/plugins").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
 	}
@@ -208,7 +215,7 @@ func (pluginClient *PluginClient) GetByRouteId(id string) (*Plugins, error) {
 }
 
 func (pluginClient *PluginClient) GetByServiceId(id string) (*Plugins, error) {
-	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+"/services/"+id+"/plugins").End()
+	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+pluginClient.getWorkspacePath()+"/services/"+id+"/plugins").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
 	}

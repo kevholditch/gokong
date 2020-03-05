@@ -150,3 +150,42 @@ func Test_AllServiceEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing
 	assert.NotNil(t, err)
 
 }
+
+func TestServiceClient_CreateWorkspaceService(t *testing.T) {
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	serviceRequest := &ServiceRequest{
+		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+		Port:     Int(8080),
+	}
+
+	client = NewClient(NewWorkspaceConfig(createdWorkspace.Name))
+
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+	assert.EqualValues(t, createdService.Name, serviceRequest.Name)
+	assert.EqualValues(t, createdService.Protocol, serviceRequest.Protocol)
+	assert.EqualValues(t, createdService.Host, serviceRequest.Host)
+	assert.EqualValues(t, createdService.Port, serviceRequest.Port)
+
+	result, err := client.Services().GetServiceById(*createdService.Id)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, createdService, result)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
+}
