@@ -124,6 +124,10 @@ func NewClient(config *Config) *KongAdminClient {
 	}
 }
 
+func (kongAdminClient *KongAdminClient) UpdateWorkspaceContext(workspace string) {
+	kongAdminClient.config.Workspace = workspace
+}
+
 func (kongAdminClient *KongAdminClient) Status() *StatusClient {
 	return &StatusClient{
 		config: kongAdminClient.config,
