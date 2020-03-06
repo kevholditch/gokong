@@ -89,7 +89,7 @@ func Test_UserGetByIdForNonExistentUserId(t *testing.T) {
 
 	result, err := NewClient(NewDefaultConfig()).Users().GetById(uuid.NewV4().String())
 
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 }
 
@@ -99,7 +99,7 @@ func Test_UserGetByIdForNonExistentUserByName(t *testing.T) {
 
 	result, err := NewClient(NewDefaultConfig()).Users().GetByName(uuid.NewV4().String())
 
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 
 }
@@ -111,7 +111,7 @@ func Test_UserCreate(t *testing.T) {
 	userRequest := &UserRequest{
 		Name:      "user-" + uuid.NewV4().String(),
 		UserToken: "test-token" + uuid.NewV4().String(),
-		Enabled:   true,
+		Enabled:   Bool(true),
 		Comment:   "testing",
 	}
 
@@ -176,11 +176,13 @@ func Test_UsersUpdateById(t *testing.T) {
 	assert.Equal(t, "testing", createdUser.Comment)
 
 	userRequest.Comment = "new comment"
+	userRequest.Enabled = Bool(false)
 
 	result, err := client.Users().UpdateById(createdUser.Id, userRequest)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
+	assert.Equal(t, Bool(false), result.Enabled)
 	assert.Equal(t, "new comment", result.Comment)
 }
 
@@ -232,7 +234,7 @@ func Test_UsersDeleteById(t *testing.T) {
 	assert.Nil(t, err)
 
 	result, err := client.Users().GetById(createdUser.Id)
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 }
 func Test_UsersDeleteByName(t *testing.T) {
@@ -256,7 +258,7 @@ func Test_UsersDeleteByName(t *testing.T) {
 	assert.Nil(t, err)
 
 	result, err := client.Users().GetByName(createdUser.Name)
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 }
 
@@ -372,7 +374,7 @@ func Test_DeleteRoleFromUser(t *testing.T) {
 		Roles: createdRole.Name,
 	}
 
-	err = client.Users().DeleteRoleFromUser(createdRole.Id, deleteRoleRequest)
+	err = client.Users().DeleteRoleFromUser(createdUser.Id, deleteRoleRequest)
 
 	assert.Nil(t, err)
 }
@@ -409,7 +411,7 @@ func Test_ListUserPermissions(t *testing.T) {
 	endpointPermissionReq := &EndpointPermissionRequest{
 		WorkspaceId: "*",
 		Endpoint:    "/foo",
-		Negative:    false,
+		Negative:    Bool(false),
 		Actions:     "read,create,update,delete",
 		Comment:     "a comment",
 	}

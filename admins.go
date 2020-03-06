@@ -15,7 +15,7 @@ type InviteAdminRequest struct {
 	Email            string `json:"email" yaml:"email"`
 	Username         string `json:"username" yaml:"username"`
 	CustomId         string `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
-	RBACTokenEnabled bool   `json:"rbac_token_enabled" yaml:"rbac_token_enabled"`
+	RBACTokenEnabled *bool  `json:"rbac_token_enabled" yaml:"rbac_token_enabled"`
 }
 
 type InviteAdminResponse struct {
@@ -45,7 +45,7 @@ type AdminRequest struct {
 	Email            string `json:"email,omitempty" yaml:"email,omitempty"`
 	Username         string `json:"username,omitempty" yaml:"username,omitempty"`
 	CustomId         string `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
-	RBACTokenEnabled bool   `json"rbac_token_enabled" yaml:"rbac_token_enabled"`
+	RBACTokenEnabled *bool  `json"rbac_token_enabled" yaml:"rbac_token_enabled"`
 }
 type AdminResponse struct {
 	CreatedAt        *int   `json:"created_at" yaml:"created_at"`
@@ -96,12 +96,13 @@ func (adminClient *AdminClient) List() (*Admins, error) {
 		return nil, fmt.Errorf("could not get admins, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	admins := &Admins{}
-	err := json.Unmarshal([]byte(body), admins)
+	err = json.Unmarshal([]byte(body), admins)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse admin list response, error: %v", err)
 	}
@@ -115,12 +116,13 @@ func (adminClient *AdminClient) Invite(inviteAdminRequest *InviteAdminRequest) (
 		return nil, fmt.Errorf("could not invite new admin, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	createdAdmin := &InviteAdminResponse{}
-	err := json.Unmarshal([]byte(body), createdAdmin)
+	err = json.Unmarshal([]byte(body), createdAdmin)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse admin invite response, error: %v", err)
 	}
@@ -138,8 +140,9 @@ func (adminClient *AdminClient) RegisterAdminCredentials(registerAdminCreds *Reg
 		return fmt.Errorf("could not register admin credentials, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -151,8 +154,9 @@ func (adminClient *AdminClient) SendAdminPasswordResetEmail(sendResetRequest *Se
 		return fmt.Errorf("could not send password-reset email, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -169,6 +173,10 @@ func (adminClient *AdminClient) ResetAdminPassword(resetPasswordRequest *Passwor
 		return fmt.Errorf("not authorised, message from kong: %s", body)
 	}
 
+	if r.StatusCode == 404 {
+		return fmt.Errorf("not found: %v", body)
+	}
+
 	return nil
 }
 
@@ -179,12 +187,13 @@ func (adminClient *AdminClient) Get(id string) (*AdminResponse, error) {
 		return nil, fmt.Errorf("could not get admin, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	admin := &AdminResponse{}
-	err := json.Unmarshal([]byte(body), admin)
+	err = json.Unmarshal([]byte(body), admin)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse admin get response, error: %v", err)
 	}
@@ -203,12 +212,13 @@ func (adminClient *AdminClient) Update(id string, adminRequest *AdminRequest) (*
 		return nil, fmt.Errorf("could not get admin, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	admin := &AdminResponse{}
-	err := json.Unmarshal([]byte(body), admin)
+	err = json.Unmarshal([]byte(body), admin)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse admin get response, error: %v", err)
 	}
@@ -227,8 +237,9 @@ func (adminClient *AdminClient) Delete(id string) error {
 		return fmt.Errorf("could not delete admin, result: %v error: %v", r, errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -241,13 +252,14 @@ func (adminClient *AdminClient) ListRoles(id string) (*AdminRoles, error) {
 		return nil, fmt.Errorf("could not list admin roles, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %v", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	adminRoles := &AdminRoles{}
 
-	err := json.Unmarshal([]byte(body), adminRoles)
+	err = json.Unmarshal([]byte(body), adminRoles)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse the list admin roles response, error: %v", err)
 	}
@@ -262,13 +274,14 @@ func (adminClient *AdminClient) AddOrUpdateRoles(id string, adminRoleRequest *Ad
 		return nil, fmt.Errorf("could not add or update admin roles, error: %v", body)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %v", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	adminRoles := &AdminRoles{}
 
-	err := json.Unmarshal([]byte(body), adminRoles)
+	err = json.Unmarshal([]byte(body), adminRoles)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse the add or update admin roles response, error: %v", err)
 	}
@@ -283,8 +296,9 @@ func (adminClient *AdminClient) DeleteRoles(id string, adminRoleRequest *AdminRo
 		return fmt.Errorf("could not delete admin roles, error: %v", body)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return fmt.Errorf("not authorised, message from kong: %v", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -296,13 +310,14 @@ func (adminClient *AdminClient) ListWorkspaces(adminId string) ([]*WorkspaceRequ
 		return nil, fmt.Errorf("could not list admin workspaces, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %v", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	adminWorkspaces := []*WorkspaceRequest{}
 
-	err := json.Unmarshal([]byte(body), &adminWorkspaces)
+	err = json.Unmarshal([]byte(body), &adminWorkspaces)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse the list admin workspaces response, error: %v", err)
 	}

@@ -2,6 +2,8 @@ package gokong
 
 import (
 	"crypto/tls"
+	"fmt"
+	"net/http"
 
 	"github.com/parnurzeal/gorequest"
 )
@@ -41,4 +43,21 @@ func newPatch(config *Config, address string) *gorequest.SuperAgent {
 func newDelete(config *Config, address string) *gorequest.SuperAgent {
 	r := gorequest.New().Delete(address)
 	return configureRequest(r, config)
+}
+
+func checkResponse(r gorequest.Response, body string, errs []error) error {
+	var responseError error
+	switch r.StatusCode {
+	case http.StatusBadRequest:
+		responseError = fmt.Errorf("bad request, message from kong: %s", body)
+	case http.StatusForbidden, http.StatusUnauthorized:
+		responseError = fmt.Errorf("not authorised, message from kong: %s", body)
+	case http.StatusConflict:
+		responseError = fmt.Errorf("there was a conflict, message from kong: %v", body)
+	case http.StatusNotFound:
+		responseError = fmt.Errorf("not found: %v", body)
+	default:
+		return nil
+	}
+	return responseError
 }

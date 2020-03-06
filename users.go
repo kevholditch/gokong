@@ -14,7 +14,7 @@ type UserClient struct {
 type UserRequest struct {
 	Name      string `json:"name" yaml:"name"`
 	UserToken string `json:"user_token" yaml:"user_token"`
-	Enabled   bool   `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	Enabled   *bool  `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 	Comment   string `json:"comment,omitempty" yaml:"comment,omitempty"`
 	CreatedAt *int   `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
@@ -64,12 +64,13 @@ func (userClient *UserClient) GetById(id string) (*User, error) {
 		return nil, fmt.Errorf("could not get user, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	user := &User{}
-	err := json.Unmarshal([]byte(body), user)
+	err = json.Unmarshal([]byte(body), user)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse user get response, error: %v", err)
 	}
@@ -87,12 +88,13 @@ func (userClient *UserClient) Create(userRequest *UserRequest) (*User, error) {
 		return nil, fmt.Errorf("could not create new user, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	createdUser := &User{}
-	err := json.Unmarshal([]byte(body), createdUser)
+	err = json.Unmarshal([]byte(body), createdUser)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse user creation response, error: %v", err)
 	}
@@ -115,8 +117,9 @@ func (userClient *UserClient) DeleteById(id string) error {
 		return fmt.Errorf("could not delete user, result: %v error: %v", r, errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -129,12 +132,13 @@ func (userClient *UserClient) List() (*Users, error) {
 		return nil, fmt.Errorf("could not get users, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	users := &Users{}
-	err := json.Unmarshal([]byte(body), users)
+	err = json.Unmarshal([]byte(body), users)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse user list response, error: %v", err)
 	}
@@ -147,18 +151,18 @@ func (userClient *UserClient) UpdateByName(name string, userRequest *UserRequest
 }
 
 func (userClient *UserClient) UpdateById(id string, userRequest *UserRequest) (*User, error) {
-
 	r, body, errs := newPatch(userClient.config, userClient.config.HostAddress+userClient.getWorkspacePath()+UsersPath+id).Send(userRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update user, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	updatedUser := &User{}
-	err := json.Unmarshal([]byte(body), updatedUser)
+	err = json.Unmarshal([]byte(body), updatedUser)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse user update response, error: %v", err)
 	}
@@ -176,13 +180,14 @@ func (userClient *UserClient) AddUserToRole(userId string, userRoleRequest *User
 		return nil, fmt.Errorf("could not add user to role, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %v", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	userRoles := &UserRoles{}
 
-	err := json.Unmarshal([]byte(body), userRoles)
+	err = json.Unmarshal([]byte(body), userRoles)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse the add user roles response, error: %v", err)
 	}
@@ -196,13 +201,14 @@ func (userClient *UserClient) ListUserRoles(userId string) (*UserRoles, error) {
 		return nil, fmt.Errorf("could not list user roles, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %v", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	userRoles := &UserRoles{}
 
-	err := json.Unmarshal([]byte(body), userRoles)
+	err = json.Unmarshal([]byte(body), userRoles)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse the list user roles response, error: %v", err)
 	}
@@ -216,8 +222,9 @@ func (userClient *UserClient) DeleteRoleFromUser(userId string, userRoleRequest 
 		return fmt.Errorf("could not list user roles, error: %v", body)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return fmt.Errorf("not authorised, message from kong: %v", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -229,13 +236,14 @@ func (userClient *UserClient) ListUserPermissions(userId string) (*UserPermissio
 		return nil, fmt.Errorf("could not list user permissions, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %v", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	userPermissions := &UserPermissions{}
 
-	err := json.Unmarshal([]byte(body), userPermissions)
+	err = json.Unmarshal([]byte(body), userPermissions)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse the list user permissions response, error: %v", err)
 	}

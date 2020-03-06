@@ -65,7 +65,7 @@ func Test_WorkspaceGetByIdForNonExistentWorkspaceId(t *testing.T) {
 
 	result, err := NewClient(NewDefaultConfig()).Workspaces().GetById(uuid.NewV4().String())
 
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 }
 
@@ -75,7 +75,7 @@ func Test_WorkspaceGetByIdForNonExistentWorkspaceByName(t *testing.T) {
 
 	result, err := NewClient(NewDefaultConfig()).Workspaces().GetByName(uuid.NewV4().String())
 
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 
 }
@@ -209,7 +209,7 @@ func Test_WorkspacesDeleteById(t *testing.T) {
 	assert.Nil(t, err)
 
 	result, err := client.Workspaces().GetById(createdWorkspace.Id)
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 }
 func Test_WorkspacesDeleteByName(t *testing.T) {
@@ -231,7 +231,7 @@ func Test_WorkspacesDeleteByName(t *testing.T) {
 	assert.Nil(t, err)
 
 	result, err := client.Workspaces().GetByName(createdWorkspace.Name)
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 }
 

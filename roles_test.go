@@ -87,7 +87,7 @@ func Test_RoleGetByIdForNonExistentRoleId(t *testing.T) {
 
 	result, err := NewClient(NewDefaultConfig()).Roles().GetById(uuid.NewV4().String())
 
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 }
 
@@ -97,7 +97,7 @@ func Test_RoleGetByIdForNonExistentRoleByName(t *testing.T) {
 
 	result, err := NewClient(NewDefaultConfig()).Roles().GetByName(uuid.NewV4().String())
 
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 
 }
@@ -222,7 +222,7 @@ func Test_RolesDeleteById(t *testing.T) {
 	assert.Nil(t, err)
 
 	result, err := client.Roles().GetById(createdRole.Id)
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 }
 func Test_RolesDeleteByName(t *testing.T) {
@@ -245,7 +245,7 @@ func Test_RolesDeleteByName(t *testing.T) {
 	assert.Nil(t, err)
 
 	result, err := client.Roles().GetByName(createdRole.Name)
-	assert.Nil(t, err)
+	assert.NotNil(t, err)
 	assert.Nil(t, result)
 }
 
@@ -265,8 +265,8 @@ func Test_AddEndpointPermissionGetByRoleId(t *testing.T) {
 
 	endpointPermissionReq := &EndpointPermissionRequest{
 		WorkspaceId: "*",
-		Endpoint:    "*",
-		Negative:    false,
+		Endpoint:    "/foo",
+		Negative:    Bool(false),
 		Actions:     "read,create,update,delete",
 		Comment:     "a comment",
 	}
@@ -274,8 +274,90 @@ func Test_AddEndpointPermissionGetByRoleId(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, endpoint)
 	assert.Equal(t, endpointPermissionReq.Endpoint, endpoint.Endpoint)
-	assert.Equal(t, endpointPermissionReq.Negative, endpoint.Negative)
+	assert.Equal(t, endpointPermissionReq.Negative, Bool(endpoint.Negative))
 	assert.Equal(t, createdRole.Id, endpoint.Role.Id)
+
+}
+
+func Test_AddWorkspaceEndpointPermissionByRoleId(t *testing.T) {
+
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-endpoint-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	client = NewClient(NewWorkspaceConfig(createdWorkspace.Name))
+
+	roleRequest := &RoleRequest{
+		Name: "role-" + uuid.NewV4().String(),
+	}
+
+	createdRole, err := client.Roles().Create(roleRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdRole)
+
+	endpointPermissionReq := &EndpointPermissionRequest{
+		WorkspaceId: "*",
+		Endpoint:    "/foo",
+		Negative:    Bool(false),
+		Actions:     "read,create,update,delete",
+		Comment:     "a comment",
+	}
+	endpoint, err := client.Roles().AddEndpointPermissionByRole(createdRole.Id, endpointPermissionReq)
+	assert.Nil(t, err)
+	assert.NotNil(t, endpoint)
+	assert.Equal(t, endpointPermissionReq.Endpoint, endpoint.Endpoint)
+	assert.Equal(t, endpointPermissionReq.Negative, Bool(endpoint.Negative))
+	assert.Equal(t, createdRole.Id, endpoint.Role.Id)
+
+}
+func Test_AddWorkspaceEndpointPermissionGetByRoleId(t *testing.T) {
+
+	skipEnterprise(t)
+
+	workspaceRequest := &WorkspaceRequest{
+		Name: "workspace-endpoint-" + uuid.NewV4().String(),
+	}
+
+	client := NewClient(NewDefaultConfig())
+
+	createdWorkspace, err := client.Workspaces().Create(workspaceRequest)
+
+	client = NewClient(NewWorkspaceConfig(createdWorkspace.Name))
+
+	roleRequest := &RoleRequest{
+		Name: "role-" + uuid.NewV4().String(),
+	}
+
+	createdRole, err := client.Roles().Create(roleRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdRole)
+
+	endpointPermissionReq := &EndpointPermissionRequest{
+		WorkspaceId: "*",
+		Endpoint:    "/foo",
+		Negative:    Bool(false),
+		Actions:     "read,create,update,delete",
+		Comment:     "a comment",
+	}
+	endpoint, err := client.Roles().AddEndpointPermissionByRole(createdRole.Id, endpointPermissionReq)
+	assert.Nil(t, err)
+	assert.NotNil(t, endpoint)
+	assert.Equal(t, endpointPermissionReq.Endpoint, endpoint.Endpoint)
+	assert.Equal(t, endpointPermissionReq.Negative, Bool(endpoint.Negative))
+	assert.Equal(t, createdRole.Id, endpoint.Role.Id)
+
+	result, err := client.Roles().GetEndpointPermission(createdRole.Id, endpoint.WorkspaceId, endpoint.Endpoint)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, result)
 
 }
 func Test_GetEndpointPermission(t *testing.T) {
@@ -294,7 +376,7 @@ func Test_GetEndpointPermission(t *testing.T) {
 	endpointPermissionReq := &EndpointPermissionRequest{
 		WorkspaceId: "*",
 		Endpoint:    "*",
-		Negative:    false,
+		Negative:    Bool(false),
 		Actions:     "read,create,update,delete",
 		Comment:     "a comment",
 	}
@@ -305,7 +387,6 @@ func Test_GetEndpointPermission(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.Nil(t, err)
 	assert.Equal(t, result.WorkspaceId, endpoint.WorkspaceId)
-
 }
 
 func Test_ListEndpointPermissions(t *testing.T) {
@@ -323,22 +404,22 @@ func Test_ListEndpointPermissions(t *testing.T) {
 
 	endpointPermissionReq1 := &EndpointPermissionRequest{
 		WorkspaceId: "*",
-		Endpoint:    "/foo",
-		Negative:    false,
+		Endpoint:    "/", // This will fail if the endpoint is anything larger than one character. Support ticket with Kong opened.
+		Negative:    Bool(false),
 		Actions:     "read,create,update,delete",
 		Comment:     "a comment",
 	}
 	endpointPermissionReq2 := &EndpointPermissionRequest{
 		WorkspaceId: "*",
 		Endpoint:    "/bar",
-		Negative:    false,
+		Negative:    Bool(false),
 		Actions:     "read,create,update,delete",
 		Comment:     "a comment",
 	}
 	endpointPermissionReq3 := &EndpointPermissionRequest{
 		WorkspaceId: "*",
 		Endpoint:    "/baz",
-		Negative:    false,
+		Negative:    Bool(false),
 		Actions:     "read,create,update,delete",
 		Comment:     "a comment",
 	}
@@ -369,7 +450,7 @@ func Test_UpdateEndpointPermissions(t *testing.T) {
 	endpointPermissionReq := &EndpointPermissionRequest{
 		WorkspaceId: "*",
 		Endpoint:    "/foo",
-		Negative:    false,
+		Negative:    Bool(false),
 		Actions:     "read,create,update,delete",
 		Comment:     "a comment",
 	}
@@ -378,7 +459,7 @@ func Test_UpdateEndpointPermissions(t *testing.T) {
 	updatePermissionReq := &EndpointPermissionRequest{
 		WorkspaceId: "*",
 		Endpoint:    "/foo",
-		Negative:    false,
+		Negative:    Bool(false),
 		Actions:     "read,create,update",
 	}
 	result, err := client.Roles().UpdateEndpointPermissions(
@@ -410,7 +491,7 @@ func Test_DeleteEndpointPermissions(t *testing.T) {
 	endpointPermissionReq := &EndpointPermissionRequest{
 		WorkspaceId: "*",
 		Endpoint:    "/foo",
-		Negative:    false,
+		Negative:    Bool(false),
 		Actions:     "read,create,update,delete",
 		Comment:     "a comment",
 	}
@@ -449,7 +530,7 @@ func Test_AddEntityPermissionGetByRoleId(t *testing.T) {
 
 	entityPermissionReq := &EntityPermissionRequest{
 		EntityId: *createdService.Id,
-		Negative: false,
+		Negative: Bool(false),
 		Actions:  "read,create,update,delete",
 		Comment:  "a comment",
 	}
@@ -458,7 +539,7 @@ func Test_AddEntityPermissionGetByRoleId(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, entity)
 	assert.Equal(t, createdService.Id, &entity.EntityId)
-	assert.Equal(t, entityPermissionReq.Negative, entity.Negative)
+	assert.Equal(t, entityPermissionReq.Negative, Bool(entity.Negative))
 	assert.Equal(t, createdRole.Id, entity.Role.Id)
 
 	err = client.Services().DeleteServiceById(*createdService.Id)
@@ -493,7 +574,7 @@ func Test_GetEntityPermission(t *testing.T) {
 
 	entityPermissionReq := &EntityPermissionRequest{
 		EntityId: *createdService.Id,
-		Negative: false,
+		Negative: Bool(false),
 		Actions:  "read,create,update,delete",
 		Comment:  "a comment",
 	}
@@ -542,13 +623,13 @@ func Test_ListEntityPermissions(t *testing.T) {
 
 	entityPermissionReq1 := &EntityPermissionRequest{
 		EntityId: *createdService1.Id,
-		Negative: false,
+		Negative: Bool(false),
 		Actions:  "read,create,update,delete",
 		Comment:  "a comment",
 	}
 	entityPermissionReq2 := &EntityPermissionRequest{
 		EntityId: *createdService2.Id,
-		Negative: false,
+		Negative: Bool(false),
 		Actions:  "read,create,update,delete",
 		Comment:  "a comment",
 	}
@@ -594,7 +675,7 @@ func Test_UpdateEntityPermissions(t *testing.T) {
 
 	entityPermissionReq := &EntityPermissionRequest{
 		EntityId: *createdService.Id,
-		Negative: false,
+		Negative: Bool(false),
 		Actions:  "read,create,update,delete",
 		Comment:  "a comment",
 	}
@@ -604,7 +685,7 @@ func Test_UpdateEntityPermissions(t *testing.T) {
 
 	updatePermissionReq := &EntityPermissionRequest{
 		EntityId: *createdService.Id,
-		Negative: false,
+		Negative: Bool(true),
 		Actions:  "read,create,update",
 	}
 	result, err := client.Roles().UpdateEntityPermissions(
@@ -617,6 +698,7 @@ func Test_UpdateEntityPermissions(t *testing.T) {
 	assert.Nil(t, err)
 	// Confirm we've removed the delete action from the permission
 	assert.Equal(t, []string{"create", "update", "read"}, result.Actions)
+	assert.Equal(t, true, result.Negative)
 
 	err = client.Services().DeleteServiceById(*createdService.Id)
 	assert.Nil(t, err)
@@ -649,7 +731,7 @@ func Test_DeleteEntityPermissions(t *testing.T) {
 
 	entityPermissionReq := &EntityPermissionRequest{
 		EntityId: *createdService.Id,
-		Negative: false,
+		Negative: Bool(false),
 		Actions:  "read,create,update,delete",
 		Comment:  "a comment",
 	}

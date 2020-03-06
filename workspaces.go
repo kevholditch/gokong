@@ -62,12 +62,13 @@ func (workspaceClient *WorkspaceClient) GetById(id string) (*Workspace, error) {
 		return nil, fmt.Errorf("could not get workspace, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	workspace := &Workspace{}
-	err := json.Unmarshal([]byte(body), workspace)
+	err = json.Unmarshal([]byte(body), workspace)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse workspace get response, error: %v", err)
 	}
@@ -86,12 +87,13 @@ func (workspaceClient *WorkspaceClient) Create(workspaceRequest *WorkspaceReques
 		return nil, fmt.Errorf("could not create new workspace, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	createdWorkspace := &Workspace{}
-	err := json.Unmarshal([]byte(body), createdWorkspace)
+	err = json.Unmarshal([]byte(body), createdWorkspace)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse workspace creation response, error: %v", err)
 	}
@@ -109,13 +111,16 @@ func (workspaceClient *WorkspaceClient) DeleteByName(name string) error {
 
 func (workspaceClient *WorkspaceClient) DeleteById(id string) error {
 
+	// First remove all entities
+
 	r, body, errs := newDelete(workspaceClient.config, workspaceClient.config.HostAddress+WorkspacesPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete workspace, result: %v error: %v", r, errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -128,12 +133,13 @@ func (workspaceClient *WorkspaceClient) List() (*Workspaces, error) {
 		return nil, fmt.Errorf("could not get workspaces, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	workspaces := &Workspaces{}
-	err := json.Unmarshal([]byte(body), workspaces)
+	err = json.Unmarshal([]byte(body), workspaces)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse workspaces list response, error: %v", err)
 	}
@@ -152,12 +158,13 @@ func (workspaceClient *WorkspaceClient) UpdateById(id string, workspaceRequest *
 		return nil, fmt.Errorf("could not update workspace, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	updatedWorkspace := &Workspace{}
-	err := json.Unmarshal([]byte(body), updatedWorkspace)
+	err = json.Unmarshal([]byte(body), updatedWorkspace)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse workspace update response, error: %v", err)
 	}
@@ -175,12 +182,13 @@ func (workspaceClient *WorkspaceClient) ListEntitiesById(id string) (*WorkspaceE
 		return nil, fmt.Errorf("could not get workspace entities, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	workspaceEntities := &WorkspaceEntities{}
-	err := json.Unmarshal([]byte(body), workspaceEntities)
+	err = json.Unmarshal([]byte(body), workspaceEntities)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse workspace entities list response, error: %v", err)
 	}
@@ -198,12 +206,13 @@ func (workspaceClient *WorkspaceClient) GetEntityById(workspaceId string, entity
 		return nil, fmt.Errorf("could not get workspace, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	workspaceEntity := &WorkspaceEntity{}
-	err := json.Unmarshal([]byte(body), workspaceEntity)
+	err = json.Unmarshal([]byte(body), workspaceEntity)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse workspace get response, error: %v", err)
 	}
@@ -225,8 +234,9 @@ func (workspaceClient *WorkspaceClient) DeleteEntityById(workspaceId string, ent
 		return fmt.Errorf("could not delete workspace entity, result: %v error: %v", r, errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -243,13 +253,14 @@ func (workspaceClient *WorkspaceClient) AddEntitiesByWorkspaceId(id string, enti
 		return nil, fmt.Errorf("could not update workspace entities, error: %v", errs)
 	}
 
-	if r.StatusCode == 401 || r.StatusCode == 403 {
-		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
+	err := checkResponse(r, body, errs)
+	if err != nil {
+		return nil, err
 	}
 
 	workspaceEntities := &EntityResponse{}
 
-	err := json.Unmarshal([]byte(body), &workspaceEntities.Entities)
+	err = json.Unmarshal([]byte(body), &workspaceEntities.Entities)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse the entity update response, error: %v", err)
 	}
