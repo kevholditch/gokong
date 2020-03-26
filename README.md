@@ -1009,6 +1009,30 @@ result, err := gokong.NewClient(gokong.NewDefaultConfig()).Roles().DeleteRoleEnt
 )
 ```
 
+## Adding Workspace-aware entities
+
+Adding a user to a workspace
+```go
+userRequest := &UserRequest{
+  Name:      "user",
+  UserToken: "testToken",
+}
+
+// Create a client that operates on a specific workspace
+client = NewClient(NewWorkspaceConfig("teamA"))
+
+createdUser, err := client.Users().Create(userRequest)
+
+// Change the workspace context of a client
+client.UpdateWorkspaceContext("teamB")
+
+userReques2t := &UserRequest{
+  Name:      "user2",
+  UserToken: "testToken",
+}
+createdUser, err := client.Users().Create(userRequest2)
+```
+
 # Contributing
 I would love to get contributions to the project so please feel free to submit a PR.  To setup your dev station you need go and docker installed.
 
