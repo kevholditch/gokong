@@ -909,9 +909,11 @@ Then all you need to do is run `make goimports` this will reformat all of the co
 
 To test enterprise you will need to set some environment variables:
 
-KONG_REPOSITORY=<enterprise image repo>
-KONG_VERSION=<enterprise image tag>
-KONG_LICENSE=<enterprise license info>
+```bash
+export KONG_REPOSITORY=<enterprise image repo>
+export KONG_VERSION=<enterprise image tag>
+export KONG_LICENSE=<enterprise license info>
+```
 
 This instructs the test suite to use Kong EE images that you must provide in an accessible repository. Enterprise feature tests will only run if the `KONG_LICENSE` environment variable is set.
 
