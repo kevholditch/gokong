@@ -763,6 +763,121 @@ entity, err := gokong.NewClient(gokong.NewDefaultConfig()).Workspaces().DeleteEn
 
 ```
 
+## Admins
+
+Create or "invite" an admin
+```go
+inviteAdminRequest := &InviteAdminRequest{
+		Email:            "admin@example.com",
+		Username:         "admin@example.com",
+		CustomId:         "admin123",
+		RBACTokenEnabled: Bool(true),
+	}
+
+	createdAdmin, err := client.Admins().Invite(inviteAdminRequest)
+```
+
+Get an admin
+```go
+result, err := client.Admins().Get("admin-id")
+```
+
+List admins
+```go
+admins, err := client.Admins().List()
+```
+
+Register admin credentials
+```go
+registerCredsRequest := &RegisterAdminCredentialsRequest{
+		Email:    "admin@example.com",
+		Username: "admin@example.com",
+		Token:    "my-token",
+		Password: "p@ssw0rd",
+	}
+
+err = client.Admins().RegisterAdminCredentials(registerCredsRequest)
+```
+
+Update an admin
+```go
+updateAdminRequest := &AdminRequest{
+		Email: "test@example.com",
+}
+updatedAdmin, err := client.Admins().Update("admin-id", updateAdminRequest)
+```
+
+Delete an admin
+```go
+err = client.Admins().Delete("admin-id")
+```
+
+## Users
+
+Create a user
+```go
+userRequest := &UserRequest{
+		Name:      "user",
+		UserToken: "test-token",
+		Enabled:   Bool(true),
+		Comment:   "New user",
+	}
+
+client := NewClient(NewDefaultConfig())
+createdUser, err := client.Users().Create(userRequest)
+```
+
+Get a user
+```go
+result, err := client.Users().GetById("user-id")
+```
+
+List users
+```go
+users, err := client.Users().List()
+```
+
+Update users
+```go
+userRequest.Comment = "new comment"
+userRequest.Enabled = Bool(false)
+
+result, err := client.Users().UpdateById(createdUser.Id, userRequest)
+```
+
+Delete a user
+```go
+err = client.Users().DeleteByName("userName")
+```
+
+Add roles to a user
+```go
+userRoleRequest := &UserRoleRequest{
+		Roles: "role1,role2",
+}
+
+userRoles, err := client.Users().AddUserToRole("user-id", userRoleRequest)
+```
+
+List user roles
+```go
+userRoles, err := client.Users().ListUserRoles("user-id")
+```
+
+Delete role from user
+```go
+deleteRoleRequest := &UserRoleRequest{
+		Roles: "role1",
+}
+
+err = client.Users().DeleteRoleFromUser("user-id", deleteRoleRequest)
+```
+
+List user permissions
+```go
+listUserPermissions, err := client.Users().ListUserPermissions("user-id")
+```
+
 ## Roles
 
 Create a role
