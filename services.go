@@ -69,8 +69,8 @@ func (serviceClient *ServiceClient) Create(serviceRequest *ServiceRequest) (*Ser
 		serviceRequest.ReadTimeout = Int(60000)
 	}
 
-	if serviceRequest.Retries == nil {
-		serviceRequest.Retries = Int(60000)
+	if serviceRequest.WriteTimeout == nil {
+		serviceRequest.WriteTimeout = Int(60000)
 	}
 
 	r, body, errs := newPost(serviceClient.config, serviceClient.config.HostAddress+ServicesPath).Send(serviceRequest).End()
