@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/go-querystring/query"
 )
@@ -28,6 +29,7 @@ type Config struct {
 	InsecureSkipVerify bool
 	ApiKey             string
 	AdminToken         string
+	Timeout            time.Duration
 }
 
 func addQueryString(currentUrl string, filter interface{}) (string, error) {
