@@ -22,6 +22,7 @@ type RouteRequest struct {
 	Sources       []*IpPort `json:"sources" yaml:"sources"`
 	Destinations  []*IpPort `json:"destinations" yaml:"destinations"`
 	Service       *Id       `json:"service" yaml:"service"`
+	Tags          []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 type Route struct {
@@ -40,6 +41,7 @@ type Route struct {
 	Sources       []*IpPort `json:"sources" yaml:"sources"`
 	Destinations  []*IpPort `json:"destinations" yaml:"destinations"`
 	Service       *Id       `json:"service" yaml:"service"`
+	Tags          []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 type IpPort struct {
