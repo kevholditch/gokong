@@ -10,14 +10,16 @@ type ConsumerClient struct {
 }
 
 type ConsumerRequest struct {
-	Username string `json:"username,omitempty" yaml:"username,omitempty"`
-	CustomId string `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
+	Username string    `json:"username,omitempty" yaml:"username,omitempty"`
+	CustomId string    `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
+	Tags     []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 type Consumer struct {
-	Id       string `json:"id,omitempty" yaml:"id,omitempty"`
-	CustomId string `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
-	Username string `json:"username,omitempty" yaml:"custom_id,omitempty"`
+	Id       string    `json:"id,omitempty" yaml:"id,omitempty"`
+	CustomId string    `json:"custom_id,omitempty" yaml:"custom_id,omitempty"`
+	Username string    `json:"username,omitempty" yaml:"custom_id,omitempty"`
+	Tags     []*string `json:"tags,omitempty" yaml:"tags,omitempty"`
 }
 
 type Consumers struct {
