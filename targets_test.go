@@ -102,6 +102,7 @@ func TestTargets_Create(t *testing.T) {
 	assert.True(t, *createdTarget.Id != "")
 	assert.Equal(t, *createdTarget.Target, targetRequest.Target)
 	assert.Equal(t, *createdTarget.Weight, targetRequest.Weight)
+	assert.Equal(t, *createdTarget.UpstreamId, createdUpstream.Id)
 
 	client.Targets().DeleteFromUpstreamById(createdUpstream.Id, *createdTarget.Id)
 	client.Upstreams().DeleteById(createdUpstream.Id)
