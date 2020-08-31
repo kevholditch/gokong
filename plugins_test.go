@@ -553,3 +553,53 @@ func Test_PluginsGetByServiceId(t *testing.T) {
 
 	assert.Nil(t, err)
 }
+
+func Test_UpdatePluginShouldReturnErrorWhenBadRequest(t *testing.T) {
+	pluginRequest := &PluginRequest{
+		Name: "rate-limiting",
+		Config: map[string]interface{}{
+			"minute": float64(20),
+			"hour":   float64(500),
+		},
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdPlugin, err := client.Plugins().Create(pluginRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdPlugin)
+	assert.Equal(t, pluginRequest.Config["minute"].(float64), createdPlugin.Config["minute"].(float64))
+	assert.Equal(t, pluginRequest.Config["hour"].(float64), createdPlugin.Config["hour"].(float64))
+
+	pluginRequest.Config = map[string]interface{}{
+		"minute": String("invalid-format"),
+		"hour":   float64(123),
+	}
+
+	result, err := client.Plugins().UpdateById(createdPlugin.Id, pluginRequest)
+
+	errorMessage := `bad request, message from kong: {"message":"schema violation (config.minute: expected a number)","name":"schema violation","fields":{"config":{"minute":"expected a number"}},"code":2}`
+
+	assert.Nil(t, result)
+	assert.NotNil(t, err)
+	assert.Equal(t, errorMessage, err.Error())
+}
+
+func Test_CreatePluginShouldReturnErrorWhenBadRequest(t *testing.T) {
+
+	pluginRequest := &PluginRequest{
+		Name:    "rate-limiting",
+		RouteId: ToId("123"),
+		Config: map[string]interface{}{
+			"some-setting": 20,
+		},
+	}
+
+	result, err := NewClient(NewDefaultConfig()).Plugins().Create(pluginRequest)
+
+	errorMessage := `bad request, message from kong: {"message":"3 schema violations (at least one of these fields must be non-empty: 'config.second', 'config.minute', 'config.hour', 'config.day', 'config.month', 'config.year'; config.some-setting: unknown field; route.id: expected a valid UUID)","name":"schema violation","fields":{"@entity":["at least one of these fields must be non-empty: 'config.second', 'config.minute', 'config.hour', 'config.day', 'config.month', 'config.year'"],"config":{"some-setting":"unknown field"},"route":{"id":"expected a valid UUID"}},"code":2}`
+
+	assert.Nil(t, result)
+	assert.NotNil(t, err)
+	assert.Equal(t, errorMessage, err.Error())
+}

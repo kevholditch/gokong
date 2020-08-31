@@ -82,6 +82,10 @@ func (serviceClient *ServiceClient) Create(serviceRequest *ServiceRequest) (*Ser
 		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
 	}
 
+	if r.StatusCode == 400 {
+		return nil, fmt.Errorf("bad request, message from kong: %s", body)
+	}
+
 	createdService := &Service{}
 	err := json.Unmarshal([]byte(body), createdService)
 	if err != nil {
@@ -192,6 +196,10 @@ func (serviceClient *ServiceClient) updateService(endpoint string, serviceReques
 		return nil, fmt.Errorf("not authorised, message from kong: %s", body)
 	}
 
+	if r.StatusCode == 400 {
+		return nil, fmt.Errorf("bad request, message from kong: %s", body)
+	}
+
 	updatedService := &Service{}
 	err := json.Unmarshal([]byte(body), updatedService)
 	if err != nil {
@@ -213,6 +221,10 @@ func (serviceClient *ServiceClient) DeleteServiceById(id string) error {
 	r, body, errs := newDelete(serviceClient.config, serviceClient.config.HostAddress+ServicesPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete the service, result: %v error: %v", r, errs)
+	}
+
+	if r.StatusCode == 400 {
+		return fmt.Errorf("bad request, message from kong: %s", body)
 	}
 
 	if r.StatusCode == 401 || r.StatusCode == 403 {

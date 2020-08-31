@@ -94,6 +94,38 @@ func TestRoutes_CreateWithSourcesAndDestinations(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestRoutes_CreateWithBadRequest(t *testing.T) {
+	serviceRequest := &ServiceRequest{
+		Name:     String("service-name" + uuid.NewV4().String()),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+	}
+
+	client := NewClient(NewDefaultConfig())
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	routeRequest := &RouteRequest{
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{"foo.com"}),
+		Paths:        StringSlice([]string{"/foo"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(true),
+	}
+
+	createdRoute, err := client.Routes().Create(routeRequest)
+
+	assert.Nil(t, createdRoute)
+	errorMessage := `bad request, message from kong: {"message":"schema violation (service: required field missing)","name":"schema violation","fields":{"service":"required field missing"},"code":2}`
+	assert.Equal(t, err.Error(), errorMessage)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
+}
+
 func TestRoutes_List(t *testing.T) {
 	serviceRequest := &ServiceRequest{
 		Name:     String("service-name" + uuid.NewV4().String()),
@@ -450,4 +482,49 @@ func Test_AllRouteEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T
 	assert.Nil(t, updatedRoute)
 	assert.NotNil(t, err)
 
+}
+
+func Test_UpateRouteShouldReturnErrorWhenBadRequest(t *testing.T) {
+	serviceRequest := &ServiceRequest{
+		Name:     String("service-name" + uuid.NewV4().String()),
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+	}
+
+	client := NewClient(NewDefaultConfig())
+
+	createdService, err := client.Services().Create(serviceRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	routeRequest := &RouteRequest{
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{"foo.com"}),
+		Paths:        StringSlice([]string{"/bar"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(true),
+		Service:      ToId(*createdService.Id),
+	}
+
+	createdRoute, err := client.Routes().Create(routeRequest)
+
+	assert.Nil(t, err)
+	assert.NotNil(t, createdRoute)
+
+	routeRequest.Protocols = StringSlice([]string{"invalidProtocol"})
+
+	updatedRoute, err := client.Routes().UpdateById(*createdRoute.Id, routeRequest)
+
+	errorMessage := `bad request, message from kong: {"message":"schema violation (protocols: expected one of: http, https, tcp, tls)","name":"schema violation","fields":{"protocols":"expected one of: http, https, tcp, tls"},"code":2}`
+
+	assert.Nil(t, updatedRoute)
+	assert.Equal(t, err.Error(), errorMessage)
+
+	err = client.Routes().DeleteById(*createdRoute.Id)
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
 }
