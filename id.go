@@ -31,3 +31,28 @@ func (c *Id) UnmarshalJSON(data []byte) error {
 
 	return nil
 }
+
+func (c *Id) MarshalYAML() (interface{}, error) {
+	if c == nil {
+		return []byte{}, nil
+	}
+
+	return map[string]string{"id": fmt.Sprintf("%s", *c)}, nil
+}
+
+func (c *Id) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	m := map[string]string{}
+
+	err := unmarshal(&m)
+	if err != nil || m == nil {
+		return nil
+	}
+
+	if val, ok := m["id"]; ok {
+		id := Id(val)
+		*c = id
+		return nil
+	}
+
+	return nil
+}
