@@ -1,3 +1,5 @@
+// +build all community enterprise
+
 package gokong
 
 import (
@@ -15,6 +17,7 @@ import (
 )
 
 const defaultKongVersion = "1.0.2"
+const defaultDockerfilePath = ""
 const kong401Server = "KONG_401_SERVER"
 
 func Test_Newclient(t *testing.T) {
@@ -27,8 +30,10 @@ func Test_Newclient(t *testing.T) {
 }
 
 func TestMain(m *testing.M) {
-
-	testContext := containers.StartKong(GetEnvVarOrDefault("KONG_VERSION", defaultKongVersion))
+	testContext := containers.StartKong(
+		GetEnvVarOrDefault("KONG_VERSION", defaultKongVersion),
+		GetEnvVarOrDefault("KONG_DOCKERFILE_PATH", defaultDockerfilePath),
+	)
 
 	err := os.Setenv(EnvKongAdminHostAddress, testContext.KongHostAddress)
 	if err != nil {
@@ -50,7 +55,6 @@ func TestMain(m *testing.M) {
 	containers.StopKong(testContext)
 
 	os.Exit(code)
-
 }
 
 type serveHttp struct {

@@ -1,3 +1,5 @@
+// +build all community
+
 package gokong
 
 import (

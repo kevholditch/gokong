@@ -12,7 +12,7 @@ type TestContext struct {
 	KongHostAddress string
 }
 
-func StartKong(kongVersion string) *TestContext {
+func StartKong(kongVersion, dockerfilePath string) *TestContext {
 	log.SetOutput(os.Stdout)
 
 	var err error
@@ -22,7 +22,13 @@ func StartKong(kongVersion string) *TestContext {
 	}
 
 	postgres := NewPostgresContainer(pool)
-	kong := NewKongContainer(pool, postgres, kongVersion)
+
+	var kong *kongContainer
+	if dockerfilePath == "" {
+		kong = NewKongContainer(pool, postgres, kongVersion)
+	} else {
+		kong = NewKongContainerDockerfile(pool, postgres, dockerfilePath)
+	}
 
 	return &TestContext{containers: []container{postgres, kong}, KongHostAddress: kong.HostAddress}
 }
@@ -35,5 +41,4 @@ func StopKong(testContext *TestContext) {
 			log.Printf("Could not stop container: %v \n", err)
 		}
 	}
-
 }

@@ -1,3 +1,5 @@
+// +build all community
+
 package gokong
 
 import (
@@ -94,7 +96,6 @@ func TestServiceClient_UpdateServiceById(t *testing.T) {
 }
 
 func Test_ServicesGetNonExistentById(t *testing.T) {
-
 	service, err := NewClient(NewDefaultConfig()).Services().GetServiceById(uuid.NewV4().String())
 
 	assert.Nil(t, service)
@@ -102,7 +103,6 @@ func Test_ServicesGetNonExistentById(t *testing.T) {
 }
 
 func Test_ServicesGetNonExistentByName(t *testing.T) {
-
 	service, err := NewClient(NewDefaultConfig()).Services().GetServiceByName(uuid.NewV4().String())
 
 	assert.Nil(t, service)
@@ -110,7 +110,6 @@ func Test_ServicesGetNonExistentByName(t *testing.T) {
 }
 
 func Test_AllServiceEndpointsShouldReturnErrorWhenRequestUnauthorised(t *testing.T) {
-
 	unauthorisedClient := NewClient(&Config{HostAddress: kong401Server})
 
 	s, err := unauthorisedClient.Services().GetServiceByName("foo")

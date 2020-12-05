@@ -86,8 +86,7 @@ func (upstreamClient *UpstreamClient) GetByName(name string) (*Upstream, error) 
 }
 
 func (upstreamClient *UpstreamClient) GetById(id string) (*Upstream, error) {
-
-	r, body, errs := newGet(upstreamClient.config, upstreamClient.config.HostAddress+UpstreamsPath+id).End()
+	r, body, errs := newGet(upstreamClient.config, UpstreamsPath+id).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get upstream, error: %v", errs)
 	}
@@ -110,8 +109,7 @@ func (upstreamClient *UpstreamClient) GetById(id string) (*Upstream, error) {
 }
 
 func (upstreamClient *UpstreamClient) Create(upstreamRequest *UpstreamRequest) (*Upstream, error) {
-
-	r, body, errs := newPost(upstreamClient.config, upstreamClient.config.HostAddress+UpstreamsPath).Send(upstreamRequest).End()
+	r, body, errs := newPost(upstreamClient.config, UpstreamsPath).Send(upstreamRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not create new upstream, error: %v", errs)
 	}
@@ -138,8 +136,7 @@ func (upstreamClient *UpstreamClient) DeleteByName(name string) error {
 }
 
 func (upstreamClient *UpstreamClient) DeleteById(id string) error {
-
-	r, body, errs := newDelete(upstreamClient.config, upstreamClient.config.HostAddress+UpstreamsPath+id).End()
+	r, body, errs := newDelete(upstreamClient.config, UpstreamsPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete upstream, result: %v error: %v", r, errs)
 	}
@@ -152,8 +149,7 @@ func (upstreamClient *UpstreamClient) DeleteById(id string) error {
 }
 
 func (upstreamClient *UpstreamClient) List() (*Upstreams, error) {
-
-	r, body, errs := newGet(upstreamClient.config, upstreamClient.config.HostAddress+UpstreamsPath).End()
+	r, body, errs := newGet(upstreamClient.config, UpstreamsPath).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get upstreams, error: %v", errs)
 	}
@@ -176,8 +172,7 @@ func (upstreamClient *UpstreamClient) UpdateByName(name string, upstreamRequest 
 }
 
 func (upstreamClient *UpstreamClient) UpdateById(id string, upstreamRequest *UpstreamRequest) (*Upstream, error) {
-
-	r, body, errs := newPatch(upstreamClient.config, upstreamClient.config.HostAddress+UpstreamsPath+id).Send(upstreamRequest).End()
+	r, body, errs := newPatch(upstreamClient.config, UpstreamsPath+id).Send(upstreamRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update upstream, error: %v", errs)
 	}

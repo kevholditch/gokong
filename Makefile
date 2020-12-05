@@ -9,7 +9,13 @@ build: fmtcheck errcheck vet
 	go install
 
 test: goimportscheck
-	go test -v ./...
+	go test -v --tags="community" ./...
+
+test-all: goimportscheck
+	go test -v --tags="all" ./...
+
+test-enterprise: goimportscheck
+	go test -v --tags="enterprise" ./...
 
 vet:
 	@echo "go vet ."

@@ -65,7 +65,7 @@ func (routeClient *RouteClient) GetByName(name string) (*Route, error) {
 }
 
 func (routeClient *RouteClient) GetById(id string) (*Route, error) {
-	r, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+RoutesPath+id).End()
+	r, body, errs := newGet(routeClient.config, RoutesPath+id).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get the route, error: %v", errs)
 	}
@@ -88,7 +88,7 @@ func (routeClient *RouteClient) GetById(id string) (*Route, error) {
 }
 
 func (routeClient *RouteClient) Create(routeRequest *RouteRequest) (*Route, error) {
-	r, body, errs := newPost(routeClient.config, routeClient.config.HostAddress+RoutesPath).Send(routeRequest).End()
+	r, body, errs := newPost(routeClient.config, RoutesPath).Send(routeRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not register the route, error: %v", errs)
 	}
@@ -124,7 +124,7 @@ func (routeClient *RouteClient) List(query *RouteQueryString) ([]*Route, error) 
 	for {
 		data := &Routes{}
 
-		r, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+RoutesPath).Query(*query).End()
+		r, body, errs := newGet(routeClient.config, RoutesPath).Query(*query).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get the route, error: %v", errs)
 		}
@@ -159,7 +159,7 @@ func (routeClient *RouteClient) GetRoutesFromServiceId(id string) ([]*Route, err
 	data := &Routes{}
 
 	for {
-		r, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+fmt.Sprintf("/services/%s/routes", id)).End()
+		r, body, errs := newGet(routeClient.config, fmt.Sprintf("/services/%s/routes", id)).End()
 		if errs != nil {
 			return nil, fmt.Errorf("could not get the route, error: %v", errs)
 		}
@@ -188,7 +188,7 @@ func (routeClient *RouteClient) UpdateByName(name string, routeRequest *RouteReq
 }
 
 func (routeClient *RouteClient) UpdateById(id string, routeRequest *RouteRequest) (*Route, error) {
-	r, body, errs := newPatch(routeClient.config, routeClient.config.HostAddress+RoutesPath+id).Send(routeRequest).End()
+	r, body, errs := newPatch(routeClient.config, RoutesPath+id).Send(routeRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update route, error: %v", errs)
 	}
@@ -215,7 +215,7 @@ func (routeClient *RouteClient) DeleteByName(name string) error {
 }
 
 func (routeClient *RouteClient) DeleteById(id string) error {
-	r, body, errs := newDelete(routeClient.config, routeClient.config.HostAddress+RoutesPath+id).End()
+	r, body, errs := newDelete(routeClient.config, RoutesPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete the route, result: %v error: %v", r, errs)
 	}
