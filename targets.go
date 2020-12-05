@@ -5,7 +5,22 @@ import (
 	"fmt"
 )
 
-type TargetClient struct {
+type TargetClient interface {
+	CreateFromUpstreamName(name string, targetRequest *TargetRequest) (*Target, error)
+	CreateFromUpstreamId(id string, targetRequest *TargetRequest) (*Target, error)
+	GetTargetsFromUpstreamName(name string) ([]*Target, error)
+	GetTargetsFromUpstreamId(id string) ([]*Target, error)
+	DeleteFromUpstreamByHostPort(upstreamNameOrId string, hostPort string) error
+	DeleteFromUpstreamById(upstreamNameOrId string, id string) error
+	SetTargetFromUpstreamByHostPortAsHealthy(upstreamNameOrId string, hostPort string) error
+	SetTargetFromUpstreamByIdAsHealthy(upstreamNameOrId string, id string) error
+	SetTargetFromUpstreamByHostPortAsUnhealthy(upstreamNameOrId string, hostPort string) error
+	SetTargetFromUpstreamByIdAsUnhealthy(upstreamNameOrId string, id string) error
+	GetTargetsWithHealthFromUpstreamName(name string) ([]*Target, error)
+	GetTargetsWithHealthFromUpstreamId(id string) ([]*Target, error)
+}
+
+type targetClient struct {
 	config *Config
 }
 
@@ -32,11 +47,11 @@ type Targets struct {
 
 const TargetsPath = "/upstreams/%s/targets"
 
-func (targetClient *TargetClient) CreateFromUpstreamName(name string, targetRequest *TargetRequest) (*Target, error) {
+func (targetClient *targetClient) CreateFromUpstreamName(name string, targetRequest *TargetRequest) (*Target, error) {
 	return targetClient.CreateFromUpstreamId(name, targetRequest)
 }
 
-func (targetClient *TargetClient) CreateFromUpstreamId(id string, targetRequest *TargetRequest) (*Target, error) {
+func (targetClient *targetClient) CreateFromUpstreamId(id string, targetRequest *TargetRequest) (*Target, error) {
 	r, body, errs := newPost(targetClient.config, targetClient.config.HostAddress+fmt.Sprintf(TargetsPath, id)).Send(targetRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not register the target, error: %v", errs)
@@ -59,11 +74,11 @@ func (targetClient *TargetClient) CreateFromUpstreamId(id string, targetRequest 
 	return createdTarget, nil
 }
 
-func (targetClient *TargetClient) GetTargetsFromUpstreamName(name string) ([]*Target, error) {
+func (targetClient *targetClient) GetTargetsFromUpstreamName(name string) ([]*Target, error) {
 	return targetClient.GetTargetsFromUpstreamId(name)
 }
 
-func (targetClient *TargetClient) GetTargetsFromUpstreamId(id string) ([]*Target, error) {
+func (targetClient *targetClient) GetTargetsFromUpstreamId(id string) ([]*Target, error) {
 	targets := []*Target{}
 	data := &Targets{}
 
@@ -95,11 +110,11 @@ func (targetClient *TargetClient) GetTargetsFromUpstreamId(id string) ([]*Target
 	return targets, nil
 }
 
-func (targetClient *TargetClient) DeleteFromUpstreamByHostPort(upstreamNameOrId string, hostPort string) error {
+func (targetClient *targetClient) DeleteFromUpstreamByHostPort(upstreamNameOrId string, hostPort string) error {
 	return targetClient.DeleteFromUpstreamById(upstreamNameOrId, hostPort)
 }
 
-func (targetClient *TargetClient) DeleteFromUpstreamById(upstreamNameOrId string, id string) error {
+func (targetClient *targetClient) DeleteFromUpstreamById(upstreamNameOrId string, id string) error {
 	r, body, errs := newDelete(targetClient.config, targetClient.config.HostAddress+fmt.Sprintf(TargetsPath, upstreamNameOrId)+fmt.Sprintf("/%s", id)).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete the target, result: %v error: %v", r, errs)
@@ -116,11 +131,11 @@ func (targetClient *TargetClient) DeleteFromUpstreamById(upstreamNameOrId string
 	return nil
 }
 
-func (targetClient *TargetClient) SetTargetFromUpstreamByHostPortAsHealthy(upstreamNameOrId string, hostPort string) error {
+func (targetClient *targetClient) SetTargetFromUpstreamByHostPortAsHealthy(upstreamNameOrId string, hostPort string) error {
 	return targetClient.SetTargetFromUpstreamByIdAsHealthy(upstreamNameOrId, hostPort)
 }
 
-func (targetClient *TargetClient) SetTargetFromUpstreamByIdAsHealthy(upstreamNameOrId string, id string) error {
+func (targetClient *targetClient) SetTargetFromUpstreamByIdAsHealthy(upstreamNameOrId string, id string) error {
 	r, body, errs := newPost(targetClient.config, targetClient.config.HostAddress+fmt.Sprintf(TargetsPath, upstreamNameOrId)+fmt.Sprintf("/%s/healthy", id)).Send("").End()
 	if errs != nil {
 		return fmt.Errorf("could not set the target as healthy, result: %v error: %v", r, errs)
@@ -137,11 +152,11 @@ func (targetClient *TargetClient) SetTargetFromUpstreamByIdAsHealthy(upstreamNam
 	return nil
 }
 
-func (targetClient *TargetClient) SetTargetFromUpstreamByHostPortAsUnhealthy(upstreamNameOrId string, hostPort string) error {
+func (targetClient *targetClient) SetTargetFromUpstreamByHostPortAsUnhealthy(upstreamNameOrId string, hostPort string) error {
 	return targetClient.SetTargetFromUpstreamByIdAsUnhealthy(upstreamNameOrId, hostPort)
 }
 
-func (targetClient *TargetClient) SetTargetFromUpstreamByIdAsUnhealthy(upstreamNameOrId string, id string) error {
+func (targetClient *targetClient) SetTargetFromUpstreamByIdAsUnhealthy(upstreamNameOrId string, id string) error {
 	r, body, errs := newPost(targetClient.config, targetClient.config.HostAddress+fmt.Sprintf(TargetsPath, upstreamNameOrId)+fmt.Sprintf("/%s/unhealthy", id)).Send("").End()
 	if errs != nil {
 		return fmt.Errorf("could not set the target as unhealthy, result: %v error: %v", r, errs)
@@ -158,11 +173,11 @@ func (targetClient *TargetClient) SetTargetFromUpstreamByIdAsUnhealthy(upstreamN
 	return nil
 }
 
-func (targetClient *TargetClient) GetTargetsWithHealthFromUpstreamName(name string) ([]*Target, error) {
+func (targetClient *targetClient) GetTargetsWithHealthFromUpstreamName(name string) ([]*Target, error) {
 	return targetClient.GetTargetsWithHealthFromUpstreamId(name)
 }
 
-func (targetClient *TargetClient) GetTargetsWithHealthFromUpstreamId(id string) ([]*Target, error) {
+func (targetClient *targetClient) GetTargetsWithHealthFromUpstreamId(id string) ([]*Target, error) {
 	targets := []*Target{}
 	data := &Targets{}
 

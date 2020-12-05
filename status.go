@@ -6,7 +6,11 @@ import (
 	"fmt"
 )
 
-type StatusClient struct {
+type StatusClient interface {
+	Get() (*Status, error)
+}
+
+type statusClient struct {
 	config *Config
 }
 
@@ -29,7 +33,7 @@ type databaseStatus struct {
 	Reachable bool `json:"reachable" yaml:"reachable"`
 }
 
-func (statusClient *StatusClient) Get() (*Status, error) {
+func (statusClient *statusClient) Get() (*Status, error) {
 
 	_, body, errs := newGet(statusClient.config, statusClient.config.HostAddress+"/status").End()
 	if errs != nil {

@@ -5,7 +5,20 @@ import (
 	"fmt"
 )
 
-type RouteClient struct {
+type RouteClient interface {
+	GetByName(name string) (*Route, error)
+	GetById(id string) (*Route, error)
+	Create(routeRequest *RouteRequest) (*Route, error)
+	List(query *RouteQueryString) ([]*Route, error)
+	GetRoutesFromServiceName(name string) ([]*Route, error)
+	GetRoutesFromServiceId(id string) ([]*Route, error)
+	UpdateByName(name string, routeRequest *RouteRequest) (*Route, error)
+	UpdateById(id string, routeRequest *RouteRequest) (*Route, error)
+	DeleteByName(name string) error
+	DeleteById(id string) error
+}
+
+type routeClient struct {
 	config *Config
 }
 
@@ -60,11 +73,11 @@ type RouteQueryString struct {
 
 const RoutesPath = "/routes/"
 
-func (routeClient *RouteClient) GetByName(name string) (*Route, error) {
+func (routeClient *routeClient) GetByName(name string) (*Route, error) {
 	return routeClient.GetById(name)
 }
 
-func (routeClient *RouteClient) GetById(id string) (*Route, error) {
+func (routeClient *routeClient) GetById(id string) (*Route, error) {
 	r, body, errs := newGet(routeClient.config, routeClient.config.HostAddress+RoutesPath+id).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get the route, error: %v", errs)
@@ -87,7 +100,7 @@ func (routeClient *RouteClient) GetById(id string) (*Route, error) {
 	return route, nil
 }
 
-func (routeClient *RouteClient) Create(routeRequest *RouteRequest) (*Route, error) {
+func (routeClient *routeClient) Create(routeRequest *RouteRequest) (*Route, error) {
 	r, body, errs := newPost(routeClient.config, routeClient.config.HostAddress+RoutesPath).Send(routeRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not register the route, error: %v", errs)
@@ -110,7 +123,7 @@ func (routeClient *RouteClient) Create(routeRequest *RouteRequest) (*Route, erro
 	return createdRoute, nil
 }
 
-func (routeClient *RouteClient) List(query *RouteQueryString) ([]*Route, error) {
+func (routeClient *routeClient) List(query *RouteQueryString) ([]*Route, error) {
 	routes := make([]*Route, 0)
 
 	if query.Size < 100 {
@@ -150,11 +163,11 @@ func (routeClient *RouteClient) List(query *RouteQueryString) ([]*Route, error) 
 	return routes, nil
 }
 
-func (routeClient *RouteClient) GetRoutesFromServiceName(name string) ([]*Route, error) {
+func (routeClient *routeClient) GetRoutesFromServiceName(name string) ([]*Route, error) {
 	return routeClient.GetRoutesFromServiceId(name)
 }
 
-func (routeClient *RouteClient) GetRoutesFromServiceId(id string) ([]*Route, error) {
+func (routeClient *routeClient) GetRoutesFromServiceId(id string) ([]*Route, error) {
 	routes := make([]*Route, 0)
 	data := &Routes{}
 
@@ -183,11 +196,11 @@ func (routeClient *RouteClient) GetRoutesFromServiceId(id string) ([]*Route, err
 	return routes, nil
 }
 
-func (routeClient *RouteClient) UpdateByName(name string, routeRequest *RouteRequest) (*Route, error) {
+func (routeClient *routeClient) UpdateByName(name string, routeRequest *RouteRequest) (*Route, error) {
 	return routeClient.UpdateById(name, routeRequest)
 }
 
-func (routeClient *RouteClient) UpdateById(id string, routeRequest *RouteRequest) (*Route, error) {
+func (routeClient *routeClient) UpdateById(id string, routeRequest *RouteRequest) (*Route, error) {
 	r, body, errs := newPatch(routeClient.config, routeClient.config.HostAddress+RoutesPath+id).Send(routeRequest).End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not update route, error: %v", errs)
@@ -210,11 +223,11 @@ func (routeClient *RouteClient) UpdateById(id string, routeRequest *RouteRequest
 	return updatedRoute, nil
 }
 
-func (routeClient *RouteClient) DeleteByName(name string) error {
+func (routeClient *routeClient) DeleteByName(name string) error {
 	return routeClient.DeleteById(name)
 }
 
-func (routeClient *RouteClient) DeleteById(id string) error {
+func (routeClient *routeClient) DeleteById(id string) error {
 	r, body, errs := newDelete(routeClient.config, routeClient.config.HostAddress+RoutesPath+id).End()
 	if errs != nil {
 		return fmt.Errorf("could not delete the route, result: %v error: %v", r, errs)

@@ -5,7 +5,15 @@ import (
 	"fmt"
 )
 
-type SnisClient struct {
+type SnisClient interface {
+	Create(snisRequest *SnisRequest) (*Sni, error)
+	GetByName(name string) (*Sni, error)
+	List() (*Snis, error)
+	DeleteByName(name string) error
+	UpdateByName(name string, snisRequest *SnisRequest) (*Sni, error)
+}
+
+type snisClient struct {
 	config *Config
 }
 
@@ -26,7 +34,7 @@ type Snis struct {
 
 const SnisPath = "/snis/"
 
-func (snisClient *SnisClient) Create(snisRequest *SnisRequest) (*Sni, error) {
+func (snisClient *snisClient) Create(snisRequest *SnisRequest) (*Sni, error) {
 
 	r, body, errs := newPost(snisClient.config, snisClient.config.HostAddress+SnisPath).Send(snisRequest).End()
 	if errs != nil {
@@ -50,7 +58,7 @@ func (snisClient *SnisClient) Create(snisRequest *SnisRequest) (*Sni, error) {
 	return sni, nil
 }
 
-func (snisClient *SnisClient) GetByName(name string) (*Sni, error) {
+func (snisClient *snisClient) GetByName(name string) (*Sni, error) {
 
 	r, body, errs := newGet(snisClient.config, snisClient.config.HostAddress+SnisPath+name).End()
 	if errs != nil {
@@ -74,7 +82,7 @@ func (snisClient *SnisClient) GetByName(name string) (*Sni, error) {
 	return sni, nil
 }
 
-func (snisClient *SnisClient) List() (*Snis, error) {
+func (snisClient *snisClient) List() (*Snis, error) {
 
 	r, body, errs := newGet(snisClient.config, snisClient.config.HostAddress+SnisPath).End()
 	if errs != nil {
@@ -94,7 +102,7 @@ func (snisClient *SnisClient) List() (*Snis, error) {
 	return snis, nil
 }
 
-func (snisClient *SnisClient) DeleteByName(name string) error {
+func (snisClient *snisClient) DeleteByName(name string) error {
 
 	r, body, errs := newDelete(snisClient.config, snisClient.config.HostAddress+SnisPath+name).End()
 	if errs != nil {
@@ -108,7 +116,7 @@ func (snisClient *SnisClient) DeleteByName(name string) error {
 	return nil
 }
 
-func (snisClient *SnisClient) UpdateByName(name string, snisRequest *SnisRequest) (*Sni, error) {
+func (snisClient *snisClient) UpdateByName(name string, snisRequest *SnisRequest) (*Sni, error) {
 
 	r, body, errs := newPatch(snisClient.config, snisClient.config.HostAddress+SnisPath+name).Send(snisRequest).End()
 	if errs != nil {

@@ -5,7 +5,18 @@ import (
 	"fmt"
 )
 
-type PluginClient struct {
+type PluginClient interface {
+	GetById(id string) (*Plugin, error)
+	List(query *PluginQueryString) ([]*Plugin, error)
+	Create(pluginRequest *PluginRequest) (*Plugin, error)
+	UpdateById(id string, pluginRequest *PluginRequest) (*Plugin, error)
+	DeleteById(id string) error
+	GetByConsumerId(id string) (*Plugins, error)
+	GetByRouteId(id string) (*Plugins, error)
+	GetByServiceId(id string) (*Plugins, error)
+}
+
+type pluginClient struct {
 	config *Config
 }
 
@@ -43,7 +54,7 @@ type PluginQueryString struct {
 
 const PluginsPath = "/plugins/"
 
-func (pluginClient *PluginClient) GetById(id string) (*Plugin, error) {
+func (pluginClient *pluginClient) GetById(id string) (*Plugin, error) {
 
 	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+PluginsPath+id).End()
 	if errs != nil {
@@ -67,7 +78,7 @@ func (pluginClient *PluginClient) GetById(id string) (*Plugin, error) {
 	return plugin, nil
 }
 
-func (pluginClient *PluginClient) List(query *PluginQueryString) ([]*Plugin, error) {
+func (pluginClient *pluginClient) List(query *PluginQueryString) ([]*Plugin, error) {
 	plugins := make([]*Plugin, 0)
 
 	if query.Size < 100 {
@@ -107,7 +118,7 @@ func (pluginClient *PluginClient) List(query *PluginQueryString) ([]*Plugin, err
 	return plugins, nil
 }
 
-func (pluginClient *PluginClient) Create(pluginRequest *PluginRequest) (*Plugin, error) {
+func (pluginClient *pluginClient) Create(pluginRequest *PluginRequest) (*Plugin, error) {
 
 	r, body, errs := newPost(pluginClient.config, pluginClient.config.HostAddress+PluginsPath).Send(pluginRequest).End()
 	if errs != nil {
@@ -131,7 +142,7 @@ func (pluginClient *PluginClient) Create(pluginRequest *PluginRequest) (*Plugin,
 	return createdPlugin, nil
 }
 
-func (pluginClient *PluginClient) UpdateById(id string, pluginRequest *PluginRequest) (*Plugin, error) {
+func (pluginClient *pluginClient) UpdateById(id string, pluginRequest *PluginRequest) (*Plugin, error) {
 
 	r, body, errs := newPatch(pluginClient.config, pluginClient.config.HostAddress+PluginsPath+id).Send(pluginRequest).End()
 	if errs != nil {
@@ -155,7 +166,7 @@ func (pluginClient *PluginClient) UpdateById(id string, pluginRequest *PluginReq
 	return updatedPlugin, nil
 }
 
-func (pluginClient *PluginClient) DeleteById(id string) error {
+func (pluginClient *pluginClient) DeleteById(id string) error {
 
 	r, body, errs := newDelete(pluginClient.config, pluginClient.config.HostAddress+PluginsPath+id).End()
 	if errs != nil {
@@ -169,7 +180,7 @@ func (pluginClient *PluginClient) DeleteById(id string) error {
 	return nil
 }
 
-func (pluginClient *PluginClient) GetByConsumerId(id string) (*Plugins, error) {
+func (pluginClient *pluginClient) GetByConsumerId(id string) (*Plugins, error) {
 	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+"/consumers/"+id+"/plugins").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
@@ -188,7 +199,7 @@ func (pluginClient *PluginClient) GetByConsumerId(id string) (*Plugins, error) {
 	return plugins, nil
 }
 
-func (pluginClient *PluginClient) GetByRouteId(id string) (*Plugins, error) {
+func (pluginClient *pluginClient) GetByRouteId(id string) (*Plugins, error) {
 	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+"/routes/"+id+"/plugins").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
@@ -207,7 +218,7 @@ func (pluginClient *PluginClient) GetByRouteId(id string) (*Plugins, error) {
 	return plugins, nil
 }
 
-func (pluginClient *PluginClient) GetByServiceId(id string) (*Plugins, error) {
+func (pluginClient *pluginClient) GetByServiceId(id string) (*Plugins, error) {
 	r, body, errs := newGet(pluginClient.config, pluginClient.config.HostAddress+"/services/"+id+"/plugins").End()
 	if errs != nil {
 		return nil, fmt.Errorf("could not get plugins, error: %v", errs)
