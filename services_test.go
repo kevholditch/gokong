@@ -67,6 +67,42 @@ func TestServiceClient_GetServices(t *testing.T) {
 	}
 }
 
+func TestServiceClient_DeleteServiceByIdWithRouteError(t *testing.T) {
+	serviceRequest := &ServiceRequest{
+		Protocol: String("http"),
+		Host:     String("foo.com"),
+	}
+	client := NewClient(NewDefaultConfig())
+
+	serviceRequest.Name = String(fmt.Sprintf("service-name-%s", uuid.NewV4().String()))
+	createdService, err := client.Services().Create(serviceRequest)
+	assert.Nil(t, err)
+	assert.NotNil(t, createdService)
+
+	routeRequest := &RouteRequest{
+		Protocols:    StringSlice([]string{"http"}),
+		Methods:      StringSlice([]string{"GET"}),
+		Hosts:        StringSlice([]string{"foo.com"}),
+		Paths:        StringSlice([]string{"/bar"}),
+		StripPath:    Bool(true),
+		PreserveHost: Bool(true),
+		Service:      ToId(*createdService.Id),
+	}
+	createdRoute, err := client.Routes().Create(routeRequest)
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	expectedError := "bad request, message from kong: {\"message\":\"an existing 'routes' entity references this 'services' entity\",\"name\":\"foreign key violation\",\"fields\":{\"@referenced_by\":\"routes\"},\"code\":4}"
+	assert.Equal(t, expectedError, err.Error())
+	assert.NotNil(t, createdRoute)
+
+	err = client.Routes().DeleteById(*createdRoute.Id)
+	assert.Nil(t, err)
+
+	err = client.Services().DeleteServiceById(*createdService.Id)
+	assert.Nil(t, err)
+}
+
 func TestServiceClient_UpdateServiceById(t *testing.T) {
 	serviceRequest := &ServiceRequest{
 		Name:     String(fmt.Sprintf("service-name-%s", uuid.NewV4().String())),
