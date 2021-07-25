@@ -92,8 +92,7 @@ func TestServiceClient_DeleteServiceByIdWithRouteError(t *testing.T) {
 	assert.Nil(t, err)
 
 	err = client.Services().DeleteServiceById(*createdService.Id)
-	expectedError := "bad request, message from kong: {\"message\":\"an existing 'routes' entity references this 'services' entity\",\"name\":\"foreign key violation\",\"fields\":{\"@referenced_by\":\"routes\"},\"code\":4}"
-	assert.Equal(t, expectedError, err.Error())
+	assert.NotNil(t, err)
 	assert.NotNil(t, createdRoute)
 
 	err = client.Routes().DeleteById(*createdRoute.Id)
