@@ -215,6 +215,10 @@ func (serviceClient *ServiceClient) DeleteServiceById(id string) error {
 		return fmt.Errorf("could not delete the service, result: %v error: %v", r, errs)
 	}
 
+	if r.StatusCode == 400 {
+		return fmt.Errorf("bad request, message from kong: %s", body)
+	}
+
 	if r.StatusCode == 401 || r.StatusCode == 403 {
 		return fmt.Errorf("not authorised, message from kong: %s", body)
 	}
