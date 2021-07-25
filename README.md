@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/kevholditch/gokong.svg?branch=master)](https://travis-ci.org/kevholditch/gokong)
 
 GoKong
 ======
@@ -13,10 +12,8 @@ GoKong has now been updated to support kong v1.0.0.  This is a breaking change r
 ## GoKong
 GoKong is a easy to use api client for [kong](https://getkong.org/).  The difference with the gokong library is all of its tests are written against a real running kong running inside a docker container, yep that's right you won't see a horrible mock anywhere!!
 
-## Supported Kong Versions
-As per [travis build](https://travis-ci.org/kevholditch/gokong):
 ```
-KONG_VERSION=1.0.0
+KONG_VERSION=2.5.0
 ```
 
 ## Importing
