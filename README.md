@@ -579,7 +579,7 @@ err := gokong.NewClient(gokong.NewDefaultConfig()).Upstreams().DeleteByName("tes
 ```
 
 Update an Upstream by id:
-```
+```go
 updateUpstreamRequest := &gokong.UpstreamRequest{
   Name: "test-upstream",
   Slots: 10,
