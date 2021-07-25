@@ -1,5 +1,7 @@
 name: gokong build
 on:
+  push:
+    branches: [ master ]
   pull_request:
 jobs:
   build:
