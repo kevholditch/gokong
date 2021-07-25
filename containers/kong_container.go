@@ -35,6 +35,9 @@ func NewKongContainer(pool *dockertest.Pool, postgres *postgresContainer, kongVe
 	}
 
 	migrations, err := pool.RunWithOptions(options)
+	if err != nil {
+		panic(fmt.Errorf("could not start kong migrations container, error: %v", err))
+	}
 
 	if err := pool.Retry(func() error {
 		migrationsContainer, err := pool.Client.InspectContainer(migrations.Container.ID)
