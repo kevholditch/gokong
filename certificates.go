@@ -12,6 +12,7 @@ type CertificateClient struct {
 type CertificateRequest struct {
 	Cert *string `json:"cert,omitempty" yaml:"cert,omitempty"`
 	Key  *string `json:"key,omitempty" yaml:"key,omitempty"`
+	SNIs *[]string `json:"snis" yaml:"snis"`
 }
 
 type Certificate struct {

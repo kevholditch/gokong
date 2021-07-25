@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const defaultKongVersion = "1.0.2"
+const defaultKongVersion = "2.5.0-ubuntu"
 const kong401Server = "KONG_401_SERVER"
 
 func Test_Newclient(t *testing.T) {
