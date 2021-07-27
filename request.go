@@ -2,6 +2,7 @@ package gokong
 
 import (
 	"crypto/tls"
+	"time"
 
 	"github.com/parnurzeal/gorequest"
 )
@@ -11,6 +12,10 @@ func configureRequest(r *gorequest.SuperAgent, config *Config) *gorequest.SuperA
 	if config.Username != "" || config.Password != "" {
 		r.SetBasicAuth(config.Username, config.Password)
 	}
+	if config.Timeout == 0 {
+		config.Timeout = time.Second * 1
+	}
+	r.Timeout(config.Timeout)
 
 	if config.ApiKey != "" {
 		r.Set("apikey", config.ApiKey)
